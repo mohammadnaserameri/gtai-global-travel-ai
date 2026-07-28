@@ -66,7 +66,7 @@ It is equally prohibited to imply an association, endorsement or partnership tha
 | #   | Module                                | File                                          |
 | --- | ------------------------------------- | --------------------------------------------- |
 | 01  | Home Search Experience                | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md` |
-| 02  | Flight Search Form                    | _not yet created_                             |
+| 02  | Flight Search Form                    | `docs/reference/02_FLIGHT_SEARCH_FORM.md`     |
 | 03  | Airport Selector                      | _not yet created_                             |
 | 04  | Date Picker and Flexible Dates        | _not yet created_                             |
 | 05  | Flight Results                        | _not yet created_                             |
@@ -75,16 +75,15 @@ It is equally prohibited to imply an association, endorsement or partnership tha
 
 ### Intended analysis scope of pending modules
 
-Names and boundaries only. **No requirements exist for modules 02–07**, and none may be inferred from this list.
+Names and boundaries only. **No requirements exist for modules 03–07**, and none may be inferred from this list. Module 02 has since been documented and is no longer listed here.
 
-| #   | Module                                | Intended analysis scope                                                                                                                               |
-| --- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 02  | Flight Search Form                    | The flight search control set in depth, beyond the homepage entry point: multi-city legs, passenger composition, validation and submission semantics. |
-| 03  | Airport Selector                      | Origin and destination selection: data model, search behaviour, grouping, nearby and all-airports concepts, keyboard and screen-reader interaction.   |
-| 04  | Date Picker and Flexible Dates        | Single and range date selection, month navigation, flexible-date and price-indicator concepts, locale and calendar-system handling.                   |
-| 05  | Flight Results                        | Result list structure, itinerary presentation, comparison lenses, pagination or progressive loading, and result-state handling.                       |
-| 06  | Filters and Sorting                   | Filter taxonomy, sorting options, interaction between filters and results, and state persistence.                                                     |
-| 07  | Flight Details and Affiliate Redirect | Itinerary detail view, pre-redirect disclosure, partner hand-off and the attribution boundary.                                                        |
+| #   | Module                                | Intended analysis scope                                                                                                                             |
+| --- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 03  | Airport Selector                      | Origin and destination selection: data model, search behaviour, grouping, nearby and all-airports concepts, keyboard and screen-reader interaction. |
+| 04  | Date Picker and Flexible Dates        | Single and range date selection, month navigation, flexible-date and price-indicator concepts, locale and calendar-system handling.                 |
+| 05  | Flight Results                        | Result list structure, itinerary presentation, comparison lenses, pagination or progressive loading, and result-state handling.                     |
+| 06  | Filters and Sorting                   | Filter taxonomy, sorting options, interaction between filters and results, and state persistence.                                                   |
+| 07  | Flight Details and Affiliate Redirect | Itinerary detail view, pre-redirect disclosure, partner hand-off and the attribution boundary.                                                      |
 
 ## 6. Approval workflow
 
@@ -244,17 +243,22 @@ V1.2 does not produce, authorize or imply:
 
 ## 15. Status table
 
-| #   | Module                                | Status       | Analysis approved | Documentation complete | Implementation allowed | Implementation version | Related files                                 |
-| --- | ------------------------------------- | ------------ | ----------------- | ---------------------- | ---------------------- | ---------------------- | --------------------------------------------- |
-| 01  | Home Search Experience                | **Approved** | Yes               | Yes                    | **No**                 | Not yet assigned       | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md` |
-| 02  | Flight Search Form                    | Pending      | No                | No                     | No                     | —                      | —                                             |
-| 03  | Airport Selector                      | Pending      | No                | No                     | No                     | —                      | —                                             |
-| 04  | Date Picker and Flexible Dates        | Pending      | No                | No                     | No                     | —                      | —                                             |
-| 05  | Flight Results                        | Pending      | No                | No                     | No                     | —                      | —                                             |
-| 06  | Filters and Sorting                   | Pending      | No                | No                     | No                     | —                      | —                                             |
-| 07  | Flight Details and Affiliate Redirect | Pending      | No                | No                     | No                     | —                      | —                                             |
+| #   | Module                                | Status                                      | Analysis approved | Documentation complete | Implementation allowed         | Implementation version | Related files                                 | Frozen commit                              |
+| --- | ------------------------------------- | ------------------------------------------- | ----------------- | ---------------------- | ------------------------------ | ---------------------- | --------------------------------------------- | ------------------------------------------ |
+| 01  | Home Search Experience                | **Frozen**                                  | Yes               | Yes                    | **Presentation baseline only** | Not yet assigned       | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md` | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
+| 02  | Flight Search Form                    | **Documentation complete, awaiting freeze** | Yes               | Yes                    | **No**                         | Not yet assigned       | `docs/reference/02_FLIGHT_SEARCH_FORM.md`     | —                                          |
+| 03  | Airport Selector                      | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 04  | Date Picker and Flexible Dates        | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 05  | Flight Results                        | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 06  | Filters and Sorting                   | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 07  | Flight Details and Affiliate Redirect | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
 
-Module 01 is documented and approved **as documentation**. Documentation approval is not implementation approval — see the closing rule of module 01.
+Notes on the two non-pending modules:
+
+- **Module 01** is frozen as documentation. "Presentation baseline only" means the V1.1 presentation layer already in the repository is the sanctioned implementation of this module; no further behaviour may be built from it without a named implementation version.
+- **Module 02** is documentation complete and awaiting its freeze commit. **Implementation is not allowed.**
+
+Documentation approval is never implementation approval — see the closing rule of each module.
 
 ---
 
