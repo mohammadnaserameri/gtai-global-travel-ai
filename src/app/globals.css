@@ -1,26 +1,394 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   GTAI — Global Travel AI
+   Design tokens. See docs/design-system/GTAI_DESIGN_SYSTEM.md
+   Source palette (brand inspiration):
+     #FFD6FF  #EAC0FF  #C78EFF (primary)  #D0BDFF  #D0DFFF
+   The approved palette is preserved verbatim inside the brand ramp below and
+   is then extended into a professional, accessible semantic system.
+   ========================================================================== */
+
 :root {
+  /* ---- Brand ramp (derived from #C78EFF) ---------------------------- */
+  --brand-25: #fdfaff;
+  --brand-50: #faf3ff;
+  --brand-100: #ffd6ff; /* approved palette */
+  --brand-150: #f2e3ff;
+  --brand-200: #eac0ff; /* approved palette */
+  --brand-250: #d0bdff; /* approved palette */
+  --brand-300: #d8a9ff;
+  --brand-400: #c78eff; /* approved palette — PRIMARY BRAND COLOR */
+  --brand-500: #b071f5;
+  --brand-600: #9553df;
+  --brand-700: #7a3fbe;
+  --brand-800: #5f2f94;
+  --brand-900: #45216b;
+  --brand-950: #2b1445;
+
+  /* Blue-violet support (from #D0DFFF) */
+  --accent-100: #eaf1ff;
+  --accent-200: #d0dfff; /* approved palette */
+  --accent-400: #8fb0f0;
+  --accent-600: #3f66b8;
+  --accent-800: #26406f;
+
+  /* ---- Semantic brand ---------------------------------------------- */
+  --brand-primary: #c78eff;
+  --brand-primary-hover: #b071f5;
+  --brand-primary-active: #9553df;
+  --brand-primary-subtle: #eac0ff;
+  --brand-primary-soft: #ffd6ff;
+  --brand-secondary: #d0bdff;
+  --brand-tertiary: #d0dfff;
+
+  /* Accessible interactive ink derived from the brand hue.
+     Used wherever the brand must carry text or meet WCAG AA contrast. */
+  --brand-ink: #5f2f94;
+  --brand-ink-strong: #45216b;
+  --brand-action: #7a3fbe;
+  --brand-action-hover: #6a3399;
+  --brand-action-active: #5f2f94;
+  --brand-on-action: #ffffff;
+
+  /* ---- Gradients ---------------------------------------------------- */
+  --brand-gradient-start: #ffd6ff;
+  --brand-gradient-middle: #c78eff;
+  --brand-gradient-end: #d0dfff;
+
+  /* ---- Surfaces / background ---------------------------------------- */
   --background: #ffffff;
-  --foreground: #171717;
+  --background-muted: #f7f6fb;
+  --background-accent: #f4efff;
+
+  --surface: #ffffff;
+  --surface-subtle: #faf9fd;
+  --surface-elevated: #ffffff;
+  --surface-glass: rgb(255 255 255 / 0.72);
+
+  /* ---- Foreground ---------------------------------------------------- */
+  --foreground: #171326;
+  --foreground-secondary: #443e5b;
+  --foreground-muted: #635d7c;
+  --foreground-inverse: #ffffff;
+
+  /* ---- Lines --------------------------------------------------------- */
+  --border: #e7e3f1;
+  --border-strong: #cdc7de;
+  --focus-ring: #7a3fbe;
+
+  /* ---- Status -------------------------------------------------------- */
+  --success: #0f7a54;
+  --success-subtle: #e6f5ef;
+  --warning: #8a5104;
+  --warning-subtle: #fdf2e2;
+  --danger: #b3271f;
+  --danger-subtle: #fdecea;
+  --info: #24558f;
+  --info-subtle: #e9f0fa;
+
+  /* ---- Elevation (restrained, never neon) ---------------------------- */
+  --shadow-xs: 0 1px 2px rgb(23 19 38 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(23 19 38 / 0.07), 0 1px 2px rgb(23 19 38 / 0.04);
+  --shadow-md:
+    0 6px 16px -6px rgb(23 19 38 / 0.12), 0 2px 5px -2px rgb(23 19 38 / 0.07);
+  --shadow-lg:
+    0 18px 40px -18px rgb(23 19 38 / 0.22), 0 6px 14px -8px rgb(23 19 38 / 0.1);
+  --shadow-xl:
+    0 34px 70px -30px rgb(45 25 80 / 0.3), 0 10px 24px -14px rgb(23 19 38 / 0.12);
+  --shadow-brand: 0 20px 44px -22px rgb(122 63 190 / 0.42);
+
+  /* ---- Radii ---------------------------------------------------------- */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-pill: 999px;
+
+  /* ---- Layout --------------------------------------------------------- */
+  --container-max: 80rem;
+  --header-height: 4rem;
 }
 
+/* Map tokens into the Tailwind theme so utilities such as `bg-surface`,
+   `text-foreground-muted` and `border-border-strong` are available. */
 @theme inline {
+  --color-brand-25: var(--brand-25);
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-150: var(--brand-150);
+  --color-brand-200: var(--brand-200);
+  --color-brand-250: var(--brand-250);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-400: var(--accent-400);
+  --color-accent-600: var(--accent-600);
+  --color-accent-800: var(--accent-800);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-primary-active: var(--brand-primary-active);
+  --color-brand-primary-subtle: var(--brand-primary-subtle);
+  --color-brand-primary-soft: var(--brand-primary-soft);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-tertiary: var(--brand-tertiary);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-ink-strong: var(--brand-ink-strong);
+  --color-brand-action: var(--brand-action);
+  --color-brand-action-hover: var(--brand-action-hover);
+  --color-brand-action-active: var(--brand-action-active);
+  --color-brand-on-action: var(--brand-on-action);
+
   --color-background: var(--background);
+  --color-background-muted: var(--background-muted);
+  --color-background-accent: var(--background-accent);
+
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-glass: var(--surface-glass);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-inverse: var(--foreground-inverse);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-focus-ring: var(--focus-ring);
+
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-pill: var(--radius-pill);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-brand: var(--shadow-brand);
+
+  --font-sans: var(--font-gtai-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --breakpoint-xs: 22.5rem; /* 360px */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html {
+  /* Guarantees no horizontal page overflow at any supported width. */
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    var(--font-gtai-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  overflow-x: clip;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Persian / Arabic / Urdu / Hebrew benefit from slightly looser leading. */
+[dir="rtl"] body {
+  line-height: 1.8;
+}
+
+/* Keeps numerals, currency codes and ISO codes readable inside RTL text. */
+.gtai-ltr-numerals {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+::selection {
+  background-color: var(--brand-primary-subtle);
+  color: var(--brand-ink-strong);
+}
+
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility gtai-surface-glass {
+  background-color: var(--surface-glass);
+  backdrop-filter: saturate(150%) blur(14px);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+}
+
+@utility gtai-gradient-text {
+  background-image: linear-gradient(
+    100deg,
+    var(--brand-ink-strong) 0%,
+    var(--brand-700) 46%,
+    var(--accent-600) 100%
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+/* Lightweight CSS-only depth for elevated cards. No WebGL, no canvas. */
+@utility gtai-lift {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+/* ==========================================================================
+   Ambient background field — pure CSS, GPU-cheap, non-animated.
+   ========================================================================== */
+
+.gtai-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gtai-aurora::before,
+.gtai-aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(72px);
+  opacity: 0.5;
+}
+
+.gtai-aurora::before {
+  inset-inline-start: -12%;
+  top: -34%;
+  width: 46rem;
+  height: 32rem;
+  background: radial-gradient(
+    circle at 30% 40%,
+    var(--brand-gradient-middle) 0%,
+    var(--brand-gradient-start) 45%,
+    transparent 72%
+  );
+}
+
+.gtai-aurora::after {
+  inset-inline-end: -16%;
+  top: -12%;
+  width: 42rem;
+  height: 34rem;
+  background: radial-gradient(
+    circle at 60% 40%,
+    var(--brand-gradient-end) 0%,
+    var(--brand-secondary) 50%,
+    transparent 74%
+  );
+  opacity: 0.45;
+}
+
+/* Fine dotted travel grid, used behind the hero. */
+.gtai-grid-field {
+  background-image: radial-gradient(
+    circle at center,
+    rgb(122 63 190 / 0.13) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000 20%,
+    transparent 78%
+  );
+}
+
+/* ==========================================================================
+   Motion — everything is optional and disabled on request.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .gtai-float {
+    animation: gtai-float 9s ease-in-out infinite;
+  }
+
+  .gtai-float-slow {
+    animation-duration: 13s;
+  }
+
+  .gtai-float-delayed {
+    animation-delay: -4s;
+  }
+}
+
+@keyframes gtai-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .gtai-float {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   Print
+   ========================================================================== */
+
+@media print {
+  .gtai-aurora,
+  .gtai-grid-field {
+    display: none !important;
+  }
 }

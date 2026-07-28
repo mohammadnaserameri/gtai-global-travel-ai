@@ -1,0 +1,761 @@
+{
+  "meta": {
+    "siteName": "GTAI — Global Travel AI",
+    "home": {
+      "title": "GTAI — Search globally. Travel intelligently.",
+      "description": "Compare flights, stays, cars, packages and travel experiences across trusted travel providers."
+    },
+    "flights": {
+      "title": "Flights — GTAI",
+      "description": "The GTAI flight comparison experience. Provider connections are not active in this foundation release."
+    },
+    "stays": {
+      "title": "Stays — GTAI",
+      "description": "The GTAI stay comparison experience. Provider connections are not active in this foundation release."
+    },
+    "cars": {
+      "title": "Car rental — GTAI",
+      "description": "The GTAI car rental comparison experience. Provider connections are not active in this foundation release."
+    },
+    "packages": {
+      "title": "Packages — GTAI",
+      "description": "The GTAI package comparison experience. Provider connections are not active in this foundation release."
+    },
+    "explore": {
+      "title": "Explore — GTAI",
+      "description": "Discover where your budget, dates and interests can take you. Preview of a future GTAI capability."
+    },
+    "trips": {
+      "title": "Trips — GTAI",
+      "description": "A future home for saved searches, watched routes and planned journeys."
+    },
+    "aiTravel": {
+      "title": "Guided AI planning — GTAI",
+      "description": "A preview of GTAI's structured, question-guided travel planning. Nothing on this page is operational yet."
+    },
+    "notFound": {
+      "title": "Page not found — GTAI",
+      "description": "The page you requested does not exist."
+    }
+  },
+
+  "common": {
+    "skipToContent": "Skip to main content",
+    "previewBadge": "Preview",
+    "futureBadge": "Future capability",
+    "notConnectedBadge": "Not connected in V1",
+    "demoBadge": "Demonstration",
+    "learnMore": "Learn more",
+    "close": "Close",
+    "backToHome": "Back to home",
+    "sectionDivider": "Section",
+    "loading": "Loading"
+  },
+
+  "nav": {
+    "primaryLabel": "Travel products",
+    "utilityLabel": "Account and preferences",
+    "mobileLabel": "Site menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "home": "Home",
+    "flights": "Flights",
+    "stays": "Stays",
+    "cars": "Cars",
+    "packages": "Packages",
+    "explore": "Explore",
+    "aiTravel": "AI Travel",
+    "trips": "Trips",
+    "signIn": "Sign in",
+    "signInHint": "Accounts are not available in this release.",
+    "profile": "Profile",
+    "goToHome": "GTAI home"
+  },
+
+  "language": {
+    "label": "Language",
+    "selectorLabel": "Choose a language",
+    "current": "Current language",
+    "translationNotice": "Complete content is available in English. Other languages fall back to English where a translation has not been written yet.",
+    "demoAvailable": "Demonstration translation available"
+  },
+
+  "region": {
+    "label": "Region and currency",
+    "countryLabel": "Country or region",
+    "currencyLabel": "Display currency",
+    "selectorLabel": "Choose your country and display currency",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "featured": "Frequently selected",
+    "allCountries": "All countries and regions",
+    "allCurrencies": "All currencies",
+    "resolvedFrom": "Suggested from your selected language",
+    "noGeolocationNotice": "GTAI does not detect your physical location. Your country is a manual choice, pre-filled from the language you selected.",
+    "noConversionNotice": "Currency selection changes how prices will be labelled. GTAI does not convert prices, because no live travel prices exist in this release.",
+    "iranNotice": "Iran is displayed in USD."
+  },
+
+  "hero": {
+    "eyebrow": "Global travel metasearch",
+    "title": "Search globally. Travel intelligently.",
+    "subtitle": "Compare flights, stays, cars, packages and travel experiences across trusted travel providers — then let guided intelligence shape the trip around you.",
+    "note": "This is the GTAI foundation release. Provider connections, live prices and booking are not active yet.",
+    "highlights": [
+      {
+        "title": "One global search",
+        "description": "A single comparison surface designed for every market GTAI will serve."
+      },
+      {
+        "title": "Guided, not guesswork",
+        "description": "Structured questions instead of an open chat box you have to fill in yourself."
+      },
+      {
+        "title": "Transparent by design",
+        "description": "You always see when a link is an affiliate link and who completes your booking."
+      }
+    ],
+    "visual": {
+      "label": "Illustrative route preview",
+      "routeFrom": "YYZ",
+      "routeTo": "LHR",
+      "routeCaption": "Illustration only — no live route data",
+      "chipBest": "Best",
+      "chipCheapest": "Cheapest",
+      "chipFastest": "Fastest"
+    }
+  },
+
+  "searchTabs": {
+    "label": "Choose what to search",
+    "flights": "Flights",
+    "stays": "Stays",
+    "cars": "Cars",
+    "packages": "Packages"
+  },
+
+  "search": {
+    "heading": "Start your search",
+    "tripType": {
+      "label": "Trip type",
+      "roundTrip": "Round trip",
+      "oneWay": "One way",
+      "multiCity": "Multi-city"
+    },
+    "fields": {
+      "from": "From",
+      "to": "To",
+      "departure": "Departure",
+      "return": "Return",
+      "travelers": "Travelers",
+      "cabinClass": "Cabin class",
+      "destination": "Destination",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "guests": "Guests",
+      "rooms": "Rooms",
+      "pickUp": "Pick-up location",
+      "dropOff": "Drop-off location",
+      "pickUpDate": "Pick-up date",
+      "dropOffDate": "Drop-off date",
+      "driverAge": "Driver age",
+      "origin": "Departure city",
+      "packageDestination": "Package destination",
+      "packageDates": "Travel dates",
+      "packageTravelers": "Travelers"
+    },
+    "placeholders": {
+      "from": "City or airport",
+      "to": "City or airport",
+      "date": "Add date",
+      "destination": "City, region or property",
+      "pickUp": "City, airport or depot",
+      "generic": "Not connected yet"
+    },
+    "options": {
+      "travelersValue": "1 adult",
+      "guestsValue": "2 guests, 1 room",
+      "driverAgeValue": "30–65",
+      "cabin": {
+        "economy": "Economy",
+        "premiumEconomy": "Premium economy",
+        "business": "Business",
+        "first": "First"
+      }
+    },
+    "submit": "Search",
+    "submitDisabledHint": "Search is presentational in this release.",
+    "helper": "Nearby airports, flexible dates and price alerts are planned for a later release.",
+    "notice": "This is a visual search shell. No airport data, no provider data and no results are connected in the foundation release."
+  },
+
+  "aiPanel": {
+    "eyebrow": "Guided planning",
+    "title": "Build your perfect trip with GTAI",
+    "description": "Instead of asking you to describe a trip in a blank text box, GTAI will ask short, structured questions and build the search around your answers.",
+    "topicsLabel": "What GTAI will learn about your trip",
+    "topics": [
+      "Purpose of travel",
+      "Budget range",
+      "Date flexibility",
+      "Comfort preferences",
+      "Stop and layover preferences",
+      "Travel risk tolerance",
+      "Visa and transit concerns",
+      "Stay preferences",
+      "Ground transportation",
+      "Interests and activities"
+    ],
+    "cta": "Start guided planning",
+    "secondaryCta": "See how it will work",
+    "notice": "Guided planning is a preview. No AI model is connected in this release."
+  },
+
+  "destinations": {
+    "eyebrow": "Popular destinations",
+    "title": "Where travellers are heading",
+    "description": "A static demonstration set. Real destination trends will be generated from live provider data once partners are connected.",
+    "staticNotice": "Static demonstration data",
+    "items": [
+      { "city": "Toronto", "country": "Canada", "note": "Lakefront city breaks" },
+      {
+        "city": "Vancouver",
+        "country": "Canada",
+        "note": "Mountains and coastline"
+      },
+      {
+        "city": "London",
+        "country": "United Kingdom",
+        "note": "Culture and connections"
+      },
+      { "city": "Paris", "country": "France", "note": "Classic city escapes" },
+      {
+        "city": "Dubai",
+        "country": "United Arab Emirates",
+        "note": "Global transit hub"
+      },
+      { "city": "Tokyo", "country": "Japan", "note": "Long-haul favourite" },
+      {
+        "city": "Istanbul",
+        "country": "Türkiye",
+        "note": "Between two continents"
+      },
+      { "city": "Barcelona", "country": "Spain", "note": "Coast and architecture" }
+    ]
+  },
+
+  "exploreSection": {
+    "eyebrow": "Explore",
+    "title": "Explore travel possibilities",
+    "description": "A future GTAI capability: start from a budget, a month or an interest instead of a fixed destination, and see where you could realistically go.",
+    "cta": "Open Explore",
+    "items": [
+      {
+        "title": "Search by budget",
+        "description": "Set a ceiling and see which destinations stay inside it."
+      },
+      {
+        "title": "Search by flexibility",
+        "description": "Compare a whole month instead of a single departure date."
+      },
+      {
+        "title": "Search by interest",
+        "description": "Start from food, nature, sport, culture or family travel."
+      },
+      {
+        "title": "Search by reachability",
+        "description": "Filter by realistic flight time, stops and transit requirements."
+      }
+    ]
+  },
+
+  "why": {
+    "eyebrow": "Why GTAI",
+    "title": "Built for how people actually plan travel",
+    "description": "GTAI combines familiar metasearch comparison with structured, explainable planning.",
+    "items": [
+      {
+        "title": "Global comparison",
+        "description": "One consistent comparison surface across flights, stays, cars and packages.",
+        "status": "planned"
+      },
+      {
+        "title": "Guided intelligent planning",
+        "description": "Structured questions build a trip profile — no blank chat box required.",
+        "status": "planned"
+      },
+      {
+        "title": "Transparent affiliate model",
+        "description": "We show which partner completes your booking and where GTAI earns a commission.",
+        "status": "active"
+      },
+      {
+        "title": "Travel risk awareness",
+        "description": "Tight connections, long layovers and transit requirements surfaced before you book.",
+        "status": "planned"
+      },
+      {
+        "title": "Personalized travel preferences",
+        "description": "Your saved preferences shape ranking instead of resetting on every visit.",
+        "status": "planned"
+      },
+      {
+        "title": "Multi-provider architecture",
+        "description": "An adapter layer designed so GTAI never depends on a single supplier.",
+        "status": "planned"
+      },
+      {
+        "title": "Multilingual global experience",
+        "description": "Locale routing, RTL layout and regional currency built into the foundation.",
+        "status": "active"
+      },
+      {
+        "title": "Continued trip support",
+        "description": "Price monitoring and change awareness after you have made a decision.",
+        "status": "planned"
+      }
+    ],
+    "statusLabels": {
+      "active": "In this release",
+      "planned": "Planned"
+    }
+  },
+
+  "trust": {
+    "eyebrow": "Trust and transparency",
+    "title": "Principles we are building against",
+    "description": "These are commitments about how GTAI is engineered, not claims about capabilities that already exist.",
+    "items": [
+      {
+        "title": "Provider transparency",
+        "description": "Every offer will name the provider that supplies it before you leave GTAI."
+      },
+      {
+        "title": "Understandable recommendations",
+        "description": "Ranking will be explained in plain language, not presented as an unexplained score."
+      },
+      {
+        "title": "Visible affiliate relationships",
+        "description": "Commission-earning links are labelled where they appear, not buried in a policy page."
+      },
+      {
+        "title": "Privacy-conscious personalization",
+        "description": "Preferences are built from choices you make, not from tracking or fingerprinting."
+      },
+      {
+        "title": "No hidden free-text dependency",
+        "description": "The guided experience works through structured controls rather than an open prompt box."
+      },
+      {
+        "title": "User control over preferences",
+        "description": "Saved preferences will be reviewable, editable and deletable by you."
+      },
+      {
+        "title": "Future explainable ranking",
+        "description": "Best, cheapest and fastest comparisons will state the trade-off behind each choice."
+      }
+    ]
+  },
+
+  "affiliate": {
+    "label": "Affiliate disclosure",
+    "short": "GTAI is a travel comparison service. Selecting an offer may send you to a partner site that completes the booking and payment, and GTAI may earn a commission.",
+    "title": "How GTAI makes money",
+    "points": [
+      "GTAI compares travel offers published by third-party travel providers.",
+      "Selecting an offer may redirect you to a partner website.",
+      "The partner — not GTAI — completes the booking and takes the payment.",
+      "GTAI may receive a commission when a booking is completed.",
+      "Always recheck the price, dates and conditions on the partner site before you pay."
+    ],
+    "notice": "No provider is connected in this foundation release, so no offers, prices or affiliate links are shown anywhere on this site."
+  },
+
+  "pages": {
+    "flights": {
+      "eyebrow": "Flights",
+      "title": "Flight comparison, built for every market",
+      "description": "The GTAI flight experience will compare fares across approved providers and explain the trade-off between the best, cheapest and fastest options.",
+      "planned": [
+        {
+          "title": "Best, cheapest, fastest",
+          "description": "Three clear comparison lenses instead of one opaque ranking."
+        },
+        {
+          "title": "Flexible dates",
+          "description": "A date grid and price trend view for travellers who can move a day or two."
+        },
+        {
+          "title": "Stop and layover awareness",
+          "description": "Connection length, airport changes and overnight transits surfaced up front."
+        },
+        {
+          "title": "Transit and visa flags",
+          "description": "A warning when an itinerary needs a transit visa or a separate ticket."
+        }
+      ],
+      "emptyTitle": "No flight results yet",
+      "emptyDescription": "Flight providers are not connected in the foundation release. This page shows the intended structure only."
+    },
+    "stays": {
+      "eyebrow": "Stays",
+      "title": "Hotels, apartments and everything between",
+      "description": "The GTAI stay experience will compare accommodation across approved providers, with clarity about what is actually included in the price.",
+      "planned": [
+        {
+          "title": "Comparable totals",
+          "description": "Taxes and mandatory fees shown consistently across providers."
+        },
+        {
+          "title": "Location that matters",
+          "description": "Distance to the things you said you care about, not just to the city centre."
+        },
+        {
+          "title": "Preference-aware ranking",
+          "description": "Quiet rooms, family space, workspace or accessibility ranked from your profile."
+        },
+        {
+          "title": "Cancellation clarity",
+          "description": "Refundability and change rules shown before you leave GTAI."
+        }
+      ],
+      "emptyTitle": "No stay results yet",
+      "emptyDescription": "Accommodation providers are not connected in the foundation release. This page shows the intended structure only."
+    },
+    "cars": {
+      "eyebrow": "Cars",
+      "title": "Car rental without the surprises",
+      "description": "The GTAI car rental experience will compare suppliers and make the real cost of a rental visible before you commit.",
+      "planned": [
+        {
+          "title": "True cost view",
+          "description": "Deposit, insurance excess and fuel policy compared side by side."
+        },
+        {
+          "title": "Pick-up reality",
+          "description": "In-terminal, shuttle or off-airport pick-up stated clearly."
+        },
+        {
+          "title": "Licence requirements",
+          "description": "Flags when an international permit or a minimum licence age applies."
+        },
+        {
+          "title": "Cross-border rules",
+          "description": "Whether the vehicle may legally cross the borders on your route."
+        }
+      ],
+      "emptyTitle": "No car rental results yet",
+      "emptyDescription": "Car rental suppliers are not connected in the foundation release. This page shows the intended structure only."
+    },
+    "packages": {
+      "eyebrow": "Packages",
+      "title": "Flight, stay and extras — compared together",
+      "description": "The GTAI package experience will compare bundled travel against the same components booked separately, so the saving is a fact rather than a claim.",
+      "planned": [
+        {
+          "title": "Bundle versus separate",
+          "description": "A direct comparison of package price against booking each part alone."
+        },
+        {
+          "title": "What is actually included",
+          "description": "Transfers, baggage, board basis and extras listed without ambiguity."
+        },
+        {
+          "title": "Flexible components",
+          "description": "Swap a hotel or a departure without rebuilding the whole trip."
+        },
+        {
+          "title": "Package optimizer",
+          "description": "A future agent that rebalances the bundle against your stated budget."
+        }
+      ],
+      "emptyTitle": "No package results yet",
+      "emptyDescription": "Package providers are not connected in the foundation release. This page shows the intended structure only."
+    },
+    "explore": {
+      "eyebrow": "Explore",
+      "title": "Start with a budget, not a destination",
+      "description": "Explore will let you search outward — from what you can spend, when you can travel and what you enjoy — instead of committing to a city first.",
+      "planned": [
+        {
+          "title": "Budget-first discovery",
+          "description": "Set a ceiling and see the destinations that fit inside it."
+        },
+        {
+          "title": "Month-level flexibility",
+          "description": "Compare a whole month rather than one departure date."
+        },
+        {
+          "title": "Interest matching",
+          "description": "Discover destinations from the activities you actually want."
+        },
+        {
+          "title": "Reachability filters",
+          "description": "Limit results by flight time, stops and transit requirements."
+        }
+      ],
+      "emptyTitle": "Explore is not live yet",
+      "emptyDescription": "Destination discovery needs connected provider data. The structure is in place; the data is not."
+    },
+    "trips": {
+      "eyebrow": "Trips",
+      "title": "Your future trip workspace",
+      "description": "Trips will hold your saved searches, watched routes and planned journeys — once accounts and persistence exist.",
+      "planned": [
+        {
+          "title": "Saved searches",
+          "description": "Return to a comparison exactly as you left it."
+        },
+        {
+          "title": "Watched routes",
+          "description": "Follow a route and be told when the picture changes."
+        },
+        {
+          "title": "Trip timeline",
+          "description": "Flights, stays and ground transport in one ordered view."
+        },
+        {
+          "title": "Shared planning",
+          "description": "Plan with the people you are actually travelling with."
+        }
+      ],
+      "emptyTitle": "No saved trips",
+      "emptyDescription": "Accounts, sign-in and stored data do not exist in the foundation release. Nothing is saved and nothing is transmitted.",
+      "signInNotice": "Sign-in is a placeholder. No account system is connected."
+    },
+    "aiTravel": {
+      "eyebrow": "Guided planning preview",
+      "title": "A travel interview, not a chat box",
+      "description": "GTAI will build your trip from short structured questions. You choose from clear options, skip anything optional, and the questions adapt as you answer.",
+      "notice": "Everything on this page is a non-functional preview. No AI model, no agent and no data collection is active.",
+      "modesTitle": "Three planning modes",
+      "modesDescription": "Pick the depth that matches how much time you want to spend.",
+      "modes": [
+        {
+          "id": "quick",
+          "name": "Quick Match",
+          "scale": "About 8–12 questions",
+          "duration": "Around 2 minutes",
+          "description": "The fast path. Only the essentials needed to make a first useful comparison.",
+          "points": [
+            "Trip purpose and rough budget",
+            "Dates and how flexible they are",
+            "Basic comfort and stop preferences"
+          ]
+        },
+        {
+          "id": "smart",
+          "name": "Smart Match",
+          "scale": "About 20–40 questions",
+          "duration": "Around 6 minutes",
+          "description": "Adaptive planning. Questions branch based on what you have already told GTAI.",
+          "points": [
+            "Everything in Quick Match",
+            "Stay style, location and transport preferences",
+            "Risk tolerance, transit concerns and activity interests"
+          ]
+        },
+        {
+          "id": "profile",
+          "name": "Perfect Trip Profile",
+          "scale": "A bank of roughly 100–200 questions",
+          "duration": "Built up over time",
+          "description": "A travel profile that keeps improving. You are never shown the whole bank — only what is relevant right now.",
+          "points": [
+            "Questions asked gradually, never all at once",
+            "Answers reused across future trips",
+            "Reviewable, editable and deletable by you"
+          ]
+        }
+      ],
+      "howTitle": "How the interview will behave",
+      "how": [
+        {
+          "title": "Only relevant questions",
+          "description": "A business trip and a family holiday will not be asked the same things."
+        },
+        {
+          "title": "Adaptive branching",
+          "description": "Each answer narrows what still needs to be asked."
+        },
+        {
+          "title": "Optional questions can be skipped",
+          "description": "Skipping never blocks a search — it only makes the ranking less specific."
+        },
+        {
+          "title": "Progressive improvement",
+          "description": "Recommendations sharpen as your profile fills in, across trips."
+        }
+      ],
+      "controlsTitle": "Question formats you will see",
+      "controlsDescription": "Non-functional previews of the structured controls the interview will use. Nothing here submits, stores or transmits anything.",
+      "controls": {
+        "selectTitle": "Single choice",
+        "selectLabel": "What is the purpose of this trip?",
+        "selectOptions": [
+          "Leisure",
+          "Business",
+          "Visiting family",
+          "Relocation research"
+        ],
+        "cardsTitle": "Choice cards",
+        "cardsLabel": "How would you describe your travel pace?",
+        "cardsOptions": [
+          { "title": "Relaxed", "description": "Few commitments, long stays" },
+          { "title": "Balanced", "description": "A mix of planned and open time" },
+          { "title": "Packed", "description": "See as much as possible" }
+        ],
+        "chipsTitle": "Multi-select",
+        "chipsLabel": "Which interests should shape this trip?",
+        "chipsOptions": [
+          "Food",
+          "Nature",
+          "Museums",
+          "Nightlife",
+          "Shopping",
+          "Sport",
+          "Architecture",
+          "Family activities"
+        ],
+        "sliderTitle": "Range",
+        "sliderLabel": "Maximum acceptable layover",
+        "sliderMin": "1 hour",
+        "sliderMax": "12 hours",
+        "sliderValue": "4 hours",
+        "booleanTitle": "Yes or no",
+        "booleanLabel": "Do you need a visa-free transit route?",
+        "booleanYes": "Yes",
+        "booleanNo": "No",
+        "booleanUnsure": "Not sure yet",
+        "rankingTitle": "Ranking",
+        "rankingLabel": "Order these by importance",
+        "rankingOptions": ["Price", "Total travel time", "Comfort", "Flexibility"],
+        "rankingHint": "Preview only — the ranking control is not interactive here."
+      },
+      "privacyTitle": "What GTAI will never ask for",
+      "privacyDescription": "The interview is designed around preferences, not identity documents.",
+      "privacyItems": [
+        "No passport numbers or document scans",
+        "No visa or immigration history",
+        "No health or medical information",
+        "No payment card details"
+      ]
+    }
+  },
+
+  "agents": {
+    "eyebrow": "Architecture preview",
+    "title": "A specialist for each part of a trip",
+    "description": "GTAI's planning will be split across focused agents, each with a narrow responsibility and an explainable output. None of these are running today.",
+    "badge": "Upcoming",
+    "notice": "No agent runtime, no model provider and no AI SDK exists in this release.",
+    "items": [
+      {
+        "name": "Traveler Profile Agent",
+        "description": "Maintains your structured preferences and keeps them consistent across trips."
+      },
+      {
+        "name": "Question Orchestrator Agent",
+        "description": "Decides which question to ask next, and which ones are no longer needed."
+      },
+      {
+        "name": "Flight Agent",
+        "description": "Interprets flight options against your route, timing and comfort preferences."
+      },
+      {
+        "name": "Stay Agent",
+        "description": "Matches accommodation to location, budget and stay-style requirements."
+      },
+      {
+        "name": "Car Rental Agent",
+        "description": "Compares ground vehicle options, true cost and pick-up practicality."
+      },
+      {
+        "name": "Activities Agent",
+        "description": "Suggests things to do that fit your interests, pace and time on the ground."
+      },
+      {
+        "name": "Budget Agent",
+        "description": "Keeps the whole trip inside the budget you set, across every component."
+      },
+      {
+        "name": "Visa and Transit Agent",
+        "description": "Flags transit visa requirements and airport-change complications on a route."
+      },
+      {
+        "name": "Risk Agent",
+        "description": "Highlights tight connections, separate tickets and other fragile arrangements."
+      },
+      {
+        "name": "Trust Agent",
+        "description": "Assesses provider reliability signals and how consistently offers hold up."
+      },
+      {
+        "name": "Package Optimizer Agent",
+        "description": "Rebalances bundled components to find a better overall trip shape."
+      },
+      {
+        "name": "Explanation Agent",
+        "description": "Turns ranking decisions into plain language you can disagree with."
+      },
+      {
+        "name": "Monitoring Agent",
+        "description": "Watches a saved trip after planning and reports meaningful changes."
+      }
+    ]
+  },
+
+  "footer": {
+    "tagline": "Global travel comparison, built in Canada for travellers worldwide.",
+    "regionHeading": "Region",
+    "groups": {
+      "company": {
+        "heading": "Company",
+        "links": {
+          "about": "About GTAI",
+          "howItWorks": "How it works",
+          "careers": "Careers",
+          "press": "Press"
+        }
+      },
+      "travel": {
+        "heading": "Travel",
+        "links": {
+          "flights": "Flights",
+          "stays": "Stays",
+          "cars": "Cars",
+          "packages": "Packages",
+          "explore": "Explore"
+        }
+      },
+      "support": {
+        "heading": "Support",
+        "links": {
+          "help": "Help",
+          "contact": "Contact",
+          "accessibility": "Accessibility",
+          "partner": "Partner with us"
+        }
+      },
+      "legal": {
+        "heading": "Legal",
+        "links": {
+          "privacy": "Privacy",
+          "terms": "Terms",
+          "affiliate": "Affiliate disclosure",
+          "cookies": "Cookie preferences"
+        }
+      }
+    },
+    "placeholderNotice": "Footer destinations are placeholders. Legal documents are not published in this release.",
+    "copyright": "GTAI — Global Travel AI",
+    "buildNotice": "Foundation release. No provider, payment or booking system is connected."
+  },
+
+  "notFound": {
+    "title": "We could not find that page",
+    "description": "The address may be mistyped, or the page may not exist in this release.",
+    "cta": "Back to home"
+  }
+}
