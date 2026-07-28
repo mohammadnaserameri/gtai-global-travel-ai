@@ -29,6 +29,7 @@ export default async function PackagesPage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.packages}
       dir={getDirection(locale)}
+      locale={locale}
       searchProduct="packages"
       icon={<PackageIcon size={22} />}
       plannedIcons={[

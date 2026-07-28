@@ -35,7 +35,7 @@ export default async function HomePage({ params }: PageProps) {
       {/* Order is deliberate: search first, then one line of reassurance, then
           the AI differentiator, then discovery, then the supporting sections.
           A traveller reaches the search controls without scrolling. */}
-      <Hero dictionary={dictionary} dir={dir} />
+      <Hero dictionary={dictionary} dir={dir} locale={locale} />
       <ReassuranceStrip dictionary={dictionary} />
       <GuidedAiPanel locale={locale} dictionary={dictionary} />
       <PopularDestinations dictionary={dictionary} />

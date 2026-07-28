@@ -5,6 +5,16 @@
 **Base checkpoint:** `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d`
 **Index:** `docs/reference/V1_2_REFERENCE_UX_BLUEPRINT.md`
 
+> **Implementation note — V2.1.** This blueprint has since been implemented, in
+> part, by **V2.1 — Functional Airport Selector**. Sections 1–18, 23–24, 30–48
+> and 55–59 are built and verified against a **demonstration directory** of 15
+> cities and 21 airports. Still unimplemented and unchanged in status:
+> **§20–§22** (nearby airports), **§26–§29** (current location and geolocation
+> permission), **§49–§50** (production dataset and freshness) and the
+> analytics of §54. Recent locations (§24–§25) are session-scoped only. See
+> `docs/implementation/V2_1_FUNCTIONAL_AIRPORT_SELECTOR.md`. The prohibition in
+> §62 continues to apply to everything listed there as unimplemented.
+
 ---
 
 ## 1. Purpose

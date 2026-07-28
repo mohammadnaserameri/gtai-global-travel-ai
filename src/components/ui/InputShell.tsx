@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type { InputHTMLAttributes, ReactNode, Ref } from "react";
 
 import { cn } from "@/lib/utilities/cn";
 
@@ -13,21 +13,24 @@ interface InputShellProps extends Omit<
   icon?: ReactNode;
   /** Small helper line rendered under the field and wired via aria-describedby. */
   hint?: string;
+  /** Forwarded to the inner input, so callers can move focus to this field. */
+  ref?: Ref<HTMLInputElement>;
   className?: string;
 }
 
 /**
  * A labelled text field used throughout the search shell.
  *
- * V1 wires no data source to these fields: there is no airport dataset, no
- * autocomplete and no suggestion service. The control is a genuine, accessible
- * input so focus, labelling and mobile behaviour can be verified for real.
+ * Origin and destination now use the dedicated `AirportSelector`; this remains
+ * the primitive for date and other plain fields, which have no dataset behind
+ * them yet.
  */
 export function InputShell({
   label,
   id,
   icon,
   hint,
+  ref,
   className,
   ...rest
 }: InputShellProps) {
@@ -53,6 +56,7 @@ export function InputShell({
           </span>
         ) : null}
         <input
+          ref={ref}
           id={id}
           aria-describedby={hintId}
           autoComplete="off"

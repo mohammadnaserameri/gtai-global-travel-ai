@@ -1,9 +1,12 @@
 "use client";
 
-import { useId, useState, type FormEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import type { Direction } from "@/config/locales";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import type { TravelLocation } from "@/features/locations/location-types";
+import { AirportSelector } from "@/components/search/airport-selector/AirportSelector";
+import { SwapControl } from "@/components/search/SwapControl";
 import { cn } from "@/lib/utilities/cn";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -32,10 +35,25 @@ interface SearchShellProps {
   tabs: Dictionary["searchTabs"];
   labels: Dictionary["search"];
   dir?: Direction;
+  /** Active locale — the selector uses it for localized location names. */
+  locale?: string;
   /** Which product tab opens first. Product pages preselect their own. */
   defaultProduct?: ProductId;
   className?: string;
 }
+
+/** One side of the origin/destination pair. */
+interface LocationFieldState {
+  readonly selected: TravelLocation | null;
+  readonly query: string;
+  readonly error: string | null;
+}
+
+const EMPTY_FIELD: LocationFieldState = {
+  selected: null,
+  query: "",
+  error: null,
+};
 
 /**
  * Groups the locate/date fields and the submit control into one visually
@@ -81,6 +99,7 @@ export function SearchShell({
   tabs,
   labels,
   dir = "ltr",
+  locale = "en",
   defaultProduct = "flights",
   className,
 }: SearchShellProps) {
@@ -88,6 +107,37 @@ export function SearchShell({
   const [product, setProduct] = useState<ProductId>(defaultProduct);
   const [tripType, setTripType] = useState<TripType>("roundTrip");
   const [announced, setAnnounced] = useState(false);
+
+  const [origin, setOrigin] = useState<LocationFieldState>(EMPTY_FIELD);
+  const [destination, setDestination] = useState<LocationFieldState>(EMPTY_FIELD);
+
+  const departureRef = useRef<HTMLInputElement>(null);
+  const destinationWrapperRef = useRef<HTMLDivElement>(null);
+
+  const locationLabels = labels.locations;
+  const destinationIsFlexible =
+    destination.selected?.isFlexibleDestination === true;
+
+  /**
+   * Validates one side. A typed query with no explicit selection is invalid —
+   * that is the rule the whole selector is built around.
+   */
+  function validateField(
+    state: LocationFieldState,
+    requiredMessage: string,
+  ): string | null {
+    if (state.selected) return null;
+    return state.query.trim().length > 0
+      ? locationLabels.unresolved
+      : requiredMessage;
+  }
+
+  function swapLocations() {
+    if (destinationIsFlexible) return;
+    setOrigin({ ...destination, error: null });
+    setDestination({ ...origin, error: null });
+    setAnnounced(false);
+  }
 
   const items: TabItem[] = [
     { id: "flights", label: tabs.flights, icon: <FlightIcon size={18} /> },
@@ -97,9 +147,46 @@ export function SearchShell({
   ];
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
-    // Search is intentionally not implemented. Rather than failing silently,
-    // the shell says so in a live region.
     event.preventDefault();
+
+    if (product !== "flights") {
+      setAnnounced(true);
+      return;
+    }
+
+    let originError = validateField(origin, locationLabels.originRequired);
+    let destinationError = validateField(
+      destination,
+      locationLabels.destinationRequired,
+    );
+
+    // Both sides resolved to the same entity — a search that cannot fly.
+    if (
+      !originError &&
+      !destinationError &&
+      origin.selected &&
+      destination.selected &&
+      origin.selected.id === destination.selected.id
+    ) {
+      originError = locationLabels.sameLocation;
+      destinationError = locationLabels.sameLocation;
+    }
+
+    setOrigin((state) => ({ ...state, error: originError }));
+    setDestination((state) => ({ ...state, error: destinationError }));
+
+    if (originError || destinationError) {
+      setAnnounced(false);
+      // Move focus to the first field that needs attention.
+      const target = originError
+        ? document.getElementById(`${field("from")}-input`)
+        : document.getElementById(`${field("to")}-input`);
+      target?.focus();
+      return;
+    }
+
+    // Locations are resolved, but GTAI still connects no provider. The shell
+    // reports that truthfully instead of fabricating a result set.
     setAnnounced(true);
   }
 
@@ -165,21 +252,68 @@ export function SearchShell({
           </div>
 
           <FieldGroup>
+            {/* From · Swap · To share one flex row so the swap control sits
+                between the pair at every width and mirrors under RTL without
+                a second rule. */}
+            <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:items-start lg:col-span-6">
+              <AirportSelector
+                id={field("from")}
+                context="origin"
+                label={labels.fields.from}
+                labels={locationLabels}
+                locale={locale}
+                value={origin.selected}
+                query={origin.query}
+                invalid={Boolean(origin.error)}
+                errorMessage={origin.error ?? undefined}
+                onQueryChange={(query) =>
+                  setOrigin({ selected: null, query, error: null })
+                }
+                onSelect={(selected) =>
+                  setOrigin({ selected, query: "", error: null })
+                }
+                onClear={() => setOrigin(EMPTY_FIELD)}
+                onSelectionComplete={() => {
+                  destinationWrapperRef.current
+                    ?.querySelector<HTMLElement>("input,button")
+                    ?.focus();
+                }}
+                className="min-w-0 flex-1"
+              />
+
+              <SwapControl
+                label={locationLabels.swap}
+                disabled={destinationIsFlexible}
+                disabledReason={locationLabels.everywhereOriginBlocked}
+                onSwap={swapLocations}
+                className="self-center sm:mt-6 sm:self-start"
+              />
+
+              <div ref={destinationWrapperRef} className="min-w-0 flex-1">
+                <AirportSelector
+                  id={field("to")}
+                  context="destination"
+                  label={labels.fields.to}
+                  labels={locationLabels}
+                  locale={locale}
+                  value={destination.selected}
+                  query={destination.query}
+                  invalid={Boolean(destination.error)}
+                  errorMessage={destination.error ?? undefined}
+                  onQueryChange={(query) =>
+                    setDestination({ selected: null, query, error: null })
+                  }
+                  onSelect={(selected) =>
+                    setDestination({ selected, query: "", error: null })
+                  }
+                  onClear={() => setDestination(EMPTY_FIELD)}
+                  onSelectionComplete={() => departureRef.current?.focus()}
+                />
+              </div>
+            </div>
+
             <InputShell
-              id={field("from")}
-              label={labels.fields.from}
-              placeholder={labels.placeholders.from}
-              icon={<PinIcon size={18} />}
-              className="lg:col-span-3"
-            />
-            <InputShell
-              id={field("to")}
-              label={labels.fields.to}
-              placeholder={labels.placeholders.to}
-              icon={<PinIcon size={18} />}
-              className="lg:col-span-3"
-            />
-            <InputShell
+              ref={departureRef}
               id={field("departure")}
               label={labels.fields.departure}
               type="date"

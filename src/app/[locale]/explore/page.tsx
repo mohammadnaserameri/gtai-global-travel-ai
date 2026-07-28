@@ -29,6 +29,7 @@ export default async function ExplorePage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.explore}
       dir={getDirection(locale)}
+      locale={locale}
       icon={<CompassIcon size={22} />}
       plannedIcons={[
         <CoinsIcon key="budget" size={20} />,

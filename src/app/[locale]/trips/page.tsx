@@ -31,6 +31,7 @@ export default async function TripsPage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.trips}
       dir={getDirection(locale)}
+      locale={locale}
       icon={<PinIcon size={22} />}
       plannedIcons={[
         <SearchIcon key="saved" size={20} />,

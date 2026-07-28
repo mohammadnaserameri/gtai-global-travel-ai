@@ -242,21 +242,21 @@ V1.2 does not produce, authorize or imply:
 
 ## 15. Status table
 
-| #   | Module                                | Status                                      | Analysis approved | Documentation complete | Implementation allowed         | Implementation version | Related files                                 | Frozen commit                              |
-| --- | ------------------------------------- | ------------------------------------------- | ----------------- | ---------------------- | ------------------------------ | ---------------------- | --------------------------------------------- | ------------------------------------------ |
-| 01  | Home Search Experience                | **Frozen**                                  | Yes               | Yes                    | **Presentation baseline only** | Not yet assigned       | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md` | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
-| 02  | Flight Search Form                    | **Frozen**                                  | Yes               | Yes                    | **No**                         | Not yet assigned       | `docs/reference/02_FLIGHT_SEARCH_FORM.md`     | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
-| 03  | Airport Selector                      | **Documentation complete, awaiting freeze** | Yes               | Yes                    | **No**                         | Not yet assigned       | `docs/reference/03_AIRPORT_SELECTOR.md`       | —                                          |
-| 04  | Date Picker and Flexible Dates        | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
-| 05  | Flight Results                        | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
-| 06  | Filters and Sorting                   | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
-| 07  | Flight Details and Affiliate Redirect | Pending                                     | No                | No                     | No                             | —                      | —                                             | —                                          |
+| #   | Module                                | Status     | Analysis approved | Documentation complete | Implementation allowed         | Implementation version | Related files                                 | Frozen commit                              |
+| --- | ------------------------------------- | ---------- | ----------------- | ---------------------- | ------------------------------ | ---------------------- | --------------------------------------------- | ------------------------------------------ |
+| 01  | Home Search Experience                | **Frozen** | Yes               | Yes                    | **Presentation baseline only** | Not yet assigned       | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md` | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
+| 02  | Flight Search Form                    | **Frozen** | Yes               | Yes                    | **No**                         | Not yet assigned       | `docs/reference/02_FLIGHT_SEARCH_FORM.md`     | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
+| 03  | Airport Selector                      | **Frozen** | Yes               | Yes                    | **Yes — implemented in V2.1**  | V2.1                   | `docs/reference/03_AIRPORT_SELECTOR.md`       | `afd4cdd8801bf97ac586beddc59e6f1f8b85419f` |
+| 04  | Date Picker and Flexible Dates        | Pending    | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 05  | Flight Results                        | Pending    | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 06  | Filters and Sorting                   | Pending    | No                | No                     | No                             | —                      | —                                             | —                                          |
+| 07  | Flight Details and Affiliate Redirect | Pending    | No                | No                     | No                             | —                      | —                                             | —                                          |
 
 Notes on the non-pending modules:
 
 - **Module 01** is frozen as documentation. "Presentation baseline only" means the V1.1 presentation layer already in the repository is the sanctioned implementation of this module; no further behaviour may be built from it without a named implementation version.
 - **Module 02** is frozen as documentation. **Implementation is not allowed.**
-- **Module 03** is documentation complete and awaiting its freeze commit. **Implementation is not allowed.**
+- **Module 03** is frozen, and is the first module to be implemented: **V2.1 — Functional Airport Selector** builds it against a demonstration directory. See `docs/implementation/V2_1_FUNCTIONAL_AIRPORT_SELECTOR.md`. Geolocation, nearby-airport resolution and provider mapping remain unimplemented.
 
 Documentation approval is never implementation approval — see the closing rule of each module.
 

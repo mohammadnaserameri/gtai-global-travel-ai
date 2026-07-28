@@ -38,7 +38,6 @@
       "description": "The page you requested does not exist."
     }
   },
-
   "common": {
     "skipToContent": "Skip to main content",
     "previewBadge": "Preview",
@@ -51,7 +50,6 @@
     "sectionDivider": "Section",
     "loading": "Loading"
   },
-
   "nav": {
     "primaryLabel": "Travel products",
     "utilityLabel": "Account and preferences",
@@ -72,7 +70,6 @@
     "profile": "Profile",
     "goToHome": "GTAI home"
   },
-
   "language": {
     "label": "Language",
     "selectorLabel": "Choose a language",
@@ -80,7 +77,6 @@
     "translationNotice": "Complete content is available in English. Other languages fall back to English where a translation has not been written yet.",
     "demoAvailable": "Translated"
   },
-
   "region": {
     "label": "Region and currency",
     "countryLabel": "Country or region",
@@ -96,12 +92,10 @@
     "noConversionNotice": "Currency selection changes how prices are labelled. GTAI does not convert between currencies.",
     "iranNotice": "Iran is displayed in USD."
   },
-
   "hero": {
     "title": "Search globally. Travel intelligently.",
     "subtitle": "Compare flights, stays, cars and packages across trusted travel providers — in one search."
   },
-
   "reassurance": {
     "label": "What comparing with GTAI gives you",
     "items": [
@@ -119,7 +113,6 @@
       }
     ]
   },
-
   "searchTabs": {
     "label": "Choose what to search",
     "flights": "Flights",
@@ -127,7 +120,6 @@
     "cars": "Cars",
     "packages": "Packages"
   },
-
   "search": {
     "heading": "Start your search",
     "tripType": {
@@ -180,9 +172,47 @@
     "submit": "Search",
     "submitDisabledHint": "Search results are not available yet.",
     "helper": "Nearby airports, flexible dates and price alerts are coming soon.",
-    "notice": "GTAI is still connecting its travel providers. You will be able to run this search soon."
+    "notice": "GTAI is still connecting its travel providers. You will be able to run this search soon.",
+    "locations": {
+      "originTitle": "Choose your origin",
+      "destinationTitle": "Choose your destination",
+      "inputLabel": "Search for a city or airport",
+      "inputPlaceholder": "City, airport or IATA code",
+      "listLabel": "City and airport suggestions",
+      "groups": {
+        "best": "Best match",
+        "flexible": "Flexible destination",
+        "recent": "Recent locations",
+        "popular": "Popular destinations",
+        "cities": "Cities and all airports",
+        "airports": "Airports",
+        "other": "Other matches"
+      },
+      "allAirports": "All airports",
+      "clearRecent": "Clear recent locations",
+      "everywhere": "Everywhere",
+      "everywhereDescription": "Explore destinations within your budget",
+      "everywhereOriginBlocked": "Everywhere can only be used as a destination.",
+      "noResultsTitle": "No cities or airports found",
+      "noResultsHint": "Check the spelling or try an IATA code.",
+      "clearQuery": "Clear search",
+      "loading": "Searching cities and airports…",
+      "errorTitle": "We could not load airport suggestions.",
+      "retry": "Try again",
+      "clearOrigin": "Clear origin",
+      "clearDestination": "Clear destination",
+      "close": "Close",
+      "swap": "Swap origin and destination",
+      "unresolved": "Choose a city or airport from the suggestions.",
+      "originRequired": "Choose where you are flying from.",
+      "destinationRequired": "Choose where you are flying to.",
+      "sameLocation": "Origin and destination must be different.",
+      "resultCount": "{count} results available.",
+      "selectedOrigin": "{name} selected as origin.",
+      "selectedDestination": "{name} selected as destination.",
+      "demoNotice": "Location suggestions currently use GTAI's demonstration directory."
+    }
   },
-
   "aiPanel": {
     "eyebrow": "Guided planning",
     "title": "Build your perfect trip with GTAI",
@@ -204,14 +234,17 @@
     "secondaryCta": "See how it will work",
     "notice": "Guided planning is coming soon."
   },
-
   "destinations": {
     "eyebrow": "Popular destinations",
     "title": "Where travellers are heading",
     "description": "A sample of the destinations GTAI will compare. Live trends will follow once travel partners are connected.",
     "staticNotice": "Sample destinations",
     "items": [
-      { "city": "Toronto", "country": "Canada", "note": "Lakefront city breaks" },
+      {
+        "city": "Toronto",
+        "country": "Canada",
+        "note": "Lakefront city breaks"
+      },
       {
         "city": "Vancouver",
         "country": "Canada",
@@ -222,22 +255,33 @@
         "country": "United Kingdom",
         "note": "Culture and connections"
       },
-      { "city": "Paris", "country": "France", "note": "Classic city escapes" },
+      {
+        "city": "Paris",
+        "country": "France",
+        "note": "Classic city escapes"
+      },
       {
         "city": "Dubai",
         "country": "United Arab Emirates",
         "note": "Global transit hub"
       },
-      { "city": "Tokyo", "country": "Japan", "note": "Long-haul favourite" },
+      {
+        "city": "Tokyo",
+        "country": "Japan",
+        "note": "Long-haul favourite"
+      },
       {
         "city": "Istanbul",
         "country": "Türkiye",
         "note": "Between two continents"
       },
-      { "city": "Barcelona", "country": "Spain", "note": "Coast and architecture" }
+      {
+        "city": "Barcelona",
+        "country": "Spain",
+        "note": "Coast and architecture"
+      }
     ]
   },
-
   "exploreSection": {
     "eyebrow": "Explore",
     "title": "Explore travel possibilities",
@@ -262,7 +306,6 @@
       }
     ]
   },
-
   "why": {
     "eyebrow": "Why GTAI",
     "title": "Built for how people actually plan travel",
@@ -304,7 +347,6 @@
       "planned": "Coming soon"
     }
   },
-
   "trust": {
     "eyebrow": "Trust and transparency",
     "title": "Principles we are building against",
@@ -332,7 +374,6 @@
       }
     ]
   },
-
   "affiliate": {
     "label": "Affiliate disclosure",
     "short": "GTAI is a travel comparison service. Selecting an offer may send you to a partner site that completes the booking and payment, and GTAI may earn a commission.",
@@ -346,7 +387,6 @@
     ],
     "notice": "GTAI is not showing live offers or prices yet, so no partner links appear on this site today."
   },
-
   "pages": {
     "flights": {
       "eyebrow": "Flights",
@@ -577,9 +617,18 @@
         "cardsTitle": "Choice cards",
         "cardsLabel": "How would you describe your travel pace?",
         "cardsOptions": [
-          { "title": "Relaxed", "description": "Few commitments, long stays" },
-          { "title": "Balanced", "description": "A mix of planned and open time" },
-          { "title": "Packed", "description": "See as much as possible" }
+          {
+            "title": "Relaxed",
+            "description": "Few commitments, long stays"
+          },
+          {
+            "title": "Balanced",
+            "description": "A mix of planned and open time"
+          },
+          {
+            "title": "Packed",
+            "description": "See as much as possible"
+          }
         ],
         "chipsTitle": "Multi-select",
         "chipsLabel": "Which interests should shape this trip?",
@@ -618,7 +667,6 @@
       ]
     }
   },
-
   "agents": {
     "eyebrow": "Architecture preview",
     "title": "A specialist for each part of a trip",
@@ -680,7 +728,6 @@
       }
     ]
   },
-
   "footer": {
     "tagline": "Global travel comparison, built in Canada for travellers worldwide.",
     "regionHeading": "Region",
@@ -727,7 +774,6 @@
     "copyright": "GTAI — Global Travel AI",
     "buildNotice": "GTAI compares travel offers. Booking and payment are completed by our partners."
   },
-
   "notFound": {
     "title": "We could not find that page",
     "description": "The address may be mistyped, or the page may no longer exist.",

@@ -28,6 +28,7 @@ interface ProductPageShellProps {
     emptyDescription: string;
   };
   dir: Direction;
+  locale: string;
   /** Renders the search shell with this product tab preselected. */
   searchProduct?: ProductId;
   /** Icon shown in the empty state. */
@@ -50,6 +51,7 @@ export function ProductPageShell({
   dictionary,
   page,
   dir,
+  locale,
   searchProduct,
   icon,
   plannedIcons,
@@ -77,6 +79,7 @@ export function ProductPageShell({
               tabs={searchTabs}
               labels={search}
               dir={dir}
+              locale={locale}
               defaultProduct={searchProduct}
             />
           </Container>

@@ -227,6 +227,31 @@ export function RouteIcon(props: IconProps) {
   );
 }
 
+/** Abstract city — a skyline of three blocks. Distinguishes a city entity. */
+export function CityIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3.5 20.5h17" />
+      <path d="M5 20.5V11l4-2.5V20.5" />
+      <path d="M9 20.5V6l5-2.5v17" />
+      <path d="M14 20.5v-8l5 2v6" />
+      <path d="M11.4 8.2v.01M11.4 11.6v.01M16.4 15.4v.01" />
+    </Icon>
+  );
+}
+
+/** Two opposed arrows — the origin/destination swap control. */
+export function SwapIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 4.5 3.5 8 7 11.5" />
+      <path d="M3.5 8h13.2" />
+      <path d="m17 12.5 3.5 3.5-3.5 3.5" />
+      <path d="M20.5 16H7.3" />
+    </Icon>
+  );
+}
+
 export function LayersIcon(props: IconProps) {
   return (
     <Icon {...props}>

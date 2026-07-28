@@ -30,6 +30,7 @@ export default async function CarsPage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.cars}
       dir={getDirection(locale)}
+      locale={locale}
       searchProduct="cars"
       icon={<CarIcon size={22} />}
       plannedIcons={[

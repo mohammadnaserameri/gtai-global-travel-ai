@@ -7,6 +7,7 @@ import { HeroBackdrop } from "@/components/home/HeroBackdrop";
 interface HeroProps {
   dictionary: Dictionary;
   dir: Direction;
+  locale: string;
 }
 
 /**
@@ -20,7 +21,7 @@ interface HeroProps {
  * the search controls without scrolling. The whole band fits inside 900px of
  * viewport height at desktop widths.
  */
-export function Hero({ dictionary, dir }: HeroProps) {
+export function Hero({ dictionary, dir, locale }: HeroProps) {
   const { hero, searchTabs, search } = dictionary;
 
   return (
@@ -41,6 +42,7 @@ export function Hero({ dictionary, dir }: HeroProps) {
           tabs={searchTabs}
           labels={search}
           dir={dir}
+          locale={locale}
           className="mt-6 lg:mt-8"
         />
       </Container>

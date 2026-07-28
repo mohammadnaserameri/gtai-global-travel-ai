@@ -30,6 +30,7 @@ export default async function StaysPage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.stays}
       dir={getDirection(locale)}
+      locale={locale}
       searchProduct="stays"
       icon={<StayIcon size={22} />}
       plannedIcons={[

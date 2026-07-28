@@ -29,6 +29,7 @@ export default async function FlightsPage({ params }: PageProps) {
       dictionary={dictionary}
       page={dictionary.pages.flights}
       dir={getDirection(locale)}
+      locale={locale}
       searchProduct="flights"
       icon={<FlightIcon size={22} />}
       plannedIcons={[
