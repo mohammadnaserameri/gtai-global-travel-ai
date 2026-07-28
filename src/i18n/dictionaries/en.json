@@ -7,31 +7,31 @@
     },
     "flights": {
       "title": "Flights — GTAI",
-      "description": "The GTAI flight comparison experience. Provider connections are not active in this foundation release."
+      "description": "Compare flights across trusted travel providers with GTAI. Live provider results are coming soon."
     },
     "stays": {
       "title": "Stays — GTAI",
-      "description": "The GTAI stay comparison experience. Provider connections are not active in this foundation release."
+      "description": "Compare hotels and apartments across trusted travel providers with GTAI. Live provider results are coming soon."
     },
     "cars": {
       "title": "Car rental — GTAI",
-      "description": "The GTAI car rental comparison experience. Provider connections are not active in this foundation release."
+      "description": "Compare car rental across trusted suppliers with GTAI. Live supplier results are coming soon."
     },
     "packages": {
       "title": "Packages — GTAI",
-      "description": "The GTAI package comparison experience. Provider connections are not active in this foundation release."
+      "description": "Compare flight and stay packages with GTAI. Live provider results are coming soon."
     },
     "explore": {
       "title": "Explore — GTAI",
-      "description": "Discover where your budget, dates and interests can take you. Preview of a future GTAI capability."
+      "description": "Discover where your budget, dates and interests can take you."
     },
     "trips": {
       "title": "Trips — GTAI",
-      "description": "A future home for saved searches, watched routes and planned journeys."
+      "description": "Your saved searches, watched routes and planned journeys."
     },
     "aiTravel": {
       "title": "Guided AI planning — GTAI",
-      "description": "A preview of GTAI's structured, question-guided travel planning. Nothing on this page is operational yet."
+      "description": "A look at GTAI's structured, question-guided travel planning. Guided planning is coming soon."
     },
     "notFound": {
       "title": "Page not found — GTAI",
@@ -42,9 +42,9 @@
   "common": {
     "skipToContent": "Skip to main content",
     "previewBadge": "Preview",
-    "futureBadge": "Future capability",
-    "notConnectedBadge": "Not connected in V1",
-    "demoBadge": "Demonstration",
+    "futureBadge": "Coming soon",
+    "notConnectedBadge": "Coming soon",
+    "demoBadge": "Example",
     "learnMore": "Learn more",
     "close": "Close",
     "backToHome": "Back to home",
@@ -68,7 +68,7 @@
     "aiTravel": "AI Travel",
     "trips": "Trips",
     "signIn": "Sign in",
-    "signInHint": "Accounts are not available in this release.",
+    "signInHint": "Accounts are coming soon.",
     "profile": "Profile",
     "goToHome": "GTAI home"
   },
@@ -78,7 +78,7 @@
     "selectorLabel": "Choose a language",
     "current": "Current language",
     "translationNotice": "Complete content is available in English. Other languages fall back to English where a translation has not been written yet.",
-    "demoAvailable": "Demonstration translation available"
+    "demoAvailable": "Translated"
   },
 
   "region": {
@@ -93,38 +93,31 @@
     "allCurrencies": "All currencies",
     "resolvedFrom": "Suggested from your selected language",
     "noGeolocationNotice": "GTAI does not detect your physical location. Your country is a manual choice, pre-filled from the language you selected.",
-    "noConversionNotice": "Currency selection changes how prices will be labelled. GTAI does not convert prices, because no live travel prices exist in this release.",
+    "noConversionNotice": "Currency selection changes how prices are labelled. GTAI does not convert between currencies.",
     "iranNotice": "Iran is displayed in USD."
   },
 
   "hero": {
-    "eyebrow": "Global travel metasearch",
     "title": "Search globally. Travel intelligently.",
-    "subtitle": "Compare flights, stays, cars, packages and travel experiences across trusted travel providers — then let guided intelligence shape the trip around you.",
-    "note": "This is the GTAI foundation release. Provider connections, live prices and booking are not active yet.",
-    "highlights": [
+    "subtitle": "Compare flights, stays, cars and packages across trusted travel providers — in one search."
+  },
+
+  "reassurance": {
+    "label": "What comparing with GTAI gives you",
+    "items": [
       {
-        "title": "One global search",
-        "description": "A single comparison surface designed for every market GTAI will serve."
+        "title": "One search, many providers",
+        "description": "Compare across trusted travel providers instead of checking every site yourself."
       },
       {
-        "title": "Guided, not guesswork",
-        "description": "Structured questions instead of an open chat box you have to fill in yourself."
+        "title": "Clear on who you book with",
+        "description": "You always see which provider supplies an offer and who completes the booking."
       },
       {
-        "title": "Transparent by design",
-        "description": "You always see when a link is an affiliate link and who completes your booking."
+        "title": "Best, cheapest or fastest",
+        "description": "Choose the trade-off that matters for this trip instead of one fixed ranking."
       }
-    ],
-    "visual": {
-      "label": "Illustrative route preview",
-      "routeFrom": "YYZ",
-      "routeTo": "LHR",
-      "routeCaption": "Illustration only — no live route data",
-      "chipBest": "Best",
-      "chipCheapest": "Cheapest",
-      "chipFastest": "Fastest"
-    }
+    ]
   },
 
   "searchTabs": {
@@ -171,7 +164,7 @@
       "date": "Add date",
       "destination": "City, region or property",
       "pickUp": "City, airport or depot",
-      "generic": "Not connected yet"
+      "generic": "City or airport"
     },
     "options": {
       "travelersValue": "1 adult",
@@ -185,9 +178,9 @@
       }
     },
     "submit": "Search",
-    "submitDisabledHint": "Search is presentational in this release.",
-    "helper": "Nearby airports, flexible dates and price alerts are planned for a later release.",
-    "notice": "This is a visual search shell. No airport data, no provider data and no results are connected in the foundation release."
+    "submitDisabledHint": "Search results are not available yet.",
+    "helper": "Nearby airports, flexible dates and price alerts are coming soon.",
+    "notice": "GTAI is still connecting its travel providers. You will be able to run this search soon."
   },
 
   "aiPanel": {
@@ -209,14 +202,14 @@
     ],
     "cta": "Start guided planning",
     "secondaryCta": "See how it will work",
-    "notice": "Guided planning is a preview. No AI model is connected in this release."
+    "notice": "Guided planning is coming soon."
   },
 
   "destinations": {
     "eyebrow": "Popular destinations",
     "title": "Where travellers are heading",
-    "description": "A static demonstration set. Real destination trends will be generated from live provider data once partners are connected.",
-    "staticNotice": "Static demonstration data",
+    "description": "A sample of the destinations GTAI will compare. Live trends will follow once travel partners are connected.",
+    "staticNotice": "Sample destinations",
     "items": [
       { "city": "Toronto", "country": "Canada", "note": "Lakefront city breaks" },
       {
@@ -301,24 +294,14 @@
         "status": "planned"
       },
       {
-        "title": "Multi-provider architecture",
-        "description": "An adapter layer designed so GTAI never depends on a single supplier.",
-        "status": "planned"
-      },
-      {
-        "title": "Multilingual global experience",
-        "description": "Locale routing, RTL layout and regional currency built into the foundation.",
-        "status": "active"
-      },
-      {
         "title": "Continued trip support",
         "description": "Price monitoring and change awareness after you have made a decision.",
         "status": "planned"
       }
     ],
     "statusLabels": {
-      "active": "In this release",
-      "planned": "Planned"
+      "active": "Available now",
+      "planned": "Coming soon"
     }
   },
 
@@ -344,16 +327,8 @@
         "description": "Preferences are built from choices you make, not from tracking or fingerprinting."
       },
       {
-        "title": "No hidden free-text dependency",
-        "description": "The guided experience works through structured controls rather than an open prompt box."
-      },
-      {
         "title": "User control over preferences",
         "description": "Saved preferences will be reviewable, editable and deletable by you."
-      },
-      {
-        "title": "Future explainable ranking",
-        "description": "Best, cheapest and fastest comparisons will state the trade-off behind each choice."
       }
     ]
   },
@@ -369,7 +344,7 @@
       "GTAI may receive a commission when a booking is completed.",
       "Always recheck the price, dates and conditions on the partner site before you pay."
     ],
-    "notice": "No provider is connected in this foundation release, so no offers, prices or affiliate links are shown anywhere on this site."
+    "notice": "GTAI is not showing live offers or prices yet, so no partner links appear on this site today."
   },
 
   "pages": {
@@ -396,12 +371,12 @@
         }
       ],
       "emptyTitle": "No flight results yet",
-      "emptyDescription": "Flight providers are not connected in the foundation release. This page shows the intended structure only."
+      "emptyDescription": "GTAI is still connecting its flight providers. Comparison results will appear here."
     },
     "stays": {
       "eyebrow": "Stays",
       "title": "Hotels, apartments and everything between",
-      "description": "The GTAI stay experience will compare accommodation across approved providers, with clarity about what is actually included in the price.",
+      "description": "GTAI compares accommodation across approved providers, with clarity about what is actually included in the price.",
       "planned": [
         {
           "title": "Comparable totals",
@@ -421,7 +396,7 @@
         }
       ],
       "emptyTitle": "No stay results yet",
-      "emptyDescription": "Accommodation providers are not connected in the foundation release. This page shows the intended structure only."
+      "emptyDescription": "GTAI is still connecting its accommodation providers. Comparison results will appear here."
     },
     "cars": {
       "eyebrow": "Cars",
@@ -446,7 +421,7 @@
         }
       ],
       "emptyTitle": "No car rental results yet",
-      "emptyDescription": "Car rental suppliers are not connected in the foundation release. This page shows the intended structure only."
+      "emptyDescription": "GTAI is still connecting its car rental suppliers. Comparison results will appear here."
     },
     "packages": {
       "eyebrow": "Packages",
@@ -471,7 +446,7 @@
         }
       ],
       "emptyTitle": "No package results yet",
-      "emptyDescription": "Package providers are not connected in the foundation release. This page shows the intended structure only."
+      "emptyDescription": "GTAI is still connecting its package providers. Comparison results will appear here."
     },
     "explore": {
       "eyebrow": "Explore",
@@ -496,7 +471,7 @@
         }
       ],
       "emptyTitle": "Explore is not live yet",
-      "emptyDescription": "Destination discovery needs connected provider data. The structure is in place; the data is not."
+      "emptyDescription": "Destination discovery opens once GTAI's travel partners are connected."
     },
     "trips": {
       "eyebrow": "Trips",
@@ -521,14 +496,14 @@
         }
       ],
       "emptyTitle": "No saved trips",
-      "emptyDescription": "Accounts, sign-in and stored data do not exist in the foundation release. Nothing is saved and nothing is transmitted.",
-      "signInNotice": "Sign-in is a placeholder. No account system is connected."
+      "emptyDescription": "Saved trips arrive with GTAI accounts. Nothing is stored or transmitted today.",
+      "signInNotice": "Accounts are coming soon."
     },
     "aiTravel": {
       "eyebrow": "Guided planning preview",
       "title": "A travel interview, not a chat box",
       "description": "GTAI will build your trip from short structured questions. You choose from clear options, skip anything optional, and the questions adapt as you answer.",
-      "notice": "Everything on this page is a non-functional preview. No AI model, no agent and no data collection is active.",
+      "notice": "This page previews how guided planning will work. Nothing here is answered, stored or sent.",
       "modesTitle": "Three planning modes",
       "modesDescription": "Pick the depth that matches how much time you want to spend.",
       "modes": [
@@ -589,7 +564,7 @@
         }
       ],
       "controlsTitle": "Question formats you will see",
-      "controlsDescription": "Non-functional previews of the structured controls the interview will use. Nothing here submits, stores or transmits anything.",
+      "controlsDescription": "Examples of the structured controls the interview will use. Nothing here submits, stores or transmits anything.",
       "controls": {
         "selectTitle": "Single choice",
         "selectLabel": "What is the purpose of this trip?",
@@ -649,7 +624,7 @@
     "title": "A specialist for each part of a trip",
     "description": "GTAI's planning will be split across focused agents, each with a narrow responsibility and an explainable output. None of these are running today.",
     "badge": "Upcoming",
-    "notice": "No agent runtime, no model provider and no AI SDK exists in this release.",
+    "notice": "These specialists are in design. None of them is running today.",
     "items": [
       {
         "name": "Traveler Profile Agent",
@@ -748,14 +723,14 @@
         }
       }
     },
-    "placeholderNotice": "Footer destinations are placeholders. Legal documents are not published in this release.",
+    "placeholderNotice": "Some destinations below are not published yet.",
     "copyright": "GTAI — Global Travel AI",
-    "buildNotice": "Foundation release. No provider, payment or booking system is connected."
+    "buildNotice": "GTAI compares travel offers. Booking and payment are completed by our partners."
   },
 
   "notFound": {
     "title": "We could not find that page",
-    "description": "The address may be mistyped, or the page may not exist in this release.",
+    "description": "The address may be mistyped, or the page may no longer exist.",
     "cta": "Back to home"
   }
 }

@@ -7,51 +7,49 @@
     },
     "flights": {
       "title": "Vols — GTAI",
-      "description": "L'expérience de comparaison de vols GTAI. Aucun fournisseur n'est connecté dans cette version fondation."
+      "description": "Comparez les vols auprès de fournisseurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
     },
     "stays": {
       "title": "Hébergements — GTAI",
-      "description": "L'expérience de comparaison d'hébergements GTAI. Aucun fournisseur n'est connecté dans cette version fondation."
+      "description": "Comparez hôtels et appartements auprès de fournisseurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
     },
     "cars": {
       "title": "Location de voiture — GTAI",
-      "description": "L'expérience de comparaison de location de voiture GTAI. Aucun fournisseur n'est connecté dans cette version fondation."
+      "description": "Comparez la location de voiture auprès de loueurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
     },
     "packages": {
       "title": "Forfaits — GTAI",
-      "description": "L'expérience de comparaison de forfaits GTAI. Aucun fournisseur n'est connecté dans cette version fondation."
+      "description": "Comparez les forfaits vol + hébergement avec GTAI. Les résultats en direct arrivent bientôt."
     },
     "explore": {
       "title": "Explorer — GTAI",
-      "description": "Découvrez où votre budget, vos dates et vos envies peuvent vous mener. Aperçu d'une capacité future."
+      "description": "Découvrez où votre budget, vos dates et vos envies peuvent vous mener."
     },
     "trips": {
       "title": "Voyages — GTAI",
-      "description": "Le futur espace pour vos recherches enregistrées et vos voyages planifiés."
+      "description": "Vos recherches enregistrées, vos itinéraires suivis et vos voyages planifiés."
     },
     "aiTravel": {
       "title": "Planification guidée par IA — GTAI",
-      "description": "Un aperçu de la planification structurée de GTAI. Rien sur cette page n'est encore opérationnel."
+      "description": "Un aperçu de la planification structurée de GTAI. La planification guidée arrive bientôt."
     },
     "notFound": {
       "title": "Page introuvable — GTAI",
       "description": "La page demandée n'existe pas."
     }
   },
-
   "common": {
     "skipToContent": "Aller au contenu principal",
     "previewBadge": "Aperçu",
-    "futureBadge": "Capacité future",
-    "notConnectedBadge": "Non connecté en V1",
-    "demoBadge": "Démonstration",
+    "futureBadge": "Bientôt disponible",
+    "notConnectedBadge": "Bientôt disponible",
+    "demoBadge": "Exemple",
     "learnMore": "En savoir plus",
     "close": "Fermer",
     "backToHome": "Retour à l'accueil",
     "sectionDivider": "Section",
     "loading": "Chargement"
   },
-
   "nav": {
     "primaryLabel": "Produits de voyage",
     "utilityLabel": "Compte et préférences",
@@ -68,19 +66,17 @@
     "aiTravel": "Voyage IA",
     "trips": "Voyages",
     "signIn": "Se connecter",
-    "signInHint": "Les comptes ne sont pas disponibles dans cette version.",
+    "signInHint": "Les comptes arrivent bientôt.",
     "profile": "Profil",
     "goToHome": "Accueil GTAI"
   },
-
   "language": {
     "label": "Langue",
     "selectorLabel": "Choisir une langue",
     "current": "Langue actuelle",
     "translationNotice": "Le contenu complet est disponible en anglais. Les autres langues reviennent à l'anglais lorsqu'une traduction n'existe pas encore.",
-    "demoAvailable": "Traduction de démonstration disponible"
+    "demoAvailable": "Traduit"
   },
-
   "region": {
     "label": "Région et devise",
     "countryLabel": "Pays ou région",
@@ -93,38 +89,13 @@
     "allCurrencies": "Toutes les devises",
     "resolvedFrom": "Suggéré à partir de la langue choisie",
     "noGeolocationNotice": "GTAI ne détecte pas votre position physique. Votre pays est un choix manuel, pré-rempli selon la langue sélectionnée.",
-    "noConversionNotice": "Le choix de devise modifie l'étiquetage des prix. GTAI ne convertit aucun prix, car aucun prix réel n'existe dans cette version.",
+    "noConversionNotice": "Le choix de devise modifie l'affichage des prix. GTAI ne convertit pas les devises.",
     "iranNotice": "L'Iran est affiché en USD."
   },
-
   "hero": {
-    "eyebrow": "Métamoteur de voyage mondial",
     "title": "Cherchez partout. Voyagez intelligemment.",
-    "subtitle": "Comparez vols, hébergements, voitures, forfaits et expériences auprès de fournisseurs de confiance — puis laissez une intelligence guidée façonner le voyage autour de vous.",
-    "note": "Ceci est la version fondation de GTAI. Les connexions fournisseurs, les prix en direct et la réservation ne sont pas actifs.",
-    "highlights": [
-      {
-        "title": "Une recherche mondiale",
-        "description": "Une seule surface de comparaison conçue pour tous les marchés que GTAI servira."
-      },
-      {
-        "title": "Guidé, pas approximatif",
-        "description": "Des questions structurées plutôt qu'une zone de texte vide à remplir."
-      },
-      {
-        "title": "Transparent par conception",
-        "description": "Vous voyez toujours quand un lien est affilié et qui finalise votre réservation."
-      }
-    ],
-    "visual": {
-      "label": "Aperçu d'itinéraire illustratif",
-      "routeCaption": "Illustration uniquement — aucune donnée d'itinéraire réelle",
-      "chipBest": "Meilleur",
-      "chipCheapest": "Moins cher",
-      "chipFastest": "Plus rapide"
-    }
+    "subtitle": "Comparez vols, hébergements, voitures et forfaits auprès de fournisseurs de confiance — en une seule recherche."
   },
-
   "searchTabs": {
     "label": "Choisissez quoi rechercher",
     "flights": "Vols",
@@ -132,7 +103,6 @@
     "cars": "Voitures",
     "packages": "Forfaits"
   },
-
   "search": {
     "heading": "Commencez votre recherche",
     "tripType": {
@@ -169,7 +139,7 @@
       "date": "Ajouter une date",
       "destination": "Ville, région ou établissement",
       "pickUp": "Ville, aéroport ou agence",
-      "generic": "Pas encore connecté"
+      "generic": "Ville ou aéroport"
     },
     "options": {
       "travelersValue": "1 adulte",
@@ -183,11 +153,10 @@
       }
     },
     "submit": "Rechercher",
-    "submitDisabledHint": "La recherche est purement visuelle dans cette version.",
-    "helper": "Aéroports proches, dates flexibles et alertes de prix sont prévus pour une version ultérieure.",
-    "notice": "Ceci est une coquille de recherche visuelle. Aucune donnée d'aéroport, aucun fournisseur et aucun résultat n'est connecté."
+    "submitDisabledHint": "Les résultats de recherche ne sont pas encore disponibles.",
+    "helper": "Aéroports proches, dates flexibles et alertes de prix arrivent bientôt.",
+    "notice": "GTAI connecte encore ses fournisseurs de voyage. Vous pourrez bientôt lancer cette recherche."
   },
-
   "aiPanel": {
     "eyebrow": "Planification guidée",
     "title": "Construisez votre voyage idéal avec GTAI",
@@ -207,21 +176,24 @@
     ],
     "cta": "Démarrer la planification guidée",
     "secondaryCta": "Voir comment cela fonctionnera",
-    "notice": "La planification guidée est un aperçu. Aucun modèle d'IA n'est connecté."
+    "notice": "La planification guidée arrive bientôt."
   },
-
   "destinations": {
     "eyebrow": "Destinations populaires",
     "title": "Où vont les voyageurs",
-    "description": "Un jeu de démonstration statique. Les tendances réelles seront générées à partir de données fournisseurs une fois les partenaires connectés.",
-    "staticNotice": "Données de démonstration statiques",
+    "description": "Un aperçu des destinations que GTAI comparera. Les tendances réelles suivront une fois les partenaires connectés.",
+    "staticNotice": "Destinations d'exemple",
     "items": [
       {
         "city": "Toronto",
         "country": "Canada",
         "note": "Escapades au bord du lac"
       },
-      { "city": "Vancouver", "country": "Canada", "note": "Montagnes et littoral" },
+      {
+        "city": "Vancouver",
+        "country": "Canada",
+        "note": "Montagnes et littoral"
+      },
       {
         "city": "Londres",
         "country": "Royaume-Uni",
@@ -237,12 +209,23 @@
         "country": "Émirats arabes unis",
         "note": "Plateforme de transit mondiale"
       },
-      { "city": "Tokyo", "country": "Japon", "note": "Favori long-courrier" },
-      { "city": "Istanbul", "country": "Türkiye", "note": "Entre deux continents" },
-      { "city": "Barcelone", "country": "Espagne", "note": "Côte et architecture" }
+      {
+        "city": "Tokyo",
+        "country": "Japon",
+        "note": "Favori long-courrier"
+      },
+      {
+        "city": "Istanbul",
+        "country": "Türkiye",
+        "note": "Entre deux continents"
+      },
+      {
+        "city": "Barcelone",
+        "country": "Espagne",
+        "note": "Côte et architecture"
+      }
     ]
   },
-
   "exploreSection": {
     "eyebrow": "Explorer",
     "title": "Explorez les possibilités de voyage",
@@ -267,20 +250,74 @@
       }
     ]
   },
-
   "why": {
     "eyebrow": "Pourquoi GTAI",
     "title": "Conçu pour la façon dont on planifie vraiment un voyage",
     "description": "GTAI associe la comparaison familière d'un métamoteur à une planification structurée et explicable.",
-    "statusLabels": { "active": "Dans cette version", "planned": "Prévu" }
+    "statusLabels": {
+      "active": "Disponible",
+      "planned": "Bientôt"
+    },
+    "items": [
+      {
+        "title": "Comparaison mondiale",
+        "description": "Une surface de comparaison cohérente pour les vols, les hébergements, les voitures et les forfaits.",
+        "status": "planned"
+      },
+      {
+        "title": "Planification guidée et intelligente",
+        "description": "Des questions structurées construisent votre profil de voyage — sans zone de discussion à remplir.",
+        "status": "planned"
+      },
+      {
+        "title": "Modèle d'affiliation transparent",
+        "description": "Nous indiquons quel partenaire finalise votre réservation et où GTAI perçoit une commission.",
+        "status": "active"
+      },
+      {
+        "title": "Vigilance sur les risques du voyage",
+        "description": "Correspondances serrées, longues escales et formalités de transit signalées avant la réservation.",
+        "status": "planned"
+      },
+      {
+        "title": "Préférences de voyage personnalisées",
+        "description": "Vos préférences enregistrées orientent le classement au lieu d'être réinitialisées à chaque visite.",
+        "status": "planned"
+      },
+      {
+        "title": "Accompagnement après la décision",
+        "description": "Suivi des prix et alerte en cas de changement, une fois votre choix fait.",
+        "status": "planned"
+      }
+    ]
   },
-
   "trust": {
     "eyebrow": "Confiance et transparence",
     "title": "Les principes qui guident notre construction",
-    "description": "Ce sont des engagements sur la façon dont GTAI est conçu, et non des affirmations sur des capacités déjà existantes."
+    "description": "Ce sont des engagements sur la façon dont GTAI est conçu, et non des affirmations sur des capacités déjà existantes.",
+    "items": [
+      {
+        "title": "Transparence sur les fournisseurs",
+        "description": "Chaque offre indiquera le fournisseur qui la propose avant que vous ne quittiez GTAI."
+      },
+      {
+        "title": "Des recommandations compréhensibles",
+        "description": "Le classement sera expliqué en langage clair, et non présenté comme un score inexpliqué."
+      },
+      {
+        "title": "Relations d'affiliation visibles",
+        "description": "Les liens rémunérés sont signalés là où ils apparaissent, et non enfouis dans une page de politique."
+      },
+      {
+        "title": "Personnalisation respectueuse de la vie privée",
+        "description": "Les préférences se construisent à partir de vos choix, jamais d'un pistage ou d'une empreinte numérique."
+      },
+      {
+        "title": "Vous gardez la main sur vos préférences",
+        "description": "Les préférences enregistrées seront consultables, modifiables et supprimables par vous."
+      }
+    ]
   },
-
   "affiliate": {
     "label": "Divulgation d'affiliation",
     "short": "GTAI est un service de comparaison de voyages. Sélectionner une offre peut vous rediriger vers un site partenaire qui finalise la réservation et le paiement, et GTAI peut percevoir une commission.",
@@ -292,9 +329,8 @@
       "GTAI peut percevoir une commission lorsqu'une réservation est finalisée.",
       "Vérifiez toujours le prix, les dates et les conditions sur le site partenaire avant de payer."
     ],
-    "notice": "Aucun fournisseur n'est connecté dans cette version fondation : aucune offre, aucun prix et aucun lien d'affiliation n'est affiché."
+    "notice": "GTAI n'affiche pas encore d'offres ni de prix en direct : aucun lien partenaire n'apparaît sur ce site aujourd'hui."
   },
-
   "footer": {
     "tagline": "Comparaison de voyage mondiale, conçue au Canada pour les voyageurs du monde entier.",
     "regionHeading": "Région",
@@ -337,73 +373,71 @@
         }
       }
     },
-    "placeholderNotice": "Les liens du pied de page sont des espaces réservés. Aucun document légal n'est publié dans cette version.",
+    "placeholderNotice": "Certaines destinations ci-dessous ne sont pas encore publiées.",
     "copyright": "GTAI — Global Travel AI",
-    "buildNotice": "Version fondation. Aucun fournisseur, paiement ou système de réservation n'est connecté."
+    "buildNotice": "GTAI compare des offres de voyage. La réservation et le paiement sont finalisés par nos partenaires."
   },
-
   "agents": {
     "eyebrow": "Aperçu de l'architecture",
     "title": "Un spécialiste pour chaque partie du voyage",
     "description": "La planification GTAI sera répartie entre des agents ciblés, chacun avec une responsabilité étroite et un résultat explicable. Aucun n'est actif aujourd'hui.",
     "badge": "À venir",
-    "notice": "Aucun runtime d'agent, aucun fournisseur de modèle et aucun SDK d'IA n'existe dans cette version."
+    "notice": "Ces spécialistes sont en conception. Aucun n'est actif aujourd'hui."
   },
-
   "pages": {
     "flights": {
       "eyebrow": "Vols",
       "title": "Comparaison de vols, pensée pour chaque marché",
       "description": "L'expérience vols de GTAI comparera les tarifs entre fournisseurs approuvés et expliquera le compromis entre la meilleure option, la moins chère et la plus rapide.",
       "emptyTitle": "Aucun résultat de vol",
-      "emptyDescription": "Les fournisseurs de vols ne sont pas connectés. Cette page ne montre que la structure prévue."
+      "emptyDescription": "GTAI connecte encore ses fournisseurs de vols. Les résultats de comparaison apparaîtront ici."
     },
     "stays": {
       "eyebrow": "Hébergements",
       "title": "Hôtels, appartements et tout le reste",
       "description": "L'expérience hébergement de GTAI comparera les logements entre fournisseurs approuvés, en clarifiant ce qui est réellement inclus dans le prix.",
       "emptyTitle": "Aucun résultat d'hébergement",
-      "emptyDescription": "Les fournisseurs d'hébergement ne sont pas connectés. Cette page ne montre que la structure prévue."
+      "emptyDescription": "GTAI connecte encore ses fournisseurs d'hébergement. Les résultats de comparaison apparaîtront ici."
     },
     "cars": {
       "eyebrow": "Voitures",
       "title": "La location de voiture sans mauvaise surprise",
       "description": "L'expérience location de GTAI comparera les loueurs et rendra visible le coût réel avant tout engagement.",
       "emptyTitle": "Aucun résultat de location",
-      "emptyDescription": "Les loueurs ne sont pas connectés. Cette page ne montre que la structure prévue."
+      "emptyDescription": "GTAI connecte encore ses loueurs de voitures. Les résultats de comparaison apparaîtront ici."
     },
     "packages": {
       "eyebrow": "Forfaits",
       "title": "Vol, hébergement et extras — comparés ensemble",
       "description": "L'expérience forfaits de GTAI comparera le voyage groupé aux mêmes composants réservés séparément, pour que l'économie soit un fait et non une promesse.",
       "emptyTitle": "Aucun résultat de forfait",
-      "emptyDescription": "Les fournisseurs de forfaits ne sont pas connectés. Cette page ne montre que la structure prévue."
+      "emptyDescription": "GTAI connecte encore ses fournisseurs de forfaits. Les résultats de comparaison apparaîtront ici."
     },
     "explore": {
       "eyebrow": "Explorer",
       "title": "Partez d'un budget, pas d'une destination",
       "description": "Explorer vous laissera chercher vers l'extérieur — à partir de ce que vous pouvez dépenser, de quand vous pouvez partir et de ce que vous aimez.",
       "emptyTitle": "Explorer n'est pas encore actif",
-      "emptyDescription": "La découverte de destinations nécessite des données fournisseurs connectées. La structure existe, les données non."
+      "emptyDescription": "La découverte de destinations s'ouvrira une fois les partenaires de voyage connectés."
     },
     "trips": {
       "eyebrow": "Voyages",
       "title": "Votre futur espace de voyage",
       "description": "Voyages regroupera vos recherches enregistrées, vos itinéraires suivis et vos voyages planifiés — une fois les comptes et la persistance en place.",
       "emptyTitle": "Aucun voyage enregistré",
-      "emptyDescription": "Les comptes et le stockage de données n'existent pas dans cette version. Rien n'est enregistré ni transmis.",
-      "signInNotice": "La connexion est un espace réservé. Aucun système de compte n'est connecté."
+      "emptyDescription": "Les voyages enregistrés arriveront avec les comptes GTAI. Rien n'est stocké ni transmis aujourd'hui.",
+      "signInNotice": "Les comptes arrivent bientôt."
     },
     "aiTravel": {
       "eyebrow": "Aperçu de la planification guidée",
       "title": "Un entretien de voyage, pas une zone de discussion",
       "description": "GTAI construira votre voyage à partir de questions structurées et courtes. Vous choisissez parmi des options claires, sautez ce qui est facultatif, et les questions s'adaptent.",
-      "notice": "Tout sur cette page est un aperçu non fonctionnel. Aucun modèle d'IA, aucun agent et aucune collecte de données n'est actif.",
+      "notice": "Cette page montre comment fonctionnera la planification guidée. Rien ici n'est répondu, stocké ni envoyé.",
       "modesTitle": "Trois modes de planification",
       "modesDescription": "Choisissez la profondeur qui correspond au temps que vous voulez y consacrer.",
       "howTitle": "Comment l'entretien se comportera",
       "controlsTitle": "Formats de questions que vous verrez",
-      "controlsDescription": "Aperçus non fonctionnels des contrôles structurés utilisés par l'entretien. Rien ici n'envoie, ne stocke ni ne transmet quoi que ce soit.",
+      "controlsDescription": "Exemples des contrôles structurés utilisés par l'entretien. Rien ici n'envoie, ne stocke ni ne transmet quoi que ce soit.",
       "privacyTitle": "Ce que GTAI ne demandera jamais",
       "privacyDescription": "L'entretien est conçu autour des préférences, pas des documents d'identité.",
       "privacyItems": [
@@ -414,10 +448,26 @@
       ]
     }
   },
-
   "notFound": {
     "title": "Page introuvable",
-    "description": "L'adresse est peut-être mal saisie, ou la page n'existe pas dans cette version.",
+    "description": "L'adresse est peut-être mal saisie, ou la page n'existe plus.",
     "cta": "Retour à l'accueil"
+  },
+  "reassurance": {
+    "label": "Ce que la comparaison GTAI vous apporte",
+    "items": [
+      {
+        "title": "Une recherche, plusieurs fournisseurs",
+        "description": "Comparez auprès de fournisseurs de confiance au lieu de consulter chaque site vous-même."
+      },
+      {
+        "title": "Vous savez avec qui vous réservez",
+        "description": "Vous voyez toujours quel fournisseur propose une offre et qui finalise la réservation."
+      },
+      {
+        "title": "Meilleur, moins cher ou plus rapide",
+        "description": "Choisissez le compromis qui compte pour ce voyage plutôt qu'un classement unique."
+      }
+    ]
   }
 }

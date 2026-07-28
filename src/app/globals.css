@@ -268,6 +268,19 @@ body {
   color: transparent;
 }
 
+/* Horizontal scroll container without a visible scrollbar. Used by the product
+   tab row, which must stay on one line at every width. Keyboard users are
+   unaffected: focusing a tab scrolls it into view automatically. */
+@utility gtai-scroll-x {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Lightweight CSS-only depth for elevated cards. No WebGL, no canvas. */
 @utility gtai-lift {
   transition:

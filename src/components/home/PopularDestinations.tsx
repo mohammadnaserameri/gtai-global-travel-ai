@@ -30,7 +30,7 @@ export function PopularDestinations({ dictionary }: PopularDestinationsProps) {
   const { destinations } = dictionary;
 
   return (
-    <section aria-labelledby="gtai-destinations-heading" className="py-16 lg:py-24">
+    <section aria-labelledby="gtai-destinations-heading" className="py-14 lg:py-20">
       <Container>
         <SectionHeading
           id="gtai-destinations-heading"

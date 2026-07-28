@@ -24,7 +24,7 @@ export function GuidedAiPanel({ locale, dictionary }: GuidedAiPanelProps) {
   return (
     <section
       aria-labelledby="gtai-ai-panel-heading"
-      className="relative isolate overflow-hidden py-16 lg:py-24"
+      className="relative isolate overflow-hidden py-14 lg:py-20"
     >
       <div
         aria-hidden="true"

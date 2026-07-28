@@ -4,9 +4,7 @@ import { SectionHeading } from "@/components/layout/SectionHeading";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import {
-  CompassIcon,
   GlobeIcon,
-  LayersIcon,
   PinIcon,
   RouteIcon,
   ShieldIcon,
@@ -18,30 +16,32 @@ interface WhyGtaiProps {
   dictionary: Dictionary;
 }
 
+/** Paired with `why.items` by position. Decorative only. */
 const icons = [
   <GlobeIcon key="global" size={20} />,
   <SparkIcon key="guided" size={20} />,
   <RouteIcon key="affiliate" size={20} />,
   <ShieldIcon key="risk" size={20} />,
   <TravelersIcon key="preferences" size={20} />,
-  <LayersIcon key="providers" size={20} />,
-  <CompassIcon key="multilingual" size={20} />,
   <PinIcon key="support" size={20} />,
 ];
 
 /**
  * Differentiation grid.
  *
- * Every item states whether it exists today or is planned. Two of the eight are
- * genuinely in this release (the transparent affiliate model and the
- * multilingual foundation); the rest are labelled "Planned" rather than
- * described as if they already worked.
+ * Trimmed from eight items to six: the two that were cut described internal
+ * architecture rather than anything a traveller benefits from, which is what
+ * made this section read as a software-company landing page.
+ *
+ * Every remaining item carries a visible availability label. Only the
+ * transparent affiliate model is live today; the rest say "Coming soon" rather
+ * than being described as if they already worked.
  */
 export function WhyGtai({ dictionary }: WhyGtaiProps) {
   const { why } = dictionary;
 
   return (
-    <section aria-labelledby="gtai-why-heading" className="py-16 lg:py-24">
+    <section aria-labelledby="gtai-why-heading" className="py-14 lg:py-20">
       <Container>
         <SectionHeading
           id="gtai-why-heading"
@@ -50,16 +50,20 @@ export function WhyGtai({ dictionary }: WhyGtaiProps) {
           description={why.description}
         />
 
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Three columns, not four: six items divide into two balanced rows of
+            three instead of leaving a two-card orphan row. */}
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {why.items.map((item, index) => {
             const planned = item.status !== "active";
             return (
+              /* Not `interactive`: these cards are informational and have no
+                 click target, so hover elevation would promise an action that
+                 does not exist. */
               <Card
                 key={item.title}
                 as="li"
                 variant="plain"
                 padding="md"
-                interactive
                 className="flex h-full flex-col gap-3"
               >
                 <div className="flex items-start justify-between gap-2">

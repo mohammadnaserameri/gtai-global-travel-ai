@@ -20,7 +20,7 @@ export function TrustSection({ dictionary }: TrustSectionProps) {
   return (
     <section
       aria-labelledby="gtai-trust-heading"
-      className="border-border from-background to-brand-25 border-t bg-linear-to-b py-16 lg:py-24"
+      className="border-border from-background to-brand-25 border-t bg-linear-to-b py-14 lg:py-20"
     >
       <Container>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">

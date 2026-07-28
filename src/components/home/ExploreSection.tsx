@@ -31,7 +31,7 @@ export function ExploreSection({ locale, dictionary }: ExploreSectionProps) {
   return (
     <section
       aria-labelledby="gtai-explore-heading"
-      className="border-border bg-background-muted border-y py-16 lg:py-24"
+      className="border-border bg-background-muted border-y py-14 lg:py-20"
     >
       <Container>
         <SectionHeading

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent, type ReactNode } from "react";
 
 import type { Direction } from "@/config/locales";
 import type { Dictionary } from "@/i18n/get-dictionary";
@@ -38,13 +38,44 @@ interface SearchShellProps {
 }
 
 /**
- * The standard travel search surface.
+ * Groups the locate/date fields and the submit control into one visually
+ * connected block, so the row reads as a single search bar rather than five
+ * separate widgets.
+ *
+ * Column spans are assigned per product and always total 12 on `lg`, which is
+ * what keeps a control such as Cabin class from stranding on a near-empty
+ * second row.
+ */
+function FieldGroup({ children }: { children: ReactNode }) {
+  return (
+    <div className="bg-background-muted grid gap-2 rounded-xl p-2 sm:grid-cols-2 lg:grid-cols-12">
+      {children}
+    </div>
+  );
+}
+
+/** Submit cell, bottom-aligned so the CTA lines up with the field boxes. */
+function SubmitCell({ label }: { label: string }) {
+  return (
+    <div className="flex items-end sm:col-span-2 lg:col-span-2">
+      <Button type="submit" size="lg" fullWidth className="min-h-12">
+        <SearchIcon size={18} />
+        {label}
+      </Button>
+    </div>
+  );
+}
+
+/**
+ * The standard travel search surface, and the visual focal point of the
+ * homepage.
  *
  * This is a **presentational shell**. There is no airport dataset, no
- * autocomplete, no provider query and no results route — submitting simply
- * announces that search is not connected in this release. The controls are
- * nevertheless real, labelled form elements so focus order, mobile keyboards
- * and screen-reader output can be verified now rather than retrofitted later.
+ * autocomplete, no calendar picker, no provider query and no results route —
+ * submitting only announces that results are not available yet. The controls
+ * are nevertheless real, labelled form elements so focus order, mobile
+ * keyboards and screen-reader output can be verified now rather than
+ * retrofitted later.
  */
 export function SearchShell({
   tabs,
@@ -66,8 +97,8 @@ export function SearchShell({
   ];
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
-    // Search is intentionally not implemented in V1. Rather than failing
-    // silently, the shell states that plainly in a live region.
+    // Search is intentionally not implemented. Rather than failing silently,
+    // the shell says so in a live region.
     event.preventDefault();
     setAnnounced(true);
   }
@@ -84,7 +115,7 @@ export function SearchShell({
   return (
     <div
       className={cn(
-        "border-border bg-surface-elevated rounded-2xl border p-4 shadow-xl sm:p-6",
+        "border-border bg-surface-elevated rounded-2xl border p-3 shadow-xl sm:p-5",
         className,
       )}
     >
@@ -100,25 +131,40 @@ export function SearchShell({
         }}
         idPrefix={idPrefix}
         dir={dir}
-        className="mb-5"
+        className="mb-4"
       />
 
       <form onSubmit={onSubmit} noValidate>
         <TabPanel idPrefix={idPrefix} id="flights" active={product === "flights"}>
-          <TripTypeSelector
-            label={labels.tripType.label}
-            value={tripType}
-            onChange={setTripType}
-            name={field("trip-type")}
-            options={{
-              roundTrip: labels.tripType.roundTrip,
-              oneWay: labels.tripType.oneWay,
-              multiCity: labels.tripType.multiCity,
-            }}
-            className="mb-4"
-          />
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <TripTypeSelector
+              label={labels.tripType.label}
+              value={tripType}
+              onChange={setTripType}
+              name={field("trip-type")}
+              options={{
+                roundTrip: labels.tripType.roundTrip,
+                oneWay: labels.tripType.oneWay,
+                multiCity: labels.tripType.multiCity,
+              }}
+            />
+            <SelectShell
+              layout="inline"
+              id={field("travelers")}
+              label={labels.fields.travelers}
+              icon={<TravelersIcon size={16} />}
+              options={[{ value: "1", label: labels.options.travelersValue }]}
+            />
+            <SelectShell
+              layout="inline"
+              id={field("cabin")}
+              label={labels.fields.cabinClass}
+              icon={<SeatIcon size={16} />}
+              options={cabinOptions}
+            />
+          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
+          <FieldGroup>
             <InputShell
               id={field("from")}
               label={labels.fields.from}
@@ -151,25 +197,22 @@ export function SearchShell({
                 tripType !== "roundTrip" && "opacity-55",
               )}
             />
-            <SelectShell
-              id={field("travelers")}
-              label={labels.fields.travelers}
-              icon={<TravelersIcon size={18} />}
-              options={[{ value: "1", label: labels.options.travelersValue }]}
-              className="lg:col-span-2"
-            />
-            <SelectShell
-              id={field("cabin")}
-              label={labels.fields.cabinClass}
-              icon={<SeatIcon size={18} />}
-              options={cabinOptions}
-              className="sm:col-span-2 lg:col-span-3"
-            />
-          </div>
+            <SubmitCell label={labels.submit} />
+          </FieldGroup>
         </TabPanel>
 
         <TabPanel idPrefix={idPrefix} id="stays" active={product === "stays"}>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <SelectShell
+              layout="inline"
+              id={field("guests")}
+              label={labels.fields.guests}
+              icon={<TravelersIcon size={16} />}
+              options={[{ value: "2", label: labels.options.guestsValue }]}
+            />
+          </div>
+
+          <FieldGroup>
             <InputShell
               id={field("stay-destination")}
               label={labels.fields.destination}
@@ -182,27 +225,31 @@ export function SearchShell({
               label={labels.fields.checkIn}
               type="date"
               icon={<CalendarIcon size={18} />}
-              className="lg:col-span-2"
+              className="lg:col-span-3"
             />
             <InputShell
               id={field("check-out")}
               label={labels.fields.checkOut}
               type="date"
               icon={<CalendarIcon size={18} />}
-              className="lg:col-span-2"
+              className="lg:col-span-3"
             />
-            <SelectShell
-              id={field("guests")}
-              label={labels.fields.guests}
-              icon={<TravelersIcon size={18} />}
-              options={[{ value: "2", label: labels.options.guestsValue }]}
-              className="sm:col-span-2 lg:col-span-4"
-            />
-          </div>
+            <SubmitCell label={labels.submit} />
+          </FieldGroup>
         </TabPanel>
 
         <TabPanel idPrefix={idPrefix} id="cars" active={product === "cars"}>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <SelectShell
+              layout="inline"
+              id={field("driver-age")}
+              label={labels.fields.driverAge}
+              icon={<CarIcon size={16} />}
+              options={[{ value: "30-65", label: labels.options.driverAgeValue }]}
+            />
+          </div>
+
+          <FieldGroup>
             <InputShell
               id={field("pick-up")}
               label={labels.fields.pickUp}
@@ -231,18 +278,22 @@ export function SearchShell({
               icon={<CalendarIcon size={18} />}
               className="lg:col-span-2"
             />
-            <SelectShell
-              id={field("driver-age")}
-              label={labels.fields.driverAge}
-              icon={<CarIcon size={18} />}
-              options={[{ value: "30-65", label: labels.options.driverAgeValue }]}
-              className="sm:col-span-2 lg:col-span-2"
-            />
-          </div>
+            <SubmitCell label={labels.submit} />
+          </FieldGroup>
         </TabPanel>
 
         <TabPanel idPrefix={idPrefix} id="packages" active={product === "packages"}>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <SelectShell
+              layout="inline"
+              id={field("package-travelers")}
+              label={labels.fields.packageTravelers}
+              icon={<TravelersIcon size={16} />}
+              options={[{ value: "1", label: labels.options.travelersValue }]}
+            />
+          </div>
+
+          <FieldGroup>
             <InputShell
               id={field("package-origin")}
               label={labels.fields.origin}
@@ -271,27 +322,15 @@ export function SearchShell({
               icon={<CalendarIcon size={18} />}
               className="lg:col-span-2"
             />
-            <SelectShell
-              id={field("package-travelers")}
-              label={labels.fields.packageTravelers}
-              icon={<TravelersIcon size={18} />}
-              options={[{ value: "1", label: labels.options.travelersValue }]}
-              className="sm:col-span-2 lg:col-span-2"
-            />
-          </div>
+            <SubmitCell label={labels.submit} />
+          </FieldGroup>
         </TabPanel>
 
-        <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-foreground-muted max-w-md text-xs leading-relaxed">
-            {labels.helper}
-          </p>
-          <Button type="submit" size="lg" className="w-full sm:w-auto sm:min-w-40">
-            <SearchIcon size={18} />
-            {labels.submit}
-          </Button>
-        </div>
+        <p className="text-foreground-muted mt-3 text-xs leading-relaxed">
+          {labels.helper}
+        </p>
 
-        <div aria-live="polite" className="mt-4 empty:mt-0">
+        <div aria-live="polite" className="mt-3 empty:mt-0">
           {announced ? (
             <Alert tone="brand" live>
               {labels.submitDisabledHint} {labels.notice}

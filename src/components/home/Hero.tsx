@@ -1,10 +1,8 @@
 import type { Direction } from "@/config/locales";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { Container } from "@/components/layout/Container";
-import { Badge } from "@/components/ui/Badge";
 import { SearchShell } from "@/components/search/SearchShell";
-import { AffiliateDisclosure } from "@/components/ui/AffiliateDisclosure";
-import { RouteVisual } from "@/components/home/RouteVisual";
+import { HeroBackdrop } from "@/components/home/HeroBackdrop";
 
 interface HeroProps {
   dictionary: Dictionary;
@@ -12,73 +10,38 @@ interface HeroProps {
 }
 
 /**
- * Homepage hero.
+ * Above-the-fold band: a short introduction followed immediately by the search
+ * surface.
  *
- * Depth comes from three cheap, static CSS layers: an out-of-flow aurora field,
- * a masked dot grid and a single elevated search surface. No canvas, no WebGL,
- * no scroll-linked parallax — the search shell has to stay the most legible
- * thing on the page.
+ * The introduction is deliberately two elements — one headline and one
+ * sentence. Everything that used to live here (eyebrow badges, three benefit
+ * cards, a large route illustration and a release notice) either moved further
+ * down the page or was cut, because a traveller landing on GTAI should reach
+ * the search controls without scrolling. The whole band fits inside 900px of
+ * viewport height at desktop widths.
  */
 export function Hero({ dictionary, dir }: HeroProps) {
-  const { hero, searchTabs, search, common, affiliate } = dictionary;
+  const { hero, searchTabs, search } = dictionary;
 
   return (
     <section className="border-border/70 from-brand-25 via-background to-background relative isolate overflow-hidden border-b bg-linear-to-b">
-      <div className="gtai-aurora" aria-hidden="true" />
-      <div
-        className="gtai-grid-field pointer-events-none absolute inset-0"
-        aria-hidden="true"
-      />
+      <HeroBackdrop />
 
-      <Container className="relative pt-12 pb-14 sm:pt-16 lg:pt-20 lg:pb-20">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge tone="brand" dot>
-                {hero.eyebrow}
-              </Badge>
-              <Badge tone="neutral">{common.notConnectedBadge}</Badge>
-            </div>
-
-            <h1 className="text-foreground text-4xl leading-[1.06] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-              {hero.title}
-            </h1>
-
-            <p className="text-foreground-secondary max-w-xl text-base leading-relaxed sm:text-lg">
-              {hero.subtitle}
-            </p>
-
-            <ul className="grid gap-3 sm:grid-cols-3">
-              {hero.highlights.map((item) => (
-                <li
-                  key={item.title}
-                  className="border-border/80 bg-surface/70 rounded-xl border p-3.5 backdrop-blur-[2px]"
-                >
-                  <p className="text-brand-ink-strong text-sm font-semibold">
-                    {item.title}
-                  </p>
-                  <p className="text-foreground-muted mt-1 text-xs leading-relaxed">
-                    {item.description}
-                  </p>
-                </li>
-              ))}
-            </ul>
-
-            <p className="text-foreground-muted text-xs leading-relaxed">
-              {hero.note}
-            </p>
-          </div>
-
-          <RouteVisual labels={hero.visual} />
+      <Container className="relative pt-8 pb-10 sm:pt-10 lg:pt-12 lg:pb-14">
+        <div className="max-w-2xl">
+          <h1 className="text-foreground text-3xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+            {hero.title}
+          </h1>
+          <p className="text-foreground-secondary mt-3 text-base leading-relaxed sm:text-lg">
+            {hero.subtitle}
+          </p>
         </div>
-      </Container>
 
-      <Container className="relative pb-14 lg:pb-20">
-        <SearchShell tabs={searchTabs} labels={search} dir={dir} />
-        <AffiliateDisclosure
-          labels={affiliate}
-          variant="inline"
-          className="mt-4 px-1"
+        <SearchShell
+          tabs={searchTabs}
+          labels={search}
+          dir={dir}
+          className="mt-6 lg:mt-8"
         />
       </Container>
     </section>

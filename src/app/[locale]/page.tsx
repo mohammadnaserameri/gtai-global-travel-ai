@@ -4,6 +4,7 @@ import { getDirection } from "@/config/locales";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Container } from "@/components/layout/Container";
 import { Hero } from "@/components/home/Hero";
+import { ReassuranceStrip } from "@/components/home/ReassuranceStrip";
 import { GuidedAiPanel } from "@/components/home/GuidedAiPanel";
 import { PopularDestinations } from "@/components/home/PopularDestinations";
 import { ExploreSection } from "@/components/home/ExploreSection";
@@ -31,7 +32,11 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <>
+      {/* Order is deliberate: search first, then one line of reassurance, then
+          the AI differentiator, then discovery, then the supporting sections.
+          A traveller reaches the search controls without scrolling. */}
       <Hero dictionary={dictionary} dir={dir} />
+      <ReassuranceStrip dictionary={dictionary} />
       <GuidedAiPanel locale={locale} dictionary={dictionary} />
       <PopularDestinations dictionary={dictionary} />
       <ExploreSection locale={locale} dictionary={dictionary} />

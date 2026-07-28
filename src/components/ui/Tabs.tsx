@@ -94,7 +94,13 @@ export function Tabs({
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={cn("flex flex-wrap items-center gap-1.5 sm:gap-2", className)}
+      /* Never wraps: a travel product row that breaks onto two lines stops
+         reading as a product switcher. Below `sm` the tabs shed their icons to
+         fit, and horizontal scrolling is the fallback for long translations. */
+      className={cn(
+        "gtai-scroll-x flex items-center gap-1.5 overflow-x-auto sm:gap-2",
+        className,
+      )}
     >
       {items.map((item) => {
         const selected = item.id === value;
@@ -109,7 +115,7 @@ export function Tabs({
             tabIndex={selected ? 0 : -1}
             onClick={() => onValueChange(item.id)}
             className={cn(
-              "rounded-pill gtai-lift inline-flex min-h-11 items-center gap-2 px-4 text-sm font-semibold",
+              "rounded-pill gtai-lift inline-flex min-h-11 shrink-0 items-center gap-2 px-3.5 text-sm font-semibold sm:px-4",
               "focus-visible:outline-focus-ring focus-visible:outline-2 focus-visible:outline-offset-2",
               selected
                 ? "bg-brand-800 text-brand-on-action shadow-brand"
@@ -117,7 +123,7 @@ export function Tabs({
             )}
           >
             {item.icon ? (
-              <span aria-hidden="true" className="shrink-0">
+              <span aria-hidden="true" className="hidden shrink-0 sm:inline-flex">
                 {item.icon}
               </span>
             ) : null}
