@@ -38,8 +38,8 @@ Documentation-only version. Produces the approved UX blueprints that later imple
 | Sub-version | Module                                | Status                                      | Commit                                     |
 | ----------- | ------------------------------------- | ------------------------------------------- | ------------------------------------------ |
 | V1.2-A      | Home Search Experience                | **Frozen**                                  | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
-| V1.2-B      | Flight Search Form                    | **Documentation complete, awaiting freeze** | —                                          |
-| V1.2-C      | Airport Selector                      | Pending analysis                            | —                                          |
+| V1.2-B      | Flight Search Form                    | **Frozen**                                  | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
+| V1.2-C      | Airport Selector                      | **Documentation complete, awaiting freeze** | —                                          |
 | V1.2-D      | Date Picker and Flexible Dates        | Pending analysis                            | —                                          |
 | V1.2-E      | Flight Results                        | Pending analysis                            | —                                          |
 | V1.2-F      | Filters and Sorting                   | Pending analysis                            | —                                          |
@@ -120,7 +120,8 @@ A version may only move from **Blueprint** to **Implementation authorized** thro
 | ----------------------------------------------- | ------------------------------------------------------------------------ |
 | `docs/reference/V1_2_REFERENCE_UX_BLUEPRINT.md` | Master index and global principles for the V1.2 blueprint modules        |
 | `docs/reference/01_HOME_SEARCH_EXPERIENCE.md`   | Frozen V1.2-A Home Search Experience blueprint                           |
-| `docs/reference/02_FLIGHT_SEARCH_FORM.md`       | Approved V1.2-B Flight Search Form blueprint                             |
+| `docs/reference/02_FLIGHT_SEARCH_FORM.md`       | Frozen V1.2-B Flight Search Form blueprint                               |
+| `docs/reference/03_AIRPORT_SELECTOR.md`         | Approved V1.2-C Airport Selector blueprint                               |
 | `docs/architecture/V1_FOUNDATION.md`            | V1 architecture, routing, localization, region and currency rules        |
 | `docs/architecture/REFERENCE_POLICY.md`         | Which products inform GTAI's UX, and the hard line on copying            |
 | `docs/design-system/GTAI_DESIGN_SYSTEM.md`      | Palette, tokens, typography, elevation, motion, accessibility, RTL rules |
