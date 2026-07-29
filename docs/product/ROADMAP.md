@@ -40,7 +40,7 @@ Documentation-only version. Produces the approved UX blueprints that later imple
 | V1.2-A      | Home Search Experience                | **Frozen**                                     | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
 | V1.2-B      | Flight Search Form                    | **Frozen**                                     | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
 | V1.2-C      | Airport Selector                      | **Frozen** — implemented in V2.1               | `afd4cdd8801bf97ac586beddc59e6f1f8b85419f` |
-| V1.2-D      | Date Picker and Flexible Dates        | **Documented through the V2.2 implementation** | —                                          |
+| V1.2-D      | Date Picker and Flexible Dates        | **Frozen** — implemented in V2.2                | `973e28a0dca7e2e58c47efd0314632ec60b1b643` |
 | V1.2-E      | Flight Results                        | Pending analysis                               | —                                          |
 | V1.2-F      | Filters and Sorting                   | Pending analysis                               | —                                          |
 | V1.2-G      | Flight Details and Affiliate Redirect | Pending analysis                               | —                                          |
@@ -53,7 +53,7 @@ High-level intent only. Detailed requirements are deliberately **not** defined h
 
 | Version | Title                               | Status                                                                       |
 | ------- | ----------------------------------- | ---------------------------------------------------------------------------- |
-| V2      | Functional Flight Search Foundation | **In progress** — V2.1 Airport Selector frozen; V2.2 Date Picker implemented |
+| V2      | Functional Flight Search Foundation | **In progress** — V2.1 Airport Selector and V2.2 Date Picker frozen; V2.2.1 accessibility polish |
 | V3      | Provider Adapter Integration        | Planned                                                                      |
 | V4      | Affiliate Redirect and Attribution  | Planned                                                                      |
 | V5      | Guided AI Travel Assessment         | Planned                                                                      |

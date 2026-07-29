@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# review archives — built only to hand the tree to an external reviewer
+/GTAI_*.zip

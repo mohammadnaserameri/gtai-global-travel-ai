@@ -72,7 +72,7 @@ export function LocationResultList({
     return (
       <div className="px-3 py-6 text-center">
         <p className="text-foreground text-sm font-medium">{labels.errorTitle}</p>
-        <Button variant="secondary" size="sm" className="mt-3" onClick={onRetry}>
+        <Button variant="secondary" className="mt-3" onClick={onRetry}>
           {labels.retry}
         </Button>
       </div>
@@ -95,12 +95,7 @@ export function LocationResultList({
         </p>
         <p className="text-foreground-muted mt-1 text-xs">{labels.noResultsHint}</p>
         {hasQuery ? (
-          <Button
-            variant="secondary"
-            size="sm"
-            className="mt-3"
-            onClick={onClearQuery}
-          >
+          <Button variant="secondary" className="mt-3" onClick={onClearQuery}>
             {labels.clearQuery}
           </Button>
         ) : null}
@@ -155,11 +150,13 @@ export function LocationResultList({
                   {group.id === "recent" && showClearRecent ? (
                     <button
                       type="button"
-                      onPointerDown={(event) => {
-                        event.preventDefault();
-                        onClearRecent();
-                      }}
-                      className="text-brand-ink hover:text-brand-ink-strong focus-visible:outline-focus-ring rounded-sm text-[0.6875rem] font-semibold normal-case focus-visible:outline-2 focus-visible:outline-offset-2"
+                      // Pointer-down only suppresses the blur that would close
+                      // the panel before the click lands. The action itself
+                      // lives in onClick, which is what Enter and Space fire —
+                      // running it here too would execute twice on pointer.
+                      onPointerDown={(event) => event.preventDefault()}
+                      onClick={onClearRecent}
+                      className="text-brand-ink hover:text-brand-ink-strong focus-visible:outline-focus-ring inline-flex min-h-11 items-center rounded-sm px-1 text-[0.6875rem] font-semibold normal-case focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                       {labels.clearRecent}
                     </button>

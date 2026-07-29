@@ -1,4 +1,4 @@
-import type { LocalizedNames } from "@/features/locations/location-types";
+import type { LocalizedNames } from "./location-types";
 
 /**
  * Localized country names for the demonstration directory.

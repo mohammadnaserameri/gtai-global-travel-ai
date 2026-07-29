@@ -109,7 +109,9 @@
       "label": "نوع سفر",
       "roundTrip": "رفت و برگشت",
       "oneWay": "یک‌طرفه",
-      "multiCity": "چندمقصده"
+      "multiCity": "چندمقصده",
+      "multiCityBadge": "به‌زودی",
+      "multiCityUnavailable": "جست‌وجوی چندمقصده هنوز در دسترس نیست. رفت و برگشت یا یک‌طرفه را انتخاب کنید."
     },
     "fields": {
       "from": "مبدأ",

@@ -341,8 +341,16 @@ export function AirportSelector({
             ref={triggerRef}
             type="button"
             id={`${id}-input`}
+            // A real combobox, matching the desktop input. `role="button"` does
+            // not support aria-invalid, so the error state had nowhere valid to
+            // live and a screen-reader user on a phone heard no error at all.
+            // Combobox does support it, and it is what this control actually is:
+            // it holds the selected location and opens a picker for it.
+            role="combobox"
             aria-haspopup="dialog"
             aria-expanded={open}
+            aria-controls={open ? listboxId : undefined}
+            aria-invalid={invalid || undefined}
             aria-describedby={invalid && errorMessage ? errorId : undefined}
             onClick={() => setOpen(true)}
             className="min-w-0 flex-1 py-2.5 text-start text-sm focus:outline-none"
@@ -366,7 +374,10 @@ export function AirportSelector({
               onClear();
               if (isDesktop) fieldInputRef.current?.focus();
             }}
-            className="text-foreground-muted hover:text-foreground focus-visible:outline-focus-ring inline-flex size-6 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+            // 44px target. Nothing paints a background here, so the hit area
+            // is larger than the glyph without looking larger; the field keeps
+            // its min-h-12 because the button is shorter than the field.
+            className="text-foreground-muted hover:text-foreground focus-visible:outline-focus-ring inline-flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             <CloseIcon size={14} />
           </button>

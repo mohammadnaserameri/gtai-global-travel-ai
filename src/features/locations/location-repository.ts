@@ -3,11 +3,8 @@ import type {
   LocationSearchRequest,
   LocationSearchResponse,
   TravelLocation,
-} from "@/features/locations/location-types";
-import {
-  resolveLocationIds,
-  searchLocationsSync,
-} from "@/features/locations/location-search";
+} from "./location-types";
+import { resolveLocationIds, searchLocationsSync } from "./location-search";
 
 /**
  * Raised when a repository lookup fails. The UI renders a retryable error

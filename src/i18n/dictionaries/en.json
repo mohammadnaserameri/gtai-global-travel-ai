@@ -126,7 +126,9 @@
       "label": "Trip type",
       "roundTrip": "Round trip",
       "oneWay": "One way",
-      "multiCity": "Multi-city"
+      "multiCity": "Multi-city",
+      "multiCityBadge": "Coming soon",
+      "multiCityUnavailable": "Multi-city search is not available yet. Choose round trip or one way."
     },
     "fields": {
       "from": "From",

@@ -109,7 +109,9 @@
       "label": "نوع الرحلة",
       "roundTrip": "ذهاب وعودة",
       "oneWay": "ذهاب فقط",
-      "multiCity": "وجهات متعددة"
+      "multiCity": "وجهات متعددة",
+      "multiCityBadge": "قريبًا",
+      "multiCityUnavailable": "البحث عن وجهات متعددة غير متاح بعد. اختر ذهابًا وعودة أو ذهابًا فقط."
     },
     "fields": {
       "from": "من",

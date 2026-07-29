@@ -1,6 +1,7 @@
 # GTAI V2.2 — Functional Date Picker and Flexible Dates
 
-**Status:** Implemented and frozen
+**Status:** Frozen at `973e28a0dca7e2e58c47efd0314632ec60b1b643`
+**Follow-up:** V2.2.1 — Foundation Accessibility and Truthfulness Polish
 **Base checkpoint:** `1768b916f4a7dd631e408827a87bba2b8c5d6371`
 **Specification:** `docs/reference/04_DATE_PICKER_AND_FLEXIBLE_DATES.md`
 
@@ -78,3 +79,12 @@ Two-month desktop view and one-month tablet fallback · round-trip selection wit
 Unchanged from the specification: live price calendar · provider pricing · cheapest-date indicators · Whole month · multi-city date legs · date-range API · flight results · provider mapping · URL-state synchronisation · permanent persistence · authentication · analytics · price alerts · booking · payment.
 
 Submitting a complete search still performs **no provider call** and produces **no results** — the form reports truthfully that GTAI is still connecting its travel providers.
+
+## 8. Corrected in V2.2.1
+
+- The calendar surface now carries the id the date triggers reference, so
+  `aria-controls` resolves. The desktop popover is a non-modal
+  `role="dialog"`; the mobile sheet keeps `aria-modal="true"`. Both are named.
+- Flexible-date options and Clear date / Clear dates are 44px targets.
+- Multi-city is now a disabled option with a visible "Coming soon" marker and
+  a localized explanation, instead of silently behaving like One way.

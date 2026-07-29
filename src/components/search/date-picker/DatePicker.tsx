@@ -254,6 +254,7 @@ export function DatePicker({
       {open ? (
         <DatePickerPanel
           variant={isDesktop ? "popover" : "sheet"}
+          panelId={panelId}
           labels={labels}
           locale={locale}
           bounds={bounds}

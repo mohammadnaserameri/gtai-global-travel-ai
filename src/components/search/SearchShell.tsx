@@ -316,6 +316,15 @@ export function SearchShell({
                 oneWay: labels.tripType.oneWay,
                 multiCity: labels.tripType.multiCity,
               }}
+              // Multi-city has no leg model yet. Leaving it selectable made the
+              // form silently behave like One way, which is a lie about what
+              // GTAI can do — so it stays visible and stays unavailable.
+              unavailable={{
+                multiCity: {
+                  badge: labels.tripType.multiCityBadge,
+                  explanation: labels.tripType.multiCityUnavailable,
+                },
+              }}
             />
             <SelectShell
               layout="inline"

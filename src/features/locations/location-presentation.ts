@@ -1,5 +1,5 @@
-import type { TravelLocation } from "@/features/locations/location-types";
-import { resolveCountryName } from "@/features/locations/country-names";
+import type { TravelLocation } from "./location-types";
+import { resolveCountryName } from "./country-names";
 
 /** Locales that separate list items with an Arabic comma. */
 const ARABIC_COMMA_LOCALES = new Set(["fa", "ar", "ur"]);

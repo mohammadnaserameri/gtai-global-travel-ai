@@ -6,12 +6,12 @@ import type {
   LocationSearchRequest,
   LocationSearchResponse,
   TravelLocation,
-} from "@/features/locations/location-types";
+} from "./location-types";
 import {
   DEMO_LOCATIONS,
   DEMO_POPULAR_IDS,
   EVERYWHERE_LOCATION,
-} from "@/features/locations/demo-location-data";
+} from "./demo-location-data";
 
 /** Default number of selectable rows returned for a typed query. */
 export const DEFAULT_RESULT_LIMIT = 10;

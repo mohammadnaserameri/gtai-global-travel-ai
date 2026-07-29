@@ -2,11 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { locationRepository } from "@/features/locations/location-repository";
-import type {
-  LocationContext,
-  LocationGroup,
-} from "@/features/locations/location-types";
+import { locationRepository } from "./location-repository";
+import type { LocationContext, LocationGroup } from "./location-types";
 
 export type LocationSearchStatus = "idle" | "loading" | "ready" | "error";
 

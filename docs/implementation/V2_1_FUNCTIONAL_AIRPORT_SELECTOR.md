@@ -100,3 +100,18 @@ Quality gates: build, typecheck, lint and format-check all pass with no suppress
 Not implemented, unchanged from the blueprint's scope: external airport API · production global dataset · geolocation · nearby-airport resolution · provider mapping · provider API · live availability · live prices · date picker · travellers popup · multi-city legs · flight results · authentication · database · analytics · map · affiliate redirect · booking · payment.
 
 Submitting a valid search still produces **no results and no provider call** — the form reports truthfully that GTAI is still connecting its travel providers.
+
+---
+
+## Corrected in V2.2.1
+
+- **Clear recent locations** performs its action in `onClick`, not
+  `onPointerDown`, so Enter and Space activate it. Pointer-down only
+  prevents the blur that would close the panel; it never runs twice.
+- Clear origin / Clear destination, Clear recent, Retry and Clear search
+  are 44px targets.
+- The mobile field trigger is a `role="combobox"` carrying `aria-invalid`
+  and `aria-describedby`, matching the desktop input. As a `role="button"`
+  it could not legally expose the invalid state at all.
+- `npm run verify:locations` covers directory integrity, ranking, localized
+  matching, grouping, limits and Everywhere's destination-only rule.

@@ -1,5 +1,5 @@
-import type { TravelLocation } from "@/features/locations/location-types";
-import { countryNamesFor } from "@/features/locations/country-names";
+import type { TravelLocation } from "./location-types";
+import { countryNamesFor } from "./country-names";
 
 /**
  * GTAI demonstration location directory.

@@ -51,6 +51,12 @@ export interface DatePickerPanelLabels extends CalendarDayLabels {
 
 interface DatePickerPanelProps {
   variant: "popover" | "sheet";
+  /**
+   * Id of the calendar surface itself. Both date triggers point their
+   * `aria-controls` here, and only one panel is ever mounted, so the reference
+   * always resolves to exactly one element and never duplicates.
+   */
+  panelId: string;
   labels: DatePickerPanelLabels;
   locale: string;
   bounds: DateBounds;
@@ -93,6 +99,7 @@ interface DatePickerPanelProps {
  */
 export function DatePickerPanel({
   variant,
+  panelId,
   labels,
   locale,
   bounds,
@@ -287,7 +294,7 @@ export function DatePickerPanel({
         onChange={onFlexibilityChange}
         name={`${fieldName}-flex`}
       />
-      <Button variant="ghost" size="sm" onClick={onClear}>
+      <Button variant="ghost" onClick={onClear}>
         {roundTrip ? labels.clearDates : labels.clearDate}
       </Button>
     </div>
@@ -309,6 +316,7 @@ export function DatePickerPanel({
         />
         <div
           ref={sheetRef}
+          id={panelId}
           role="dialog"
           aria-modal="true"
           aria-label={labels.title}
@@ -346,6 +354,12 @@ export function DatePickerPanel({
 
   return (
     <div
+      id={panelId}
+      // Non-modal dialog: the trigger declares aria-haspopup="dialog", so the
+      // surface it opens has to actually be one. It is not aria-modal, because
+      // on desktop the page behind stays usable and outside click dismisses.
+      role="dialog"
+      aria-label={labels.title}
       className={cn(
         "border-border bg-surface-elevated absolute end-0 top-[calc(100%+0.5rem)] z-50",
         // Width follows the month count. Two months need 44rem to keep seven

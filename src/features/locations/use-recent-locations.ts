@@ -2,10 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-import type {
-  LocationContext,
-  TravelLocation,
-} from "@/features/locations/location-types";
+import type { LocationContext, TravelLocation } from "./location-types";
 
 const MAX_RECENT = 5;
 

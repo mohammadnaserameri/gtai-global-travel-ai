@@ -109,7 +109,9 @@
       "label": "Type de voyage",
       "roundTrip": "Aller-retour",
       "oneWay": "Aller simple",
-      "multiCity": "Multi-destinations"
+      "multiCity": "Multi-destinations",
+      "multiCityBadge": "Bientôt",
+      "multiCityUnavailable": "La recherche multi-destinations n'est pas encore disponible. Choisissez aller-retour ou aller simple."
     },
     "fields": {
       "from": "De",

@@ -68,7 +68,7 @@ export function FlexibleDateControl({
               <label
                 htmlFor={id}
                 className={cn(
-                  "rounded-pill gtai-lift inline-flex min-h-9 cursor-pointer items-center px-3 text-xs font-medium",
+                  "rounded-pill gtai-lift inline-flex min-h-11 cursor-pointer items-center px-3.5 text-xs font-medium",
                   "peer-focus-visible:outline-focus-ring peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2",
                   selected
                     ? "bg-surface text-brand-ink-strong font-semibold shadow-sm"

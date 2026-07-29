@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "../node_modules/.cache/gtai-verify",
+    "rootDir": "..",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2022",
+    "isolatedModules": false,
+    "incremental": false,
+    "baseUrl": "..",
+    "paths": { "@/*": ["./src/*"] },
+    "plugins": []
+  },
+  "include": ["verify-dates.ts", "verify-locations.ts"]
+}
