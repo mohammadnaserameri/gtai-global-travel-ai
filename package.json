@@ -9,6 +9,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
+    "verify:dates": "tsc scripts/verify-dates.ts --outDir node_modules/.cache/gtai-verify --module commonjs --moduleResolution node --target es2022 --strict --skipLibCheck && node node_modules/.cache/gtai-verify/scripts/verify-dates.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

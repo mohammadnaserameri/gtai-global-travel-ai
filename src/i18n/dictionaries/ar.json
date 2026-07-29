@@ -194,6 +194,38 @@
       "selectedOrigin": "تم اختيار {name} كنقطة مغادرة.",
       "selectedDestination": "تم اختيار {name} كوجهة.",
       "demoNotice": "تستخدم اقتراحات المواقع حاليًا دليل GTAI التجريبي."
+    },
+    "dates": {
+      "title": "اختر تواريخ سفرك",
+      "departureLabel": "المغادرة",
+      "returnLabel": "العودة",
+      "addDate": "أضف تاريخًا",
+      "chooseDeparture": "اختر تاريخ المغادرة",
+      "chooseReturn": "اختر تاريخ العودة",
+      "departureFirst": "اختر تاريخ المغادرة أولًا.",
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي",
+      "today": "اليوم",
+      "selectedDeparture": "مُختار كتاريخ مغادرة",
+      "selectedReturn": "مُختار كتاريخ عودة",
+      "unavailable": "غير متاح",
+      "clearDate": "مسح التاريخ",
+      "clearDates": "مسح التواريخ",
+      "cancel": "إلغاء",
+      "apply": "تطبيق",
+      "close": "إغلاق",
+      "datesSelected": "تم اختيار التواريخ",
+      "changesCancelled": "تم إلغاء تغييرات التواريخ",
+      "departureRequired": "اختر تاريخ المغادرة.",
+      "returnRequired": "اختر تاريخ العودة.",
+      "returnAfterDeparture": "يجب أن يكون تاريخ العودة بعد تاريخ المغادرة.",
+      "flexible": {
+        "legend": "تواريخ مرنة",
+        "exact": "تواريخ محددة",
+        "plusOne": "±يوم واحد",
+        "plusTwo": "±يومان",
+        "plusThree": "±٣ أيام"
+      }
     }
   },
   "aiPanel": {

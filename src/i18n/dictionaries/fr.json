@@ -194,6 +194,38 @@
       "selectedOrigin": "{name} sélectionné comme point de départ.",
       "selectedDestination": "{name} sélectionné comme destination.",
       "demoNotice": "Les suggestions de lieux utilisent actuellement le répertoire de démonstration de GTAI."
+    },
+    "dates": {
+      "title": "Choisissez vos dates de voyage",
+      "departureLabel": "Départ",
+      "returnLabel": "Retour",
+      "addDate": "Ajouter une date",
+      "chooseDeparture": "Choisissez une date de départ",
+      "chooseReturn": "Choisissez une date de retour",
+      "departureFirst": "Choisissez d'abord une date de départ.",
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "today": "aujourd'hui",
+      "selectedDeparture": "sélectionné comme départ",
+      "selectedReturn": "sélectionné comme retour",
+      "unavailable": "indisponible",
+      "clearDate": "Effacer la date",
+      "clearDates": "Effacer les dates",
+      "cancel": "Annuler",
+      "apply": "Appliquer",
+      "close": "Fermer",
+      "datesSelected": "Dates sélectionnées",
+      "changesCancelled": "Modifications de dates annulées",
+      "departureRequired": "Sélectionnez une date de départ.",
+      "returnRequired": "Sélectionnez une date de retour.",
+      "returnAfterDeparture": "La date de retour doit être postérieure au départ.",
+      "flexible": {
+        "legend": "Dates flexibles",
+        "exact": "Dates exactes",
+        "plusOne": "±1 jour",
+        "plusTwo": "±2 jours",
+        "plusThree": "±3 jours"
+      }
     }
   },
   "aiPanel": {

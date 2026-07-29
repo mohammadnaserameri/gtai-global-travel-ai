@@ -194,6 +194,38 @@
       "selectedOrigin": "{name} به‌عنوان مبدأ انتخاب شد.",
       "selectedDestination": "{name} به‌عنوان مقصد انتخاب شد.",
       "demoNotice": "پیشنهادهای مکان در حال حاضر از فهرست نمایشی GTAI استفاده می‌کنند."
+    },
+    "dates": {
+      "title": "تاریخ‌های سفر خود را انتخاب کنید",
+      "departureLabel": "تاریخ رفت",
+      "returnLabel": "تاریخ برگشت",
+      "addDate": "افزودن تاریخ",
+      "chooseDeparture": "یک تاریخ رفت انتخاب کنید",
+      "chooseReturn": "یک تاریخ برگشت انتخاب کنید",
+      "departureFirst": "ابتدا تاریخ رفت را انتخاب کنید.",
+      "previousMonth": "ماه پیشین",
+      "nextMonth": "ماه بعدی",
+      "today": "امروز",
+      "selectedDeparture": "به‌عنوان تاریخ رفت انتخاب شد",
+      "selectedReturn": "به‌عنوان تاریخ برگشت انتخاب شد",
+      "unavailable": "در دسترس نیست",
+      "clearDate": "پاک کردن تاریخ",
+      "clearDates": "پاک کردن تاریخ‌ها",
+      "cancel": "انصراف",
+      "apply": "اعمال",
+      "close": "بستن",
+      "datesSelected": "تاریخ‌ها انتخاب شد",
+      "changesCancelled": "تغییر تاریخ‌ها لغو شد",
+      "departureRequired": "یک تاریخ رفت انتخاب کنید.",
+      "returnRequired": "یک تاریخ برگشت انتخاب کنید.",
+      "returnAfterDeparture": "تاریخ برگشت باید پس از تاریخ رفت باشد.",
+      "flexible": {
+        "legend": "تاریخ‌های منعطف",
+        "exact": "تاریخ دقیق",
+        "plusOne": "±۱ روز",
+        "plusTwo": "±۲ روز",
+        "plusThree": "±۳ روز"
+      }
     }
   },
   "aiPanel": {
