@@ -13,6 +13,7 @@
     "verify:dates": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dates.js",
     "verify:flights": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-flights.js",
     "verify:filters": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-filters.js",
+    "verify:polish": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-polish.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

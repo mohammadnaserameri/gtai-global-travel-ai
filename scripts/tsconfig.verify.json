@@ -17,6 +17,7 @@
     "verify-dates.ts",
     "verify-locations.ts",
     "verify-flights.ts",
-    "verify-filters.ts"
+    "verify-filters.ts",
+    "verify-polish.ts"
   ]
 }

@@ -4,6 +4,7 @@ import { Fragment, useId, useRef, useState, type ReactNode } from "react";
 
 import type { Dictionary } from "@/i18n/get-dictionary";
 import type { FlightSearchIntent } from "@/features/flights/search-intent-types";
+import type { HighlightKind } from "@/features/flights/flight-offer-highlights";
 import type {
   FlightItinerary,
   FlightOffer,
@@ -23,6 +24,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ChevronDownIcon } from "@/components/ui/icons";
+import { ProviderHandoffModal } from "@/components/flights/ProviderHandoffModal";
 
 interface ResultCardProps {
   offer: FlightOffer;
@@ -30,6 +32,8 @@ interface ResultCardProps {
   labels: Dictionary["flightResults"];
   /** Localized cabin name — the offer only carries the internal enum value. */
   cabinLabel: string;
+  /** At most one deterministic highlight for this offer within the currently shown set. */
+  highlight?: HighlightKind;
 }
 
 const ITINERARY_LABEL_KEY: Record<
@@ -248,11 +252,19 @@ function ItineraryDetail({
  * V2.3 has nothing further to navigate to, so a second control that opened a
  * different view would be a dead end dressed as a feature.
  */
-export function ResultCard({ offer, intent, labels, cabinLabel }: ResultCardProps) {
+export function ResultCard({
+  offer,
+  intent,
+  labels,
+  cabinLabel,
+  highlight,
+}: ResultCardProps) {
   const [open, setOpen] = useState(false);
+  const [handoffOpen, setHandoffOpen] = useState(false);
   const headingId = useId();
   const detailId = useId();
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
+  const highlightCopy = highlight ? labels.highlights[highlight] : null;
 
   function openDetails() {
     setOpen(true);
@@ -285,9 +297,19 @@ export function ResultCard({ offer, intent, labels, cabinLabel }: ResultCardProp
             })}
           </p>
         </div>
-        <Badge tone="neutral" size="sm">
-          {cabinLabel}
-        </Badge>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {highlightCopy ? (
+            <Badge tone="brand" size="sm">
+              {highlightCopy.badge}
+            </Badge>
+          ) : null}
+          <Badge tone="neutral" size="sm">
+            {cabinLabel}
+          </Badge>
+          <Badge tone="info" size="sm">
+            {labels.demoOffer}
+          </Badge>
+        </div>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -301,9 +323,45 @@ export function ResultCard({ offer, intent, labels, cabinLabel }: ResultCardProp
         ))}
       </div>
 
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Badge
+          tone={offer.baggage.carryOnIncluded ? "success" : "neutral"}
+          size="sm"
+        >
+          {labels.card.carryOnIncluded}
+        </Badge>
+        <Badge
+          tone={offer.baggage.checkedBagIncluded ? "success" : "neutral"}
+          size="sm"
+        >
+          {offer.baggage.checkedBagIncluded
+            ? labels.card.checkedBagIncluded
+            : labels.card.checkedBagNotIncluded}
+        </Badge>
+        <Badge tone={offer.fare.refundable ? "success" : "neutral"} size="sm">
+          {offer.fare.refundable
+            ? labels.card.refundable
+            : labels.card.nonRefundable}
+        </Badge>
+        <Badge tone={offer.fare.changeable ? "success" : "neutral"} size="sm">
+          {offer.fare.changeable
+            ? labels.card.changesPermitted
+            : labels.card.changesNotPermitted}
+        </Badge>
+      </div>
+
+      {highlightCopy ? (
+        <p className="border-brand-150 bg-brand-25 text-foreground-secondary rounded-xl border px-3 py-2.5 text-sm leading-relaxed">
+          <span className="text-brand-ink-strong font-semibold">
+            {labels.highlights.sectionLabel}
+          </span>{" "}
+          {highlightCopy.explanation}
+        </p>
+      ) : null}
+
       <div className="border-border flex flex-wrap items-end justify-between gap-3 border-t pt-4">
         <div>
-          <p className="text-foreground text-lg font-bold">
+          <p className="text-foreground text-lg font-bold sm:text-xl">
             {/* Intl already embeds its own directional marks (LRM/RLM) around
                 the localized digits and currency symbol for fa/ar — forcing
                 dir="ltr" here would override that and can reorder the
@@ -340,6 +398,9 @@ export function ResultCard({ offer, intent, labels, cabinLabel }: ResultCardProp
               <ChevronDownIcon size={16} />
             </span>
           </button>
+          <Button variant="primary" onClick={() => setHandoffOpen(true)}>
+            {labels.outbound.cta}
+          </Button>
         </div>
       </div>
 
@@ -401,6 +462,14 @@ export function ResultCard({ offer, intent, labels, cabinLabel }: ResultCardProp
           </p>
         </div>
       ) : null}
+
+      <ProviderHandoffModal
+        open={handoffOpen}
+        onClose={() => setHandoffOpen(false)}
+        offer={offer}
+        intent={intent}
+        labels={labels}
+      />
     </Card>
   );
 }

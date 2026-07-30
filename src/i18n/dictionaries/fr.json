@@ -717,6 +717,43 @@
         "fromChip": "Depuis {airport}",
         "toChip": "Vers {airport}"
       }
+    },
+    "demoOffer": "Offre de démonstration",
+    "highlights": {
+      "sectionLabel": "Pourquoi cette option ?",
+      "cheapest": {
+        "badge": "Le moins cher",
+        "explanation": "Cette option a le prix total le plus bas parmi les résultats actuellement affichés."
+      },
+      "fastest": {
+        "badge": "Le plus rapide",
+        "explanation": "Cette option a la durée de trajet totale la plus courte parmi les résultats actuellement affichés."
+      },
+      "fewerStops": {
+        "badge": "Moins d'escales",
+        "explanation": "Cette option comporte moins d'escales que les autres résultats actuellement affichés."
+      },
+      "betterDeparture": {
+        "badge": "Meilleure heure de départ",
+        "explanation": "Le départ aller de cette option est plus proche d'un horaire de journée habituel que les autres résultats affichés."
+      },
+      "balanced": {
+        "badge": "Équilibré",
+        "explanation": "Cette option équilibre mieux le prix, la durée et les escales que les autres résultats actuellement affichés."
+      }
+    },
+    "outbound": {
+      "cta": "Voir l'offre",
+      "modalTitle": "Continuer vers le fournisseur (démonstration)",
+      "modalDescription": "GTAI ne vous redirige pas vers un vrai site partenaire.",
+      "points": [
+        "Il s'agit d'un transfert de démonstration vers un fournisseur, pas d'une véritable redirection.",
+        "Le prix affiché est une offre de démonstration, pas un tarif en direct.",
+        "La disponibilité auprès du fournisseur n'a pas été vérifiée.",
+        "La réservation et le paiement ne sont pas gérés dans cette version.",
+        "Une future version connectera ici de vrais fournisseurs et de vraies redirections d'affiliation."
+      ],
+      "close": "Fermer"
     }
   }
 }

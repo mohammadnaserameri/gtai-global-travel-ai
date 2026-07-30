@@ -21,6 +21,7 @@ import {
   type FlightOfferRepository,
 } from "@/features/flights/flight-offer-repository";
 import { sortOffers } from "@/features/flights/flight-offer-ranking";
+import { computeHighlights } from "@/features/flights/flight-offer-highlights";
 import { applyFilters } from "@/features/flights/filters/flight-filter-application";
 import {
   durationBounds,
@@ -346,6 +347,11 @@ export function FlightResultsExperience({
 
   const filteredOffers = applyFilters(repositoryOffers, sanitizedFilters);
   const sortedOffers = sortOffers(filteredOffers, viewState.sort);
+  // Deterministic per-offer "why this option" labels, computed fresh from
+  // the currently-shown (filtered) set — never from the whole repository —
+  // so a highlight always describes the offer's standing among what the
+  // visitor can actually see right now.
+  const highlights = computeHighlights(filteredOffers);
 
   function commitViewState(next: ResultsViewState) {
     const currentParams = new URLSearchParams(paramsString);
@@ -541,6 +547,7 @@ export function FlightResultsExperience({
                       intent={intent}
                       labels={labels}
                       cabinLabel={cabinLabel}
+                      highlight={highlights.get(offer.id)}
                     />
                   ))}
                 </div>

@@ -987,6 +987,43 @@
         "fromChip": "From {airport}",
         "toChip": "To {airport}"
       }
+    },
+    "demoOffer": "Demo offer",
+    "highlights": {
+      "sectionLabel": "Why this option?",
+      "cheapest": {
+        "badge": "Cheapest",
+        "explanation": "This option has the lowest total price among the results currently shown."
+      },
+      "fastest": {
+        "badge": "Fastest",
+        "explanation": "This option has the shortest total travel time among the results currently shown."
+      },
+      "fewerStops": {
+        "badge": "Fewer stops",
+        "explanation": "This option has fewer stops than the other results currently shown."
+      },
+      "betterDeparture": {
+        "badge": "Better departure time",
+        "explanation": "This option's outbound departure is closer to a typical daytime schedule than the other results shown."
+      },
+      "balanced": {
+        "badge": "Balanced",
+        "explanation": "This option balances price, duration and stops better than the other results currently shown."
+      }
+    },
+    "outbound": {
+      "cta": "View deal",
+      "modalTitle": "Continue to provider (demonstration)",
+      "modalDescription": "GTAI is not redirecting you to a real partner site.",
+      "points": [
+        "This is a demonstration provider hand-off, not a real redirect.",
+        "The price shown is a demo offer, not a live fare.",
+        "Provider availability has not been checked.",
+        "Booking and payment are not handled in this build.",
+        "A future version will connect real providers and affiliate redirects here."
+      ],
+      "close": "Close"
     }
   }
 }
