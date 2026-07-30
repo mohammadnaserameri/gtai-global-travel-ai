@@ -657,6 +657,66 @@
       "minusOne": "-1 jour",
       "minusN": "-{count} jours"
     },
-    "localTimeNotice": "Les heures sont indiquées à l'heure locale de chaque aéroport."
+    "localTimeNotice": "Les heures sont indiquées à l'heure locale de chaque aéroport.",
+    "filteredCount": {
+      "one": "{filtered} sur {total} options de démonstration",
+      "other": "{filtered} sur {total} options de démonstration"
+    },
+    "filteredCountAnnouncement": "{filtered} sur {total} options de démonstration affichées.",
+    "filteredEmpty": {
+      "title": "Aucune option de démonstration ne correspond à vos filtres.",
+      "clearAll": "Effacer tous les filtres"
+    },
+    "filters": {
+      "heading": "Filtres",
+      "trigger": "Filtres",
+      "triggerActive": "Filtres ({count})",
+      "showFilters": "Afficher les filtres",
+      "closeFilters": "Fermer les filtres",
+      "applied": "Filtres appliqués",
+      "apply": "Appliquer les filtres",
+      "cancel": "Annuler",
+      "clearAll": "Effacer tous les filtres",
+      "showOptions": {
+        "one": "Afficher 1 option",
+        "other": "Afficher {count} options"
+      },
+      "removeFilter": "Retirer {filter}",
+      "allOptions": "Toutes les options",
+      "optionUnavailable": "Option non disponible",
+      "stops": {
+        "legend": "Escales",
+        "direct": "Direct",
+        "oneStop": "1 escale",
+        "twoPlusStops": "2 escales ou plus"
+      },
+      "carriers": {
+        "legend": "Compagnies aériennes"
+      },
+      "departureTime": {
+        "legend": "Heure de départ à l'aller",
+        "earlyMorning": "Tôt le matin",
+        "morning": "Matin",
+        "afternoon": "Après-midi",
+        "evening": "Soir"
+      },
+      "price": {
+        "legend": "Prix",
+        "maxLabel": "Prix total maximum",
+        "upTo": "Jusqu'à {price}"
+      },
+      "duration": {
+        "legend": "Durée",
+        "maxLabel": "Durée maximale par direction",
+        "upTo": "Jusqu'à {duration}"
+      },
+      "airports": {
+        "legend": "Aéroports",
+        "departureLegend": "Aéroports de départ",
+        "arrivalLegend": "Aéroports d'arrivée",
+        "fromChip": "Depuis {airport}",
+        "toChip": "Vers {airport}"
+      }
+    }
   }
 }

@@ -13,5 +13,10 @@
     "paths": { "@/*": ["./src/*"] },
     "plugins": []
   },
-  "include": ["verify-dates.ts", "verify-locations.ts", "verify-flights.ts"]
+  "include": [
+    "verify-dates.ts",
+    "verify-locations.ts",
+    "verify-flights.ts",
+    "verify-filters.ts"
+  ]
 }

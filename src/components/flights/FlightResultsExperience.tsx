@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import type { Dictionary } from "@/i18n/get-dictionary";
 import type { FlexibilityDays } from "@/features/dates/date-types";
 import {
   parseRawSearchIntentParams,
+  serializeSearchIntent,
   type RawSearchIntentParams,
 } from "@/features/flights/search-intent-url";
 import { validateSearchIntentParams } from "@/features/flights/search-intent-validation";
@@ -19,10 +20,21 @@ import {
   isAbortError,
   type FlightOfferRepository,
 } from "@/features/flights/flight-offer-repository";
+import { sortOffers } from "@/features/flights/flight-offer-ranking";
+import { applyFilters } from "@/features/flights/filters/flight-filter-application";
 import {
-  sortOffers,
-  type SortOption,
-} from "@/features/flights/flight-offer-ranking";
+  durationBounds,
+  priceBounds,
+} from "@/features/flights/filters/flight-filter-facets";
+import {
+  buildResultsSearchParams,
+  parseResultsViewState,
+  sanitizeFiltersAgainstOffers,
+} from "@/features/flights/filters/flight-filter-url";
+import {
+  EMPTY_FILTER_STATE,
+  type ResultsViewState,
+} from "@/features/flights/filters/flight-filter-types";
 import {
   formatLocaleNumber,
   formatResultCount,
@@ -37,6 +49,7 @@ import { SearchSummary } from "@/components/flights/SearchSummary";
 import { SortControl } from "@/components/flights/SortControl";
 import { ResultCard } from "@/components/flights/ResultCard";
 import { ResultsLoadingSkeleton } from "@/components/flights/ResultsLoadingSkeleton";
+import { FlightFilters } from "@/components/flights/filters/FlightFilters";
 
 interface FlightResultsExperienceProps {
   locale: string;
@@ -75,39 +88,58 @@ function resolve(rawParamsString: string, locale: string) {
  * `__devScenario` only ever does anything outside a production build — in
  * production this whole branch is dead code, so there is no customer-facing
  * way to force an error or empty result set. It is intentionally outside the
- * documented Search Intent parameter contract (see `search-intent-url.ts`).
+ * documented Search Intent parameter contract (see `search-intent-url.ts`)
+ * and outside the Results view-state contract (see `flight-filter-url.ts`).
  */
-function createRepository(rawParamsString: string): FlightOfferRepository {
-  if (process.env.NODE_ENV !== "production") {
-    const scenario = new URLSearchParams(rawParamsString).get("__devScenario");
-    const devScenario: DemoOfferScenario | null =
-      scenario === "empty" || scenario === "error" ? scenario : null;
-    if (devScenario)
-      return new DemoFlightOfferRepository({ scenario: devScenario });
-  }
+function readDevScenario(rawParamsString: string): string | null {
+  if (process.env.NODE_ENV === "production") return null;
+  return new URLSearchParams(rawParamsString).get("__devScenario");
+}
+
+function createRepository(devScenario: string | null): FlightOfferRepository {
+  const scenario: DemoOfferScenario | null =
+    devScenario === "empty" || devScenario === "error" ? devScenario : null;
+  if (scenario) return new DemoFlightOfferRepository({ scenario });
   return new DemoFlightOfferRepository();
 }
 
 /**
  * Owns the whole Results journey: parses and validates the URL, fetches
  * demonstration offers, and renders exactly one of five states — invalid,
- * the Everywhere carve-out, loading, error/empty, or a sorted result list.
- * Every state exposes exactly one `<h1>`.
+ * the Everywhere carve-out, loading, error/empty, or a filtered, sorted
+ * result list. Every state exposes exactly one `<h1>`.
+ *
+ * Filtering and sorting are Results *view-state* — parsed from the URL
+ * separately from the Search Intent — and are applied entirely in-memory
+ * against the already-fetched complete offer set. The repository fetch below
+ * is keyed only on the normalized Search Intent (via its own canonical
+ * re-serialization) plus the retry token and the dev-only scenario escape
+ * hatch: it deliberately does **not** depend on the raw query string, so a
+ * filter or sort change — which only ever changes other query parameters —
+ * can never trigger a refetch.
  */
 export function FlightResultsExperience({
   locale,
   dictionary,
 }: FlightResultsExperienceProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const paramsString = searchParams.toString();
   const labels = dictionary.flightResults;
+
+  const validation = resolve(paramsString, locale);
+  const intentKey = validation.ok
+    ? serializeSearchIntent(validation.intent).toString()
+    : null;
+  const devScenario = readDevScenario(paramsString);
 
   /**
    * The fetch effect only ever writes here from inside its `.then`/`.catch`
    * callbacks — genuinely asynchronous completions, never a synchronous
    * `setState` at the top of the effect body. Tagging each write with the
-   * `paramsString` it answers means a result from a superseded search is
-   * simply ignored during render rather than needing an explicit reset.
+   * exact key it answers means a result from a superseded search is simply
+   * ignored during render rather than needing an explicit reset.
    */
   const [fetched, setFetched] = useState<{
     key: string;
@@ -116,42 +148,49 @@ export function FlightResultsExperience({
   /** Bumped by Retry to re-run the fetch effect without changing the URL. */
   const [retryToken, setRetryToken] = useState(0);
 
-  const [sort, setSort] = useState<SortOption>("best");
-  /**
-   * Resets the sort back to Best whenever the search itself changes. This
-   * runs during render — React's documented way to adjust state in response
-   * to a prop/derived value changing — rather than in an Effect, so it is
-   * never a "setState synchronously inside an effect".
-   */
-  const [sortResetKey, setSortResetKey] = useState(paramsString);
-  if (sortResetKey !== paramsString) {
-    setSortResetKey(paramsString);
-    setSort("best");
-  }
-
   const invalidHeadingRef = useRef<HTMLHeadingElement>(null);
   const errorHeadingRef = useRef<HTMLHeadingElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const sortGroupName = useId();
 
-  const fetchKey = `${paramsString}#${retryToken}`;
-  const validation = resolve(paramsString, locale);
-  const offerState: OfferState = !validation.ok
-    ? { status: "idle" }
-    : fetched && fetched.key === fetchKey
+  const fetchKey =
+    intentKey !== null ? `${intentKey}#${retryToken}#${devScenario ?? ""}` : null;
+  // Memoized so the canonicalization effect below — which depends on
+  // `offerState` — only re-runs when the fetch itself actually resolves
+  // (or the key changes), never on an unrelated render.
+  const offerState: OfferState = useMemo(() => {
+    if (intentKey === null) return { status: "idle" };
+    return fetched && fetched.key === fetchKey
       ? fetched.result
       : { status: "loading" };
+  }, [intentKey, fetched, fetchKey]);
+
+  /**
+   * Mirrors the codebase's established "adjust state during render" pattern
+   * (the same one previously used to reset Sort on a search change): the
+   * committed intent object only ever changes identity when `intentKey`
+   * itself changes, never on a filter/sort-only URL change, so the fetch
+   * effect below can safely depend on it without re-running for the wrong
+   * reason.
+   */
+  const [syncedIntentKey, setSyncedIntentKey] = useState(intentKey);
+  const [committedIntent, setCommittedIntent] = useState(
+    validation.ok ? validation.intent : null,
+  );
+  if (syncedIntentKey !== intentKey) {
+    setSyncedIntentKey(intentKey);
+    setCommittedIntent(validation.ok ? validation.intent : null);
+  }
 
   useEffect(() => {
-    const result = resolve(paramsString, locale);
-    if (!result.ok) return;
+    if (committedIntent === null) return;
 
+    const key = `${serializeSearchIntent(committedIntent).toString()}#${retryToken}#${devScenario ?? ""}`;
     const controller = new AbortController();
-    const repository = createRepository(paramsString);
-    const key = `${paramsString}#${retryToken}`;
+    const repository = createRepository(devScenario);
 
     repository
-      .search(result.intent, controller.signal)
+      .search(committedIntent, controller.signal)
       .then((response) => {
         setFetched({
           key,
@@ -167,7 +206,7 @@ export function FlightResultsExperience({
       });
 
     return () => controller.abort();
-  }, [paramsString, locale, retryToken]);
+  }, [committedIntent, retryToken, devScenario]);
 
   // Depends only on stable primitives (`paramsString`, `locale`) and
   // recomputes validation fresh inside, rather than depending on `validation`
@@ -191,6 +230,43 @@ export function FlightResultsExperience({
       errorHeadingRef.current?.focus();
     }
   }, [offerState.status]);
+
+  /**
+   * Canonicalizes the Results URL once the complete offer set is known: a
+   * duplicated/unknown Filter value, a numeric bound outside the current
+   * offer set's range, or non-canonical CSV ordering all get sanitized the
+   * same way `commitViewState` already builds a URL — this just performs
+   * that same build once, automatically, and only replaces the address bar
+   * when the result actually differs. Never runs before offers exist, never
+   * touches the Search Intent parameters (copied through unchanged by
+   * `buildResultsSearchParams`), and never adds a history entry or scrolls.
+   * `offerState` is a stable reference across renders that don't involve a
+   * new fetch (it is `fetched.result`, untouched React state), so this only
+   * re-runs when the fetch genuinely resolves or the URL/path changes —
+   * never once per unrelated render — and it is naturally self-terminating:
+   * once the address bar matches the canonical form, the comparison below
+   * finds no difference and stops.
+   */
+  useEffect(() => {
+    if (offerState.status !== "ready") return;
+    const offers = offerState.offers;
+    const currentParams = new URLSearchParams(paramsString);
+    const raw = parseResultsViewState(currentParams);
+    const sanitized = sanitizeFiltersAgainstOffers(raw.filters, offers);
+    const bounds = {
+      priceMax: priceBounds(offers).max,
+      durationMax: durationBounds(offers).max,
+    };
+    const canonicalParams = buildResultsSearchParams(
+      currentParams,
+      { sort: raw.sort, filters: sanitized },
+      bounds,
+    );
+    const canonicalString = canonicalParams.toString();
+    if (canonicalString !== paramsString) {
+      router.replace(`${pathname}?${canonicalString}`, { scroll: false });
+    }
+  }, [offerState, paramsString, pathname, router]);
 
   const flightsHref = `${localePath(locale, "/flights")}${paramsString ? `?${paramsString}` : ""}`;
   const flightsHomeHref = localePath(locale, "/flights");
@@ -257,21 +333,82 @@ export function FlightResultsExperience({
     );
   }
 
-  const sortedOffers =
-    offerState.status === "ready" ? sortOffers(offerState.offers, sort) : [];
+  const repositoryOffers = offerState.status === "ready" ? offerState.offers : [];
+  const rawViewState = parseResultsViewState(new URLSearchParams(paramsString));
+  const sanitizedFilters =
+    offerState.status === "ready"
+      ? sanitizeFiltersAgainstOffers(rawViewState.filters, repositoryOffers)
+      : rawViewState.filters;
+  const viewState: ResultsViewState = {
+    sort: rawViewState.sort,
+    filters: sanitizedFilters,
+  };
+
+  const filteredOffers = applyFilters(repositoryOffers, sanitizedFilters);
+  const sortedOffers = sortOffers(filteredOffers, viewState.sort);
+
+  function commitViewState(next: ResultsViewState) {
+    const currentParams = new URLSearchParams(paramsString);
+    const bounds =
+      repositoryOffers.length > 0
+        ? {
+            priceMax: priceBounds(repositoryOffers).max,
+            durationMax: durationBounds(repositoryOffers).max,
+          }
+        : { priceMax: 0, durationMax: 0 };
+    const nextParams = buildResultsSearchParams(currentParams, next, bounds);
+    const nextQueryString = nextParams.toString();
+    // Every user-initiated view-state change (a checkbox, a range commit, a
+    // Sort change, a chip removal, Clear all, or the Mobile Sheet's Apply)
+    // goes through this one function. A no-op commit — e.g. Apply with an
+    // unchanged draft, or a control that re-selects its own current value —
+    // must not push a history entry or touch the route at all; comparing the
+    // canonical next query string against the current one covers every
+    // caller identically, without each filter/sort control having to guard
+    // itself. `scroll: false` keeps the visitor exactly where they were on
+    // the page for every navigation that does happen, since all of these
+    // occur on the Results page they are already looking at.
+    if (nextQueryString === paramsString) return;
+    router.push(`${pathname}?${nextQueryString}`, { scroll: false });
+  }
 
   const sortLabel = {
     best: labels.sort.best,
     cheapest: labels.sort.cheapest,
     fastest: labels.sort.fastest,
-  }[sort];
+  }[viewState.sort];
   const liveAnnouncement =
     offerState.status === "ready"
-      ? formatTemplate(labels.sort.announcement, {
+      ? `${formatTemplate(labels.sort.announcement, {
           count: formatLocaleNumber(sortedOffers.length, locale),
           sort: sortLabel,
-        })
+        })} ${
+          repositoryOffers.length !== filteredOffers.length
+            ? formatTemplate(labels.filteredCountAnnouncement, {
+                filtered: formatLocaleNumber(filteredOffers.length, locale),
+                total: formatLocaleNumber(repositoryOffers.length, locale),
+              })
+            : ""
+        }`.trim()
       : "";
+
+  const countText =
+    offerState.status === "ready" &&
+    repositoryOffers.length !== filteredOffers.length
+      ? filteredOffers.length === 1
+        ? formatTemplate(labels.filteredCount.one, {
+            filtered: formatLocaleNumber(filteredOffers.length, locale),
+            total: formatLocaleNumber(repositoryOffers.length, locale),
+          })
+        : formatTemplate(labels.filteredCount.other, {
+            filtered: formatLocaleNumber(filteredOffers.length, locale),
+            total: formatLocaleNumber(repositoryOffers.length, locale),
+          })
+      : formatResultCount(
+          offerState.status === "ready" ? repositoryOffers.length : 0,
+          locale,
+          labels.resultCount,
+        );
 
   return (
     <Container className="flex flex-col gap-6 py-8 lg:py-10">
@@ -326,11 +463,7 @@ export function FlightResultsExperience({
             >
               {labels.heading}
               <span className="text-foreground-muted ms-2 text-sm font-medium">
-                {formatResultCount(
-                  offerState.status === "ready" ? sortedOffers.length : 0,
-                  locale,
-                  labels.resultCount,
-                )}
+                {countText}
               </span>
             </h1>
           </div>
@@ -360,26 +493,59 @@ export function FlightResultsExperience({
               </div>
             </div>
           ) : (
-            <>
-              <SortControl
-                value={sort}
-                onChange={setSort}
-                labels={labels.sort}
-                name={sortGroupName}
-              />
-
-              <div className="flex flex-col gap-4">
-                {sortedOffers.map((offer) => (
-                  <ResultCard
-                    key={offer.id}
-                    offer={offer}
-                    intent={intent}
-                    labels={labels}
-                    cabinLabel={cabinLabel}
-                  />
-                ))}
-              </div>
-            </>
+            <FlightFilters
+              offers={repositoryOffers}
+              viewState={viewState}
+              onCommit={commitViewState}
+              intent={intent}
+              labels={labels}
+              sortControl={
+                <SortControl
+                  value={viewState.sort}
+                  onChange={(nextSort) =>
+                    commitViewState({ sort: nextSort, filters: sanitizedFilters })
+                  }
+                  labels={labels.sort}
+                  name={sortGroupName}
+                />
+              }
+            >
+              {filteredOffers.length === 0 ? (
+                <div className="border-border bg-surface-subtle rounded-2xl border px-5 py-10 text-center">
+                  <h2 className="text-foreground text-base font-semibold">
+                    {labels.filteredEmpty.title}
+                  </h2>
+                  <div className="mt-5 flex flex-wrap justify-center gap-2">
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        commitViewState({
+                          sort: viewState.sort,
+                          filters: EMPTY_FILTER_STATE,
+                        })
+                      }
+                    >
+                      {labels.filteredEmpty.clearAll}
+                    </Button>
+                    <ButtonLink href={flightsHref} variant="secondary">
+                      {labels.editSearch}
+                    </ButtonLink>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {sortedOffers.map((offer) => (
+                    <ResultCard
+                      key={offer.id}
+                      offer={offer}
+                      intent={intent}
+                      labels={labels}
+                      cabinLabel={cabinLabel}
+                    />
+                  ))}
+                </div>
+              )}
+            </FlightFilters>
           )}
         </>
       )}

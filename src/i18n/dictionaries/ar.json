@@ -597,6 +597,66 @@
       "minusOne": "−١ يوم",
       "minusN": "−{count} أيام"
     },
-    "localTimeNotice": "تُعرض الأوقات بالتوقيت المحلي لكل مطار."
+    "localTimeNotice": "تُعرض الأوقات بالتوقيت المحلي لكل مطار.",
+    "filteredCount": {
+      "one": "{filtered} من {total} خيار توضيحي",
+      "other": "{filtered} من {total} خيارات توضيحية"
+    },
+    "filteredCountAnnouncement": "تم عرض {filtered} من {total} خيارات توضيحية.",
+    "filteredEmpty": {
+      "title": "لا توجد خيارات توضيحية مطابقة لعوامل التصفية لديك.",
+      "clearAll": "مسح كل عوامل التصفية"
+    },
+    "filters": {
+      "heading": "عوامل التصفية",
+      "trigger": "عوامل التصفية",
+      "triggerActive": "عوامل التصفية ({count})",
+      "showFilters": "إظهار عوامل التصفية",
+      "closeFilters": "إغلاق عوامل التصفية",
+      "applied": "تم تطبيق عوامل التصفية",
+      "apply": "تطبيق عوامل التصفية",
+      "cancel": "إلغاء",
+      "clearAll": "مسح كل عوامل التصفية",
+      "showOptions": {
+        "one": "إظهار خيار واحد",
+        "other": "إظهار {count} خيارات"
+      },
+      "removeFilter": "إزالة {filter}",
+      "allOptions": "كل الخيارات",
+      "optionUnavailable": "الخيار غير متاح",
+      "stops": {
+        "legend": "التوقفات",
+        "direct": "مباشرة",
+        "oneStop": "توقف واحد",
+        "twoPlusStops": "توقفان أو أكثر"
+      },
+      "carriers": {
+        "legend": "شركات الطيران"
+      },
+      "departureTime": {
+        "legend": "وقت مغادرة الذهاب",
+        "earlyMorning": "الفجر",
+        "morning": "الصباح",
+        "afternoon": "بعد الظهر",
+        "evening": "المساء"
+      },
+      "price": {
+        "legend": "السعر",
+        "maxLabel": "الحد الأقصى للسعر الإجمالي",
+        "upTo": "حتى {price}"
+      },
+      "duration": {
+        "legend": "المدة",
+        "maxLabel": "الحد الأقصى لمدة كل اتجاه",
+        "upTo": "حتى {duration}"
+      },
+      "airports": {
+        "legend": "المطارات",
+        "departureLegend": "مطارات المغادرة",
+        "arrivalLegend": "مطارات الوصول",
+        "fromChip": "من {airport}",
+        "toChip": "إلى {airport}"
+      }
+    }
   }
 }

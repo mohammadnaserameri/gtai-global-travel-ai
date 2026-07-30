@@ -927,6 +927,66 @@
       "minusOne": "-1 day",
       "minusN": "-{count} days"
     },
-    "localTimeNotice": "Times are shown in each airport's local time."
+    "localTimeNotice": "Times are shown in each airport's local time.",
+    "filteredCount": {
+      "one": "{filtered} of {total} demonstration options",
+      "other": "{filtered} of {total} demonstration options"
+    },
+    "filteredCountAnnouncement": "{filtered} of {total} demonstration options shown.",
+    "filteredEmpty": {
+      "title": "No demonstration options match your filters.",
+      "clearAll": "Clear all filters"
+    },
+    "filters": {
+      "heading": "Filters",
+      "trigger": "Filters",
+      "triggerActive": "Filters ({count})",
+      "showFilters": "Show filters",
+      "closeFilters": "Close filters",
+      "applied": "Filters applied",
+      "apply": "Apply filters",
+      "cancel": "Cancel",
+      "clearAll": "Clear all filters",
+      "showOptions": {
+        "one": "Show 1 option",
+        "other": "Show {count} options"
+      },
+      "removeFilter": "Remove {filter}",
+      "allOptions": "All options",
+      "optionUnavailable": "Option unavailable",
+      "stops": {
+        "legend": "Stops",
+        "direct": "Direct",
+        "oneStop": "1 stop",
+        "twoPlusStops": "2+ stops"
+      },
+      "carriers": {
+        "legend": "Airlines"
+      },
+      "departureTime": {
+        "legend": "Outbound departure time",
+        "earlyMorning": "Early morning",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening"
+      },
+      "price": {
+        "legend": "Price",
+        "maxLabel": "Maximum total price",
+        "upTo": "Up to {price}"
+      },
+      "duration": {
+        "legend": "Duration",
+        "maxLabel": "Maximum duration per direction",
+        "upTo": "Up to {duration}"
+      },
+      "airports": {
+        "legend": "Airports",
+        "departureLegend": "Departure airports",
+        "arrivalLegend": "Arrival airports",
+        "fromChip": "From {airport}",
+        "toChip": "To {airport}"
+      }
+    }
   }
 }

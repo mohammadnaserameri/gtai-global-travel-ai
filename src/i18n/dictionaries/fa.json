@@ -597,6 +597,66 @@
       "minusOne": "−۱ روز",
       "minusN": "−{count} روز"
     },
-    "localTimeNotice": "زمان‌ها بر اساس ساعت محلی هر فرودگاه نمایش داده می‌شوند."
+    "localTimeNotice": "زمان‌ها بر اساس ساعت محلی هر فرودگاه نمایش داده می‌شوند.",
+    "filteredCount": {
+      "one": "{filtered} از {total} گزینه نمایشی",
+      "other": "{filtered} از {total} گزینه نمایشی"
+    },
+    "filteredCountAnnouncement": "{filtered} از {total} گزینه نمایشی نمایش داده شد.",
+    "filteredEmpty": {
+      "title": "هیچ گزینه نمایشی با فیلترهای شما مطابقت ندارد.",
+      "clearAll": "پاک کردن همه فیلترها"
+    },
+    "filters": {
+      "heading": "فیلترها",
+      "trigger": "فیلترها",
+      "triggerActive": "فیلترها ({count})",
+      "showFilters": "نمایش فیلترها",
+      "closeFilters": "بستن فیلترها",
+      "applied": "فیلترها اعمال شد",
+      "apply": "اعمال فیلترها",
+      "cancel": "انصراف",
+      "clearAll": "پاک کردن همه فیلترها",
+      "showOptions": {
+        "one": "نمایش ۱ گزینه",
+        "other": "نمایش {count} گزینه"
+      },
+      "removeFilter": "حذف {filter}",
+      "allOptions": "همه گزینه‌ها",
+      "optionUnavailable": "گزینه در دسترس نیست",
+      "stops": {
+        "legend": "توقف‌ها",
+        "direct": "مستقیم",
+        "oneStop": "۱ توقف",
+        "twoPlusStops": "۲ توقف یا بیشتر"
+      },
+      "carriers": {
+        "legend": "ایرلاین‌ها"
+      },
+      "departureTime": {
+        "legend": "ساعت حرکت رفت",
+        "earlyMorning": "بامداد",
+        "morning": "صبح",
+        "afternoon": "بعدازظهر",
+        "evening": "عصر"
+      },
+      "price": {
+        "legend": "قیمت",
+        "maxLabel": "حداکثر قیمت کل",
+        "upTo": "تا {price}"
+      },
+      "duration": {
+        "legend": "مدت زمان",
+        "maxLabel": "حداکثر مدت زمان هر مسیر",
+        "upTo": "تا {duration}"
+      },
+      "airports": {
+        "legend": "فرودگاه‌ها",
+        "departureLegend": "فرودگاه‌های مبدأ",
+        "arrivalLegend": "فرودگاه‌های مقصد",
+        "fromChip": "از {airport}",
+        "toChip": "به {airport}"
+      }
+    }
   }
 }

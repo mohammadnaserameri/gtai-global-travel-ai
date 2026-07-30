@@ -16,6 +16,8 @@ interface DrawerShellProps {
   /** Accessible name for the close control. */
   closeLabel: string;
   children: ReactNode;
+  /** Rendered outside the scrollable body, so footer actions stay reachable even when the content scrolls. */
+  footer?: ReactNode;
   className?: string;
 }
 
@@ -32,6 +34,7 @@ export function DrawerShell({
   title,
   closeLabel,
   children,
+  footer,
   className,
 }: DrawerShellProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -77,6 +80,11 @@ export function DrawerShell({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5">
           {children}
         </div>
+        {footer ? (
+          <div className="border-border shrink-0 border-t px-4 py-3 [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))]">
+            {footer}
+          </div>
+        ) : null}
       </div>
     </div>
   );
