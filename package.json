@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "verify:locations": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-locations.js",
     "verify:dates": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dates.js",
+    "verify:flights": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-flights.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

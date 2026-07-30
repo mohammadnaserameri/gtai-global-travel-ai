@@ -47,6 +47,16 @@ export function localizedName(location: TravelLocation, locale: string): string 
 }
 
 /**
+ * The entity's parent city name alone — no country, no code. Used where a
+ * compact "Montreal → London" summary needs just the city, not the airport's
+ * own name or the "City, Country" pair `locationPrimaryLabel` renders.
+ */
+export function cityLabel(location: TravelLocation, locale: string): string {
+  if (location.isFlexibleDestination) return location.cityName;
+  return location.localizedCityNames[locale] ?? location.cityName;
+}
+
+/**
  * The parent city's name, never the entity's own. An airport carries its own
  * localized name in `localizedNames`, so reading the city from there would
  * print the airport name twice on an airport row.

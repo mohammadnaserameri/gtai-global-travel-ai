@@ -36,6 +36,10 @@
     "notFound": {
       "title": "الصفحة غير موجودة — GTAI",
       "description": "الصفحة المطلوبة غير موجودة."
+    },
+    "flightResults": {
+      "title": "نتائج الرحلات — GTAI",
+      "description": "نتائج رحلات توضيحية يتم إنشاؤها محليًا بواسطة GTAI. الجداول والأسعار غير مباشرة."
     }
   },
   "common": {
@@ -191,11 +195,13 @@
       "unresolved": "اختر مدينة أو مطارًا من الاقتراحات.",
       "originRequired": "اختر نقطة المغادرة.",
       "destinationRequired": "اختر وجهتك.",
-      "sameLocation": "يجب أن تختلف نقطة المغادرة عن الوجهة.",
+      "sameLocation": "لا يمكن أن يكون المغادرة والوجهة نفس المطار أو المدينة.",
       "resultCount": "{count} نتيجة متاحة.",
       "selectedOrigin": "تم اختيار {name} كنقطة مغادرة.",
       "selectedDestination": "تم اختيار {name} كوجهة.",
-      "demoNotice": "تستخدم اقتراحات المواقع حاليًا دليل GTAI التجريبي."
+      "demoNotice": "تستخدم اقتراحات المواقع حاليًا دليل GTAI التجريبي.",
+      "everywhereResultsUnavailable": "نتائج الوجهة المرنة غير متاحة بعد.",
+      "exploreLink": "استكشاف الوجهات"
     },
     "dates": {
       "title": "اختر تواريخ سفرك",
@@ -228,6 +234,22 @@
         "plusTwo": "±يومان",
         "plusThree": "±٣ أيام"
       }
+    },
+    "travelers": {
+      "label": "المسافرون",
+      "summaryOne": "مسافر واحد",
+      "summaryOther": "{count} مسافرين",
+      "adults": "البالغون",
+      "adultsHint": "١٨ سنة فأكثر",
+      "children": "الأطفال",
+      "childrenHint": "من ٢ إلى ١٧ سنة",
+      "infantsInSeat": "رضّع بمقعد",
+      "infantsInSeatHint": "أقل من سنتين، بمقعد خاص",
+      "infantsOnLap": "رضّع بالحضن",
+      "infantsOnLapHint": "أقل من سنتين، في حضن بالغ",
+      "decrease": "إنقاص {label}",
+      "increase": "زيادة {label}",
+      "done": "تم"
     }
   },
   "aiPanel": {
@@ -482,5 +504,99 @@
         "description": "اختر المفاضلة التي تهمّك في هذه الرحلة بدل ترتيب واحد ثابت."
       }
     ]
+  },
+  "flightResults": {
+    "heading": "نتائج الرحلات",
+    "editSearch": "تعديل البحث",
+    "disclosure": {
+      "title": "نتائج توضيحية — الجداول والأسعار غير مباشرة.",
+      "points": [
+        "لا يتصل GTAI بأي مخزون رحلات مباشر في هذا الإصدار.",
+        "يتم إنشاء العروض محليًا لاختبار الواجهة وسير العمل.",
+        "لا يتوفر الحجز أو التحويل إلى شريك حتى الآن."
+      ]
+    },
+    "resultCount": {
+      "one": "خيار توضيحي واحد",
+      "other": "{count} خيارات توضيحية"
+    },
+    "sort": {
+      "label": "الترتيب حسب",
+      "best": "الأفضل",
+      "cheapest": "الأرخص",
+      "fastest": "الأسرع",
+      "bestExplanation": "يوازن الأفضل بين السعر والمدة وعدد التوقفات التوضيحية.",
+      "announcement": "تم ترتيب {count} نتيجة حسب {sort}."
+    },
+    "loading": {
+      "status": "جارٍ البحث عن خيارات رحلات توضيحية…"
+    },
+    "empty": {
+      "title": "لم يتم إنشاء أي خيارات توضيحية لهذا البحث.",
+      "description": "هذا يعكس فقط مستودع GTAI التوضيحي، وليس بيانًا عن توفر رحلات حقيقية.",
+      "changeDates": "تغيير التواريخ",
+      "changeDestination": "اختيار وجهة أخرى"
+    },
+    "error": {
+      "title": "تعذّر تجهيز النتائج التوضيحية.",
+      "retry": "إعادة المحاولة"
+    },
+    "invalid": {
+      "title": "بعض تفاصيل بحث الرحلة مفقودة أو غير صالحة.",
+      "startNewSearch": "بدء بحث جديد",
+      "returnToFlights": "العودة إلى الرحلات"
+    },
+    "summary": {
+      "adultsOne": "بالغ واحد",
+      "adultsOther": "{count} بالغين",
+      "childrenOne": "طفل واحد",
+      "childrenOther": "{count} أطفال",
+      "infantsOne": "رضيع واحد",
+      "infantsOther": "{count} رضّع"
+    },
+    "duration": {
+      "hourUnit": "س",
+      "minuteUnit": "د"
+    },
+    "card": {
+      "outbound": "الذهاب",
+      "inbound": "العودة",
+      "direct": "مباشرة",
+      "oneStop": "توقف واحد",
+      "nStops": "{count} توقفات",
+      "totalDuration": "إجمالي المدة",
+      "layover": "توقف",
+      "layoverSummary": "{duration} في {code}",
+      "nextDayIndicator": "+١ يوم",
+      "operatedBy": "تشغيل بواسطة {carrier}",
+      "providedBy": "مقدَّم من {provider}",
+      "demonstrationTotal": "الإجمالي التوضيحي",
+      "perTraveler": "{amount} لكل مسافر",
+      "carryOnIncluded": "تشمل حقيبة يد",
+      "checkedBagIncluded": "تشمل حقيبة مسجّلة",
+      "checkedBagNotIncluded": "لا تشمل حقيبة مسجّلة",
+      "changesPermitted": "يُسمح بالتغيير",
+      "changesNotPermitted": "لا يُسمح بالتغيير",
+      "refundable": "قابل للاسترداد",
+      "nonRefundable": "غير قابل للاسترداد",
+      "showDetails": "عرض التفاصيل",
+      "hideDetails": "إخفاء التفاصيل",
+      "reviewOption": "مراجعة الخيار",
+      "partnerBookingUnavailable": "الحجز عبر الشريك غير متاح بعد.",
+      "flightLabel": "الرحلة {number}",
+      "aircraft": {
+        "widebody": "طائرة توضيحية عريضة البدن",
+        "narrowbody": "طائرة توضيحية ضيقة البدن",
+        "regionalJet": "طائرة توضيحية إقليمية"
+      },
+      "routeHeading": "من {origin} إلى {destination}"
+    },
+    "dayOffset": {
+      "plusOne": "+١ يوم",
+      "plusN": "+{count} أيام",
+      "minusOne": "−١ يوم",
+      "minusN": "−{count} أيام"
+    },
+    "localTimeNotice": "تُعرض الأوقات بالتوقيت المحلي لكل مطار."
   }
 }

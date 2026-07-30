@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import type { Direction } from "@/config/locales";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import type { InitialFlightSearch } from "@/features/flights/search-intent-types";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { Badge } from "@/components/ui/Badge";
@@ -31,6 +32,8 @@ interface ProductPageShellProps {
   locale: string;
   /** Renders the search shell with this product tab preselected. */
   searchProduct?: ProductId;
+  /** Seeds the Flight Search form from a safe, pre-validated Edit-search return trip. */
+  initialFlightSearch?: InitialFlightSearch;
   /** Icon shown in the empty state. */
   icon?: ReactNode;
   /** Icons paired with the "planned" cards, cycled if shorter than the list. */
@@ -53,6 +56,7 @@ export function ProductPageShell({
   dir,
   locale,
   searchProduct,
+  initialFlightSearch,
   icon,
   plannedIcons,
   children,
@@ -81,6 +85,7 @@ export function ProductPageShell({
               dir={dir}
               locale={locale}
               defaultProduct={searchProduct}
+              initialFlightSearch={initialFlightSearch}
             />
           </Container>
         ) : null}

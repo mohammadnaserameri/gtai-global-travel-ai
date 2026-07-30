@@ -36,6 +36,10 @@
     "notFound": {
       "title": "Page not found — GTAI",
       "description": "The page you requested does not exist."
+    },
+    "flightResults": {
+      "title": "Flight results — GTAI",
+      "description": "Demonstration flight results generated locally by GTAI. Schedules and prices are not live."
     }
   },
   "common": {
@@ -208,11 +212,13 @@
       "unresolved": "Choose a city or airport from the suggestions.",
       "originRequired": "Choose where you are flying from.",
       "destinationRequired": "Choose where you are flying to.",
-      "sameLocation": "Origin and destination must be different.",
+      "sameLocation": "Origin and destination can't be the same airport or city.",
       "resultCount": "{count} results available.",
       "selectedOrigin": "{name} selected as origin.",
       "selectedDestination": "{name} selected as destination.",
-      "demoNotice": "Location suggestions currently use GTAI's demonstration directory."
+      "demoNotice": "Location suggestions currently use GTAI's demonstration directory.",
+      "everywhereResultsUnavailable": "Flexible destination results are not available yet.",
+      "exploreLink": "Explore destinations"
     },
     "dates": {
       "title": "Select your travel dates",
@@ -245,6 +251,22 @@
         "plusTwo": "±2 days",
         "plusThree": "±3 days"
       }
+    },
+    "travelers": {
+      "label": "Travelers",
+      "summaryOne": "1 traveler",
+      "summaryOther": "{count} travelers",
+      "adults": "Adults",
+      "adultsHint": "Age 18+",
+      "children": "Children",
+      "childrenHint": "Ages 2–17",
+      "infantsInSeat": "Infants in seat",
+      "infantsInSeatHint": "Under 2, own seat",
+      "infantsOnLap": "Infants on lap",
+      "infantsOnLapHint": "Under 2, on an adult's lap",
+      "decrease": "Decrease {label}",
+      "increase": "Increase {label}",
+      "done": "Done"
     }
   },
   "aiPanel": {
@@ -812,5 +834,99 @@
     "title": "We could not find that page",
     "description": "The address may be mistyped, or the page may no longer exist.",
     "cta": "Back to home"
+  },
+  "flightResults": {
+    "heading": "Flight results",
+    "editSearch": "Edit search",
+    "disclosure": {
+      "title": "Demonstration results — schedules and prices are not live.",
+      "points": [
+        "GTAI is not connected to live flight inventory in this version.",
+        "Offers are generated locally for interface and workflow testing.",
+        "No booking or partner redirect is available yet."
+      ]
+    },
+    "resultCount": {
+      "one": "1 demonstration option",
+      "other": "{count} demonstration options"
+    },
+    "sort": {
+      "label": "Sort by",
+      "best": "Best",
+      "cheapest": "Cheapest",
+      "fastest": "Fastest",
+      "bestExplanation": "Best balances demonstration price, duration and stops.",
+      "announcement": "{count} results sorted by {sort}."
+    },
+    "loading": {
+      "status": "Finding demonstration flight options…"
+    },
+    "empty": {
+      "title": "No demonstration options were generated for this search.",
+      "description": "This reflects GTAI's demonstration repository only — it is not a statement about real flight availability.",
+      "changeDates": "Change dates",
+      "changeDestination": "Choose another destination"
+    },
+    "error": {
+      "title": "We could not prepare the demonstration results.",
+      "retry": "Retry"
+    },
+    "invalid": {
+      "title": "Some flight-search details are missing or invalid.",
+      "startNewSearch": "Start a new search",
+      "returnToFlights": "Return to Flights"
+    },
+    "summary": {
+      "adultsOne": "1 adult",
+      "adultsOther": "{count} adults",
+      "childrenOne": "1 child",
+      "childrenOther": "{count} children",
+      "infantsOne": "1 infant",
+      "infantsOther": "{count} infants"
+    },
+    "duration": {
+      "hourUnit": "h",
+      "minuteUnit": "m"
+    },
+    "card": {
+      "outbound": "Outbound",
+      "inbound": "Return",
+      "direct": "Direct",
+      "oneStop": "1 stop",
+      "nStops": "{count} stops",
+      "totalDuration": "Total duration",
+      "layover": "Layover",
+      "layoverSummary": "{duration} in {code}",
+      "nextDayIndicator": "+1 day",
+      "operatedBy": "Operated by {carrier}",
+      "providedBy": "Provided by {provider}",
+      "demonstrationTotal": "Demonstration total",
+      "perTraveler": "{amount} per traveler",
+      "carryOnIncluded": "Carry-on included",
+      "checkedBagIncluded": "Checked bag included",
+      "checkedBagNotIncluded": "Checked bag not included",
+      "changesPermitted": "Changes permitted",
+      "changesNotPermitted": "Changes not permitted",
+      "refundable": "Refundable",
+      "nonRefundable": "Non-refundable",
+      "showDetails": "Show details",
+      "hideDetails": "Hide details",
+      "reviewOption": "Review option",
+      "partnerBookingUnavailable": "Partner booking is not available yet.",
+      "flightLabel": "Flight {number}",
+      "aircraft": {
+        "widebody": "Widebody demonstration aircraft",
+        "narrowbody": "Narrowbody demonstration aircraft",
+        "regionalJet": "Regional-jet demonstration aircraft"
+      },
+      "routeHeading": "{origin} to {destination}"
+    },
+    "dayOffset": {
+      "plusOne": "+1 day",
+      "plusN": "+{count} days",
+      "minusOne": "-1 day",
+      "minusN": "-{count} days"
+    },
+    "localTimeNotice": "Times are shown in each airport's local time."
   }
 }

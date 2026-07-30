@@ -1,4 +1,4 @@
-import { getCurrency } from "@/config/currencies";
+import { getCurrency } from "../../config/currencies";
 
 /**
  * Currency presentation helpers.

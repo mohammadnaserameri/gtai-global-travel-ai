@@ -35,15 +35,15 @@ Homepage restructured so the standard travel search experience is the dominant a
 
 Documentation-only version. Produces the approved UX blueprints that later implementation versions must follow.
 
-| Sub-version | Module                                | Status                                         | Commit                                     |
-| ----------- | ------------------------------------- | ---------------------------------------------- | ------------------------------------------ |
-| V1.2-A      | Home Search Experience                | **Frozen**                                     | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
-| V1.2-B      | Flight Search Form                    | **Frozen**                                     | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
-| V1.2-C      | Airport Selector                      | **Frozen** — implemented in V2.1               | `afd4cdd8801bf97ac586beddc59e6f1f8b85419f` |
-| V1.2-D      | Date Picker and Flexible Dates        | **Frozen** — implemented in V2.2                | `973e28a0dca7e2e58c47efd0314632ec60b1b643` |
-| V1.2-E      | Flight Results                        | Pending analysis                               | —                                          |
-| V1.2-F      | Filters and Sorting                   | Pending analysis                               | —                                          |
-| V1.2-G      | Flight Details and Affiliate Redirect | Pending analysis                               | —                                          |
+| Sub-version | Module                                | Status                                                | Commit                                     |
+| ----------- | ------------------------------------- | ----------------------------------------------------- | ------------------------------------------ |
+| V1.2-A      | Home Search Experience                | **Frozen**                                            | `feb07a7283c0951cc64e1a801c71993fcbd2d865` |
+| V1.2-B      | Flight Search Form                    | **Frozen**                                            | `87a00a84b9e75fbf30b99e2ee210c2d3f17f7c7d` |
+| V1.2-C      | Airport Selector                      | **Frozen** — implemented in V2.1                      | `afd4cdd8801bf97ac586beddc59e6f1f8b85419f` |
+| V1.2-D      | Date Picker and Flexible Dates        | **Frozen** — implemented in V2.2                      | `973e28a0dca7e2e58c47efd0314632ec60b1b643` |
+| V1.2-E      | Flight Results                        | **Frozen** — implemented in V2.3 (results foundation) | —                                          |
+| V1.2-F      | Filters and Sorting                   | Sorting implemented in V2.3; filter sidebar pending   | —                                          |
+| V1.2-G      | Flight Details and Affiliate Redirect | Pending analysis                                      | —                                          |
 
 ---
 
@@ -51,17 +51,17 @@ Documentation-only version. Produces the approved UX blueprints that later imple
 
 High-level intent only. Detailed requirements are deliberately **not** defined here — each version gets its own approved blueprint before any implementation begins.
 
-| Version | Title                               | Status                                                                       |
-| ------- | ----------------------------------- | ---------------------------------------------------------------------------- |
-| V2      | Functional Flight Search Foundation | **In progress** — V2.1 Airport Selector and V2.2 Date Picker frozen; V2.2.1 accessibility polish |
-| V3      | Provider Adapter Integration        | Planned                                                                      |
-| V4      | Affiliate Redirect and Attribution  | Planned                                                                      |
-| V5      | Guided AI Travel Assessment         | Planned                                                                      |
-| V6      | AI Result Intelligence              | Planned                                                                      |
-| V7      | Stays                               | Planned                                                                      |
-| V8      | Cars                                | Planned                                                                      |
-| V9      | Packages                            | Planned                                                                      |
-| V10     | Trust, Risk and Monitoring          | Planned                                                                      |
+| Version | Title                               | Status                                                                                                                                                                                                                                    |
+| ------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V2      | Functional Flight Search Foundation | **In progress** — V2.1 Airport Selector, V2.2 Date Picker, V2.2.1 accessibility polish and V2.3 functional Search Intent and Results foundation all frozen locally. Real providers, affiliate redirect and full filtering remain pending. |
+| V3      | Provider Adapter Integration        | Planned                                                                                                                                                                                                                                   |
+| V4      | Affiliate Redirect and Attribution  | Planned                                                                                                                                                                                                                                   |
+| V5      | Guided AI Travel Assessment         | Planned                                                                                                                                                                                                                                   |
+| V6      | AI Result Intelligence              | Planned                                                                                                                                                                                                                                   |
+| V7      | Stays                               | Planned                                                                                                                                                                                                                                   |
+| V8      | Cars                                | Planned                                                                                                                                                                                                                                   |
+| V9      | Packages                            | Planned                                                                                                                                                                                                                                   |
+| V10     | Trust, Risk and Monitoring          | Planned                                                                                                                                                                                                                                   |
 
 > **Version numbering may be refined after each approved blueprint.** A blueprint can reveal that a version is too large, too small, or ordered wrongly. Renumbering is expected and is not a failure — but it must be recorded here, and a frozen version is never renumbered retroactively.
 
@@ -116,13 +116,17 @@ A version may only move from **Blueprint** to **Implementation authorized** thro
 
 ## 5. Related documentation
 
-| Document                                                  | Purpose                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `docs/reference/V1_2_REFERENCE_UX_BLUEPRINT.md`           | Master index and global principles for the V1.2 blueprint modules        |
-| `docs/reference/01_HOME_SEARCH_EXPERIENCE.md`             | Frozen V1.2-A Home Search Experience blueprint                           |
-| `docs/reference/02_FLIGHT_SEARCH_FORM.md`                 | Frozen V1.2-B Flight Search Form blueprint                               |
-| `docs/reference/03_AIRPORT_SELECTOR.md`                   | Frozen V1.2-C Airport Selector blueprint                                 |
-| `docs/implementation/V2_1_FUNCTIONAL_AIRPORT_SELECTOR.md` | V2.1 implementation record for the Airport Selector                      |
-| `docs/architecture/V1_FOUNDATION.md`                      | V1 architecture, routing, localization, region and currency rules        |
-| `docs/architecture/REFERENCE_POLICY.md`                   | Which products inform GTAI's UX, and the hard line on copying            |
-| `docs/design-system/GTAI_DESIGN_SYSTEM.md`                | Palette, tokens, typography, elevation, motion, accessibility, RTL rules |
+| Document                                                  | Purpose                                                                                                                 |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `docs/reference/V1_2_REFERENCE_UX_BLUEPRINT.md`           | Master index and global principles for the V1.2 blueprint modules                                                       |
+| `docs/reference/01_HOME_SEARCH_EXPERIENCE.md`             | Frozen V1.2-A Home Search Experience blueprint                                                                          |
+| `docs/reference/02_FLIGHT_SEARCH_FORM.md`                 | Frozen V1.2-B Flight Search Form blueprint                                                                              |
+| `docs/reference/03_AIRPORT_SELECTOR.md`                   | Frozen V1.2-C Airport Selector blueprint                                                                                |
+| `docs/reference/04_DATE_PICKER_AND_FLEXIBLE_DATES.md`     | Frozen V1.2-D Date Picker blueprint                                                                                     |
+| `docs/reference/05_FLIGHT_RESULTS.md`                     | V1.2-E Flight Results blueprint, implemented through V2.3                                                               |
+| `docs/implementation/V2_1_FUNCTIONAL_AIRPORT_SELECTOR.md` | V2.1 implementation record for the Airport Selector                                                                     |
+| `docs/implementation/V2_2_FUNCTIONAL_DATE_PICKER.md`      | V2.2 implementation record for the Date Picker, frozen `973e28a0…`; V2.2.1 accessibility corrections frozen `bc1b295e…` |
+| `docs/implementation/V2_3_FUNCTIONAL_FLIGHT_RESULTS.md`   | V2.3 implementation record for the Search Intent and Results foundation                                                 |
+| `docs/architecture/V1_FOUNDATION.md`                      | V1 architecture, routing, localization, region and currency rules                                                       |
+| `docs/architecture/REFERENCE_POLICY.md`                   | Which products inform GTAI's UX, and the hard line on copying                                                           |
+| `docs/design-system/GTAI_DESIGN_SYSTEM.md`                | Palette, tokens, typography, elevation, motion, accessibility, RTL rules                                                |

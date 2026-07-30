@@ -36,6 +36,10 @@
     "notFound": {
       "title": "صفحه پیدا نشد — GTAI",
       "description": "صفحهٔ درخواستی وجود ندارد."
+    },
+    "flightResults": {
+      "title": "نتایج پرواز — GTAI",
+      "description": "نتایج نمایشی پرواز که به‌صورت محلی توسط GTAI تولید شده‌اند. زمان‌بندی و قیمت‌ها واقعی و زنده نیستند."
     }
   },
   "common": {
@@ -191,11 +195,13 @@
       "unresolved": "یک شهر یا فرودگاه را از پیشنهادها انتخاب کنید.",
       "originRequired": "مبدأ سفر خود را انتخاب کنید.",
       "destinationRequired": "مقصد سفر خود را انتخاب کنید.",
-      "sameLocation": "مبدأ و مقصد باید متفاوت باشند.",
+      "sameLocation": "مبدأ و مقصد نمی‌توانند فرودگاه یا شهر یکسانی باشند.",
       "resultCount": "{count} نتیجه در دسترس است.",
       "selectedOrigin": "{name} به‌عنوان مبدأ انتخاب شد.",
       "selectedDestination": "{name} به‌عنوان مقصد انتخاب شد.",
-      "demoNotice": "پیشنهادهای مکان در حال حاضر از فهرست نمایشی GTAI استفاده می‌کنند."
+      "demoNotice": "پیشنهادهای مکان در حال حاضر از فهرست نمایشی GTAI استفاده می‌کنند.",
+      "everywhereResultsUnavailable": "نتایج برای مقصد انعطاف‌پذیر هنوز در دسترس نیست.",
+      "exploreLink": "کاوش مقصدها"
     },
     "dates": {
       "title": "تاریخ‌های سفر خود را انتخاب کنید",
@@ -228,6 +234,22 @@
         "plusTwo": "±۲ روز",
         "plusThree": "±۳ روز"
       }
+    },
+    "travelers": {
+      "label": "مسافران",
+      "summaryOne": "۱ مسافر",
+      "summaryOther": "{count} مسافر",
+      "adults": "بزرگسالان",
+      "adultsHint": "۱۸ سال به بالا",
+      "children": "کودکان",
+      "childrenHint": "۲ تا ۱۷ سال",
+      "infantsInSeat": "نوزاد با صندلی",
+      "infantsInSeatHint": "زیر ۲ سال، صندلی جداگانه",
+      "infantsOnLap": "نوزاد در آغوش",
+      "infantsOnLapHint": "زیر ۲ سال، در آغوش بزرگسال",
+      "decrease": "کاهش {label}",
+      "increase": "افزایش {label}",
+      "done": "تأیید"
     }
   },
   "aiPanel": {
@@ -482,5 +504,99 @@
         "description": "به‌جای یک رتبه‌بندی ثابت، همان معیاری را انتخاب کنید که برای این سفر اهمیت دارد."
       }
     ]
+  },
+  "flightResults": {
+    "heading": "نتایج پرواز",
+    "editSearch": "ویرایش جست‌وجو",
+    "disclosure": {
+      "title": "نتایج نمایشی — زمان‌بندی و قیمت‌ها واقعی نیستند.",
+      "points": [
+        "در این نسخه، GTAI به هیچ سامانه پروازی زنده متصل نیست.",
+        "پیشنهادها به‌صورت محلی برای آزمایش رابط کاربری و روند کار تولید می‌شوند.",
+        "هنوز امکان رزرو یا انتقال به شریک فروش وجود ندارد."
+      ]
+    },
+    "resultCount": {
+      "one": "۱ گزینه نمایشی",
+      "other": "{count} گزینه نمایشی"
+    },
+    "sort": {
+      "label": "مرتب‌سازی بر اساس",
+      "best": "بهترین",
+      "cheapest": "ارزان‌ترین",
+      "fastest": "سریع‌ترین",
+      "bestExplanation": "بهترین گزینه، قیمت، مدت‌زمان و توقف‌های نمایشی را متعادل می‌کند.",
+      "announcement": "{count} نتیجه بر اساس {sort} مرتب شد."
+    },
+    "loading": {
+      "status": "در حال یافتن گزینه‌های نمایشی پرواز…"
+    },
+    "empty": {
+      "title": "برای این جست‌وجو هیچ گزینه نمایشی ساخته نشد.",
+      "description": "این فقط به مخزن نمایشی GTAI مربوط است و بیانی درباره وجود پروازهای واقعی نیست.",
+      "changeDates": "تغییر تاریخ‌ها",
+      "changeDestination": "انتخاب مقصد دیگر"
+    },
+    "error": {
+      "title": "آماده‌سازی نتایج نمایشی ممکن نشد.",
+      "retry": "تلاش دوباره"
+    },
+    "invalid": {
+      "title": "برخی از جزئیات جست‌وجوی پرواز ناقص یا نامعتبر است.",
+      "startNewSearch": "شروع جست‌وجوی جدید",
+      "returnToFlights": "بازگشت به پرواز‌ها"
+    },
+    "summary": {
+      "adultsOne": "۱ بزرگسال",
+      "adultsOther": "{count} بزرگسال",
+      "childrenOne": "۱ کودک",
+      "childrenOther": "{count} کودک",
+      "infantsOne": "۱ نوزاد",
+      "infantsOther": "{count} نوزاد"
+    },
+    "duration": {
+      "hourUnit": "ساعت",
+      "minuteUnit": "دقیقه"
+    },
+    "card": {
+      "outbound": "رفت",
+      "inbound": "برگشت",
+      "direct": "مستقیم",
+      "oneStop": "۱ توقف",
+      "nStops": "{count} توقف",
+      "totalDuration": "مدت‌زمان کل",
+      "layover": "توقف",
+      "layoverSummary": "{duration} در {code}",
+      "nextDayIndicator": "+۱ روز",
+      "operatedBy": "اجراشده توسط {carrier}",
+      "providedBy": "ارائه‌شده توسط {provider}",
+      "demonstrationTotal": "مجموع نمایشی",
+      "perTraveler": "{amount} برای هر مسافر",
+      "carryOnIncluded": "کیف همراه شامل می‌شود",
+      "checkedBagIncluded": "بار چمدانی شامل می‌شود",
+      "checkedBagNotIncluded": "بار چمدانی شامل نمی‌شود",
+      "changesPermitted": "تغییر تاریخ مجاز است",
+      "changesNotPermitted": "تغییر تاریخ مجاز نیست",
+      "refundable": "قابل استرداد",
+      "nonRefundable": "غیرقابل استرداد",
+      "showDetails": "نمایش جزئیات",
+      "hideDetails": "پنهان کردن جزئیات",
+      "reviewOption": "بررسی گزینه",
+      "partnerBookingUnavailable": "رزرو از طریق شریک هنوز در دسترس نیست.",
+      "flightLabel": "پرواز {number}",
+      "aircraft": {
+        "widebody": "هواپیمای نمایشی بدنه‌پهن",
+        "narrowbody": "هواپیمای نمایشی بدنه‌باریک",
+        "regionalJet": "هواپیمای نمایشی منطقه‌ای"
+      },
+      "routeHeading": "از {origin} به {destination}"
+    },
+    "dayOffset": {
+      "plusOne": "+۱ روز",
+      "plusN": "+{count} روز",
+      "minusOne": "−۱ روز",
+      "minusN": "−{count} روز"
+    },
+    "localTimeNotice": "زمان‌ها بر اساس ساعت محلی هر فرودگاه نمایش داده می‌شوند."
   }
 }

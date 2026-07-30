@@ -26,6 +26,8 @@ interface CardProps {
   padding?: CardPadding;
   /** Adds a restrained hover elevation. Use only for interactive cards. */
   interactive?: boolean;
+  /** Connects the card (e.g. an `<article>`) to a heading rendered inside it. */
+  "aria-labelledby"?: string;
   className?: string;
   children: ReactNode;
 }
@@ -35,11 +37,13 @@ export function Card({
   variant = "plain",
   padding = "md",
   interactive = false,
+  "aria-labelledby": ariaLabelledBy,
   className,
   children,
 }: CardProps) {
   return (
     <Component
+      aria-labelledby={ariaLabelledBy}
       className={cn(
         "rounded-xl",
         variants[variant],

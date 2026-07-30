@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 import type { Direction } from "@/config/locales";
 import type { Dictionary } from "@/i18n/get-dictionary";
@@ -8,9 +9,22 @@ import type { TravelLocation } from "@/features/locations/location-types";
 import type { DateSelection } from "@/features/dates/date-types";
 import { EMPTY_DATE_SELECTION } from "@/features/dates/date-types";
 import { isAfter, isValidIsoDate } from "@/features/dates/date-utils";
+import {
+  CABIN_CLASSES,
+  DEFAULT_TRAVELERS,
+  type CabinClass,
+  type InitialFlightSearch,
+  type TravelerCounts,
+} from "@/features/flights/search-intent-types";
+import { buildSearchIntent } from "@/features/flights/search-intent-validation";
+import { locationsOverlapForFlightSearch } from "@/features/flights/location-overlap";
+import { serializeSearchIntent } from "@/features/flights/search-intent-url";
+import { localePath } from "@/i18n/routing";
+import { useRegion } from "@/components/region/RegionProvider";
 import { DatePicker } from "@/components/search/date-picker/DatePicker";
 import { AirportSelector } from "@/components/search/airport-selector/AirportSelector";
 import { SwapControl } from "@/components/search/SwapControl";
+import { TravelersControl } from "@/components/search/TravelersControl";
 import { cn } from "@/lib/utilities/cn";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -43,6 +57,8 @@ interface SearchShellProps {
   locale?: string;
   /** Which product tab opens first. Product pages preselect their own. */
   defaultProduct?: ProductId;
+  /** Seeds the flight fields once, from an Edit-search return trip. */
+  initialFlightSearch?: InitialFlightSearch;
   className?: string;
 }
 
@@ -92,12 +108,12 @@ function SubmitCell({ label }: { label: string }) {
  * The standard travel search surface, and the visual focal point of the
  * homepage.
  *
- * This is a **presentational shell**. There is no airport dataset, no
- * autocomplete, no calendar picker, no provider query and no results route —
- * submitting only announces that results are not available yet. The controls
- * are nevertheless real, labelled form elements so focus order, mobile
- * keyboards and screen-reader output can be verified now rather than
- * retrofitted later.
+ * The Flights tab is fully functional: real airport/city resolution via
+ * `AirportSelector`, a real `DatePicker`, and real Travelers/Cabin class
+ * selection, all validated into a Search Intent and submitted to
+ * `/flights/results`. Stays, Cars and Packages remain presentational —
+ * submitting one of those tabs only announces that results are not
+ * available yet.
  */
 export function SearchShell({
   tabs,
@@ -105,18 +121,57 @@ export function SearchShell({
   dir = "ltr",
   locale = "en",
   defaultProduct = "flights",
+  initialFlightSearch,
   className,
 }: SearchShellProps) {
   const idPrefix = useId().replace(/:/g, "");
+  const router = useRouter();
+  const { currency } = useRegion();
+
   const [product, setProduct] = useState<ProductId>(defaultProduct);
-  const [tripType, setTripType] = useState<TripType>("roundTrip");
-  const [announced, setAnnounced] = useState(false);
+  const [tripType, setTripType] = useState<TripType>(
+    initialFlightSearch?.tripType ?? "roundTrip",
+  );
+  /**
+   * Replaces the single `announced` flag: the flights tab now has three
+   * distinct outcomes on submit (nothing, the honest "not connected yet"
+   * notice for the other product tabs, or the Everywhere carve-out) instead
+   * of one generic message.
+   */
+  const [formNotice, setFormNotice] = useState<
+    "none" | "unavailable" | "everywhere"
+  >("none");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [origin, setOrigin] = useState<LocationFieldState>(EMPTY_FIELD);
-  const [destination, setDestination] = useState<LocationFieldState>(EMPTY_FIELD);
+  const [origin, setOrigin] = useState<LocationFieldState>(
+    initialFlightSearch?.origin
+      ? { selected: initialFlightSearch.origin, query: "", error: null }
+      : EMPTY_FIELD,
+  );
+  const [destination, setDestination] = useState<LocationFieldState>(
+    initialFlightSearch?.destination
+      ? { selected: initialFlightSearch.destination, query: "", error: null }
+      : EMPTY_FIELD,
+  );
 
-  const [dates, setDatesState] = useState<DateSelection>(EMPTY_DATE_SELECTION);
+  const [dates, setDatesState] = useState<DateSelection>(
+    initialFlightSearch
+      ? {
+          departure: initialFlightSearch.departureDate,
+          returnDate: initialFlightSearch.returnDate,
+          flexibilityDays: initialFlightSearch.flexibilityDays,
+        }
+      : EMPTY_DATE_SELECTION,
+  );
   const [datesTouched, setDatesTouched] = useState(false);
+
+  const [travelers, setTravelers] = useState<TravelerCounts>(
+    initialFlightSearch?.travelers ?? DEFAULT_TRAVELERS,
+  );
+  const [cabinClass, setCabinClass] = useState<CabinClass>(
+    initialFlightSearch?.cabinClass ?? "economy",
+  );
+
   /**
    * A return that One way hid is remembered here so switching back can restore
    * it — but only through `setTripType`, which revalidates it first. It is
@@ -158,12 +213,12 @@ export function SearchShell({
     if (destinationIsFlexible) return;
     setOrigin({ ...destination, error: null });
     setDestination({ ...origin, error: null });
-    setAnnounced(false);
+    setFormNotice("none");
   }
 
   function setDates(next: DateSelection) {
     setDatesState(next);
-    setAnnounced(false);
+    setFormNotice("none");
   }
 
   const roundTrip = tripType === "roundTrip";
@@ -189,7 +244,7 @@ export function SearchShell({
       setDatesState({ ...dates, returnDate: restorable ? remembered : null });
     }
     setTripType(next);
-    setAnnounced(false);
+    setFormNotice("none");
   }
 
   // Date validity is derived, never stored: an existing return that a later
@@ -220,9 +275,10 @@ export function SearchShell({
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
 
     if (product !== "flights") {
-      setAnnounced(true);
+      setFormNotice("unavailable");
       return;
     }
 
@@ -232,13 +288,15 @@ export function SearchShell({
       locationLabels.destinationRequired,
     );
 
-    // Both sides resolved to the same entity — a search that cannot fly.
+    // Both sides resolve to the same airport (or overlapping airport sets) —
+    // a search that cannot fly. The same policy the URL validator and the
+    // intent builder use, so the form can never accept what they would reject.
     if (
       !originError &&
       !destinationError &&
       origin.selected &&
       destination.selected &&
-      origin.selected.id === destination.selected.id
+      locationsOverlapForFlightSearch(origin.selected, destination.selected)
     ) {
       originError = locationLabels.sameLocation;
       destinationError = locationLabels.sameLocation;
@@ -254,7 +312,7 @@ export function SearchShell({
       (roundTrip && dates.returnDate === null);
 
     if (originError || destinationError || datesInvalid) {
-      setAnnounced(false);
+      setFormNotice("none");
       // Move focus to the first field that needs attention.
       const targetId = originError
         ? `${field("from")}-input`
@@ -267,14 +325,47 @@ export function SearchShell({
       return;
     }
 
-    // Locations are resolved, but GTAI still connects no provider. The shell
-    // reports that truthfully instead of fabricating a result set.
-    setAnnounced(true);
+    // Everywhere is a real, resolved destination — it just has no ordinary
+    // Flight Results yet. The search values stay exactly as entered.
+    if (destination.selected?.isFlexibleDestination) {
+      setFormNotice("everywhere");
+      return;
+    }
+
+    if (!origin.selected || !destination.selected || !dates.departure) {
+      // Unreachable given the checks above — kept as a guard so the intent
+      // builder below never receives a null it would have to assert past.
+      setFormNotice("unavailable");
+      return;
+    }
+
+    const intent = buildSearchIntent({
+      tripType: roundTrip ? "roundTrip" : "oneWay",
+      origin: origin.selected,
+      destination: destination.selected,
+      departureDate: dates.departure,
+      returnDate: dates.returnDate,
+      travelers,
+      cabinClass,
+      flexibilityDays: dates.flexibilityDays,
+      currency,
+      locale,
+    });
+
+    if (!intent) {
+      setFormNotice("unavailable");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormNotice("none");
+    const params = serializeSearchIntent(intent);
+    router.push(`${localePath(locale, "/flights/results")}?${params.toString()}`);
   }
 
-  const cabinOptions = [
+  const cabinOptions: readonly { value: CabinClass; label: string }[] = [
     { value: "economy", label: labels.options.cabin.economy },
-    { value: "premium", label: labels.options.cabin.premiumEconomy },
+    { value: "premiumEconomy", label: labels.options.cabin.premiumEconomy },
     { value: "business", label: labels.options.cabin.business },
     { value: "first", label: labels.options.cabin.first },
   ];
@@ -296,7 +387,7 @@ export function SearchShell({
         value={product}
         onValueChange={(id) => {
           setProduct(id as ProductId);
-          setAnnounced(false);
+          setFormNotice("none");
         }}
         idPrefix={idPrefix}
         dir={dir}
@@ -326,12 +417,11 @@ export function SearchShell({
                 },
               }}
             />
-            <SelectShell
-              layout="inline"
-              id={field("travelers")}
-              label={labels.fields.travelers}
-              icon={<TravelersIcon size={16} />}
-              options={[{ value: "1", label: labels.options.travelersValue }]}
+            <TravelersControl
+              value={travelers}
+              onChange={setTravelers}
+              labels={labels.travelers}
+              locale={locale}
             />
             <SelectShell
               layout="inline"
@@ -339,6 +429,13 @@ export function SearchShell({
               label={labels.fields.cabinClass}
               icon={<SeatIcon size={16} />}
               options={cabinOptions}
+              value={cabinClass}
+              onChange={(event) => {
+                const next = CABIN_CLASSES.find(
+                  (cabin) => cabin === event.target.value,
+                );
+                if (next) setCabinClass(next);
+              }}
             />
           </div>
 
@@ -549,9 +646,19 @@ export function SearchShell({
         </p>
 
         <div aria-live="polite" className="mt-3 empty:mt-0">
-          {announced ? (
+          {formNotice === "unavailable" ? (
             <Alert tone="brand" live>
               {labels.submitDisabledHint} {labels.notice}
+            </Alert>
+          ) : formNotice === "everywhere" ? (
+            <Alert tone="brand" live>
+              {locationLabels.everywhereResultsUnavailable}{" "}
+              <a
+                href={localePath(locale, "/explore")}
+                className="font-semibold underline underline-offset-2"
+              >
+                {locationLabels.exploreLink}
+              </a>
             </Alert>
           ) : null}
         </div>

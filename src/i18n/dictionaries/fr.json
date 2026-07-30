@@ -36,6 +36,10 @@
     "notFound": {
       "title": "Page introuvable — GTAI",
       "description": "La page demandée n'existe pas."
+    },
+    "flightResults": {
+      "title": "Résultats de vol — GTAI",
+      "description": "Résultats de vol de démonstration générés localement par GTAI. Les horaires et les prix ne sont pas en direct."
     }
   },
   "common": {
@@ -191,11 +195,13 @@
       "unresolved": "Choisissez une ville ou un aéroport dans les suggestions.",
       "originRequired": "Choisissez votre point de départ.",
       "destinationRequired": "Choisissez votre destination.",
-      "sameLocation": "Le départ et la destination doivent être différents.",
+      "sameLocation": "Le départ et la destination ne peuvent pas être le même aéroport ou la même ville.",
       "resultCount": "{count} résultats disponibles.",
       "selectedOrigin": "{name} sélectionné comme point de départ.",
       "selectedDestination": "{name} sélectionné comme destination.",
-      "demoNotice": "Les suggestions de lieux utilisent actuellement le répertoire de démonstration de GTAI."
+      "demoNotice": "Les suggestions de lieux utilisent actuellement le répertoire de démonstration de GTAI.",
+      "everywhereResultsUnavailable": "Les résultats pour une destination flexible ne sont pas encore disponibles.",
+      "exploreLink": "Explorer les destinations"
     },
     "dates": {
       "title": "Choisissez vos dates de voyage",
@@ -228,6 +234,22 @@
         "plusTwo": "±2 jours",
         "plusThree": "±3 jours"
       }
+    },
+    "travelers": {
+      "label": "Voyageurs",
+      "summaryOne": "1 voyageur",
+      "summaryOther": "{count} voyageurs",
+      "adults": "Adultes",
+      "adultsHint": "18 ans et plus",
+      "children": "Enfants",
+      "childrenHint": "2 à 17 ans",
+      "infantsInSeat": "Bébés avec siège",
+      "infantsInSeatHint": "Moins de 2 ans, siège propre",
+      "infantsOnLap": "Bébés sur les genoux",
+      "infantsOnLapHint": "Moins de 2 ans, sur les genoux d'un adulte",
+      "decrease": "Réduire : {label}",
+      "increase": "Augmenter : {label}",
+      "done": "Terminé"
     }
   },
   "aiPanel": {
@@ -542,5 +564,99 @@
         "description": "Choisissez le compromis qui compte pour ce voyage plutôt qu'un classement unique."
       }
     ]
+  },
+  "flightResults": {
+    "heading": "Résultats de vol",
+    "editSearch": "Modifier la recherche",
+    "disclosure": {
+      "title": "Résultats de démonstration — les horaires et les prix ne sont pas en direct.",
+      "points": [
+        "GTAI n'est pas connecté à un inventaire de vols en direct dans cette version.",
+        "Les offres sont générées localement pour tester l'interface et le parcours.",
+        "Aucune réservation ni redirection partenaire n'est encore disponible."
+      ]
+    },
+    "resultCount": {
+      "one": "1 option de démonstration",
+      "other": "{count} options de démonstration"
+    },
+    "sort": {
+      "label": "Trier par",
+      "best": "Meilleur",
+      "cheapest": "Le moins cher",
+      "fastest": "Le plus rapide",
+      "bestExplanation": "Meilleur équilibre entre prix, durée et escales de démonstration.",
+      "announcement": "{count} résultats triés par {sort}."
+    },
+    "loading": {
+      "status": "Recherche d'options de vol de démonstration…"
+    },
+    "empty": {
+      "title": "Aucune option de démonstration n'a été générée pour cette recherche.",
+      "description": "Cela ne concerne que le répertoire de démonstration de GTAI — ce n'est pas une affirmation sur la disponibilité réelle des vols.",
+      "changeDates": "Changer les dates",
+      "changeDestination": "Choisir une autre destination"
+    },
+    "error": {
+      "title": "Nous n'avons pas pu préparer les résultats de démonstration.",
+      "retry": "Réessayer"
+    },
+    "invalid": {
+      "title": "Certains détails de la recherche de vol sont manquants ou invalides.",
+      "startNewSearch": "Commencer une nouvelle recherche",
+      "returnToFlights": "Retour à Vols"
+    },
+    "summary": {
+      "adultsOne": "1 adulte",
+      "adultsOther": "{count} adultes",
+      "childrenOne": "1 enfant",
+      "childrenOther": "{count} enfants",
+      "infantsOne": "1 bébé",
+      "infantsOther": "{count} bébés"
+    },
+    "duration": {
+      "hourUnit": "h",
+      "minuteUnit": "min"
+    },
+    "card": {
+      "outbound": "Aller",
+      "inbound": "Retour",
+      "direct": "Direct",
+      "oneStop": "1 escale",
+      "nStops": "{count} escales",
+      "totalDuration": "Durée totale",
+      "layover": "Escale",
+      "layoverSummary": "{duration} à {code}",
+      "nextDayIndicator": "+1 jour",
+      "operatedBy": "Opéré par {carrier}",
+      "providedBy": "Proposé par {provider}",
+      "demonstrationTotal": "Total de démonstration",
+      "perTraveler": "{amount} par voyageur",
+      "carryOnIncluded": "Bagage à main inclus",
+      "checkedBagIncluded": "Bagage enregistré inclus",
+      "checkedBagNotIncluded": "Bagage enregistré non inclus",
+      "changesPermitted": "Modifications autorisées",
+      "changesNotPermitted": "Modifications non autorisées",
+      "refundable": "Remboursable",
+      "nonRefundable": "Non remboursable",
+      "showDetails": "Afficher les détails",
+      "hideDetails": "Masquer les détails",
+      "reviewOption": "Examiner l'option",
+      "partnerBookingUnavailable": "La réservation partenaire n'est pas encore disponible.",
+      "flightLabel": "Vol {number}",
+      "aircraft": {
+        "widebody": "Avion de démonstration gros-porteur",
+        "narrowbody": "Avion de démonstration monocouloir",
+        "regionalJet": "Avion de démonstration régional"
+      },
+      "routeHeading": "{origin} vers {destination}"
+    },
+    "dayOffset": {
+      "plusOne": "+1 jour",
+      "plusN": "+{count} jours",
+      "minusOne": "-1 jour",
+      "minusN": "-{count} jours"
+    },
+    "localTimeNotice": "Les heures sont indiquées à l'heure locale de chaque aéroport."
   }
 }
