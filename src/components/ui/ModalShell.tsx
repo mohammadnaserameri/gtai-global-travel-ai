@@ -16,6 +16,8 @@ interface ModalShellProps {
   description?: string;
   children: ReactNode;
   className?: string;
+  /** Stable id for the dialog root, so a trigger button elsewhere can reference it via `aria-controls`. */
+  id?: string;
 }
 
 /**
@@ -32,6 +34,7 @@ export function ModalShell({
   description,
   children,
   className,
+  id,
 }: ModalShellProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +61,7 @@ export function ModalShell({
       />
       <div
         ref={panelRef}
+        id={id}
         role="dialog"
         aria-modal="true"
         aria-labelledby="gtai-modal-title"

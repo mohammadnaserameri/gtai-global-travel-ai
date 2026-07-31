@@ -16,7 +16,7 @@
  *   npm run verify:polish
  */
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { addDays, todayIso } from "../src/features/dates/date-utils";
@@ -485,6 +485,325 @@ async function main(): Promise<void> {
   ok(
     "28. a genuinely changed view state still produces a different canonical query string",
     changedParams.toString() !== noOpParams.toString(),
+  );
+
+  // =====================================================================================
+  // V2.5.1 — truthful global Highlight winners, truthful outbound copy, modal a11y/bidi,
+  // and the corrected provider contract (privacy-safe audit, trusted URL, abortable search).
+  // =====================================================================================
+
+  // --- 29-34. Global winners: a category is never handed to a runner-up ------------------------
+  // The reproduced V2.5 failure: A is genuinely cheapest, fastest, fewest-stops AND the
+  // best departure; B is worse on every dimension. B must not be labeled at all.
+  const dominantA = fakeOffer({
+    id: "dominant-a",
+    totalPrice: 100,
+    durationMinutes: 100,
+    stopCount: 0,
+    departureTime: "09:00",
+  });
+  const inferiorB = fakeOffer({
+    id: "inferior-b",
+    totalPrice: 900,
+    durationMinutes: 900,
+    stopCount: 3,
+    departureTime: "21:00",
+  });
+  const dominanceHighlights = computeHighlights([dominantA, inferiorB]);
+  check(
+    "29. the dominant offer takes the highest-priority label it truly wins",
+    dominanceHighlights.get(dominantA.id),
+    "cheapest",
+  );
+  check(
+    "30. an offer that loses every dimension receives no comparative label at all",
+    dominanceHighlights.get(inferiorB.id),
+    undefined,
+  );
+  ok(
+    "31. no runner-up 'betterDeparture' is invented when the true winner is already labeled",
+    ![...dominanceHighlights.values()].includes("betterDeparture"),
+  );
+  ok(
+    "32. no runner-up 'balanced' is invented when the true winner is already labeled",
+    ![...dominanceHighlights.values()].includes("balanced"),
+  );
+  check(
+    "33. a fully dominated two-offer set awards exactly one label in total",
+    dominanceHighlights.size,
+    1,
+  );
+  // Same shape with a third, middling offer present: the middle offer must still not
+  // inherit a category whose true winner is the already-labeled dominant offer.
+  const middlingC = fakeOffer({
+    id: "middling-c",
+    totalPrice: 500,
+    durationMinutes: 500,
+    stopCount: 2,
+    departureTime: "19:00",
+  });
+  const threeWayHighlights = computeHighlights([dominantA, inferiorB, middlingC]);
+  ok(
+    "34. with a third offer present, no runner-up still receives a category the leader truly won",
+    threeWayHighlights.get(dominantA.id) === "cheapest" &&
+      !["betterDeparture", "fastest", "fewerStops"].includes(
+        threeWayHighlights.get(middlingC.id) ?? "",
+      ) &&
+      !["betterDeparture", "fastest", "fewerStops"].includes(
+        threeWayHighlights.get(inferiorB.id) ?? "",
+      ),
+  );
+
+  // --- 35-38. Tie policy: offer id never breaks a user-facing tie into a claim -----------------
+  // Two offers with identical departure tuples (same bucket, same epoch) but different
+  // prices — the price winner takes "cheapest"; the tied departure awards nothing.
+  const departureTieA = fakeOffer({
+    id: "dep-tie-a",
+    departureTime: "08:00",
+    totalPrice: 300,
+    durationMinutes: 400,
+    stopCount: 1,
+  });
+  const departureTieB = fakeOffer({
+    id: "dep-tie-b",
+    departureTime: "08:00",
+    totalPrice: 400,
+    durationMinutes: 400,
+    stopCount: 1,
+  });
+  const departureTieHighlights = computeHighlights([departureTieA, departureTieB]);
+  ok(
+    "35. two identical departure tuples produce no 'betterDeparture' label for either offer",
+    ![...departureTieHighlights.values()].includes("betterDeparture"),
+  );
+  // Two offers with equal Best scores (identical price/duration/stops) but different
+  // departure times — "balanced" must be unawarded even though ids differ.
+  const scoreTieA = fakeOffer({
+    id: "score-tie-a",
+    totalPrice: 250,
+    durationMinutes: 250,
+    stopCount: 1,
+    departureTime: "09:00",
+  });
+  const scoreTieB = fakeOffer({
+    id: "score-tie-b",
+    totalPrice: 250,
+    durationMinutes: 250,
+    stopCount: 1,
+    departureTime: "14:00",
+  });
+  const scoreTieHighlights = computeHighlights([scoreTieA, scoreTieB]);
+  ok(
+    "36. two equal Best scores produce no 'balanced' label for either offer",
+    ![...scoreTieHighlights.values()].includes("balanced"),
+  );
+  const identicalOffers = computeHighlights([
+    fakeOffer({
+      id: "identical-1",
+      totalPrice: 400,
+      durationMinutes: 400,
+      stopCount: 1,
+    }),
+    fakeOffer({
+      id: "identical-2",
+      totalPrice: 400,
+      durationMinutes: 400,
+      stopCount: 1,
+    }),
+  ]);
+  check(
+    "37. fully identical offers receive no comparative highlight whatsoever",
+    identicalOffers.size,
+    0,
+  );
+  ok(
+    "38. the highlights module never consults offer id to break a user-facing tie",
+    !readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "features",
+        "flights",
+        "flight-offer-highlights.ts",
+      ),
+      "utf8",
+    ).includes("compareOfferIds"),
+  );
+
+  // --- 39-41. One label per offer, order independence, and filtered-set recomputation ----------
+  const mixedSet = [dominantA, inferiorB, middlingC, departureTieA, scoreTieB];
+  const mixedHighlights = computeHighlights(mixedSet);
+  ok(
+    "39. at most one highlight per offer (every key is unique and maps to a single kind)",
+    mixedHighlights.size === new Set(mixedHighlights.keys()).size,
+  );
+  check(
+    "40. highlight results are identical for a reversed input array",
+    [...computeHighlights([...mixedSet].reverse()).entries()].sort(([a], [b]) =>
+      a.localeCompare(b),
+    ),
+    [...mixedHighlights.entries()].sort(([a], [b]) => a.localeCompare(b)),
+  );
+  // Filtering to a subset must recompute winners from that subset, not reuse the
+  // full-set answer — dropping the dominant offer promotes a new, genuine winner.
+  const filteredSubset = mixedSet.filter((offer) => offer.id !== dominantA.id);
+  const subsetHighlights = computeHighlights(filteredSubset);
+  ok(
+    "41. filtering recomputes truthful winners from the displayed subset only",
+    // In the full set `dominantA` (100) was cheapest; once it is filtered out the
+    // title must pass to the genuinely cheapest remaining offer (`scoreTieB`, 250),
+    // and the best remaining morning departure must win its own category.
+    !subsetHighlights.has(dominantA.id) &&
+      mixedHighlights.get(dominantA.id) === "cheapest" &&
+      subsetHighlights.get(scoreTieB.id) === "cheapest" &&
+      subsetHighlights.get(departureTieA.id) === "betterDeparture",
+  );
+
+  // --- 42-43. The real generated offer set stays deterministic under the new algorithm ---------
+  check(
+    "42. real generated offer-set highlights are identical across repeated computation",
+    [...computeHighlights(offers).entries()].sort(([a], [b]) => a.localeCompare(b)),
+    [...computeHighlights(offers).entries()].sort(([a], [b]) => a.localeCompare(b)),
+  );
+  ok(
+    "43. every real-offer-set highlight belongs to exactly one offer that exists in the set",
+    [...computeHighlights(offers).keys()].every((id) =>
+      offers.some((offer) => offer.id === id),
+    ),
+  );
+
+  // --- 44-47. Truthful outbound copy in every locale -------------------------------------------
+  const legacyCtaCopy =
+    /view deal|continue to provider|voir l'offre|select deal|\bbook\b|\bbuy\b/i;
+  for (const [code, dictionary] of Object.entries(dictionaries)) {
+    const { outbound } = dictionary.flightResults;
+    ok(
+      `44-${code}. ${code} CTA no longer uses legacy deal/continuation wording`,
+      !legacyCtaCopy.test(outbound.cta),
+    );
+    ok(
+      `45-${code}. ${code} modal title no longer uses legacy continuation wording`,
+      !legacyCtaCopy.test(outbound.modalTitle),
+    );
+  }
+  check(
+    "46. English outbound copy uses the approved preview wording exactly",
+    [
+      enDictionary.flightResults.outbound.cta,
+      enDictionary.flightResults.outbound.modalTitle,
+      enDictionary.flightResults.outbound.modalDescription,
+    ],
+    [
+      "Preview provider hand-off",
+      "Provider hand-off preview",
+      "This demonstration does not open a real partner site.",
+    ],
+  );
+  check(
+    "47. Persian outbound copy uses the approved preview wording exactly",
+    [
+      faDictionary.flightResults.outbound.cta,
+      faDictionary.flightResults.outbound.modalTitle,
+    ],
+    ["پیش‌نمایش انتقال به ارائه‌دهنده", "پیش‌نمایش انتقال به ارائه‌دهنده"],
+  );
+
+  // --- 48-50. Modal accessibility and structured bidi ------------------------------------------
+  const resultCardSourceV251 = readFileSync(
+    join(process.cwd(), "src", "components", "flights", "ResultCard.tsx"),
+    "utf8",
+  );
+  const modalSourceV251 = readFileSync(
+    join(process.cwd(), "src", "components", "flights", "ProviderHandoffModal.tsx"),
+    "utf8",
+  );
+  ok(
+    "48. the outbound CTA exposes dialog semantics (haspopup, expanded, controls)",
+    /aria-haspopup="dialog"/.test(resultCardSourceV251) &&
+      /aria-expanded=\{handoffOpen\}/.test(resultCardSourceV251) &&
+      /aria-controls=\{handoffDialogId\}/.test(resultCardSourceV251),
+  );
+  ok(
+    "49. the modal renders origin and destination as separate bidi-isolated elements",
+    /<bdi dir="auto">\{intent\.origin\.displayName\}<\/bdi>/.test(
+      modalSourceV251,
+    ) &&
+      /<bdi dir="auto">\{intent\.destination\.displayName\}<\/bdi>/.test(
+        modalSourceV251,
+      ),
+  );
+  ok(
+    "50. the modal's route summary is not built from one interpolated template string",
+    !/routeHeading/.test(modalSourceV251),
+  );
+
+  // --- 51-56. Corrected provider contract: privacy, trusted URLs, abortable typed search -------
+  const providerTypesSource = readFileSync(
+    join(
+      process.cwd(),
+      "src",
+      "features",
+      "providers",
+      "provider-adapter-types.ts",
+    ),
+    "utf8",
+  );
+  ok(
+    "51. the hand-off audit entry carries an opaque searchContextId",
+    /searchContextId:\s*string/.test(providerTypesSource),
+  );
+  ok(
+    "52. the hand-off audit entry no longer carries the canonical searchIntentKey",
+    !providerTypesSource.includes("searchIntentKey"),
+  );
+  ok(
+    "53. the shared hand-off model no longer carries an arbitrary baseUrl",
+    !/baseUrl/.test(providerTypesSource),
+  );
+  ok(
+    "54. the hand-off model selects a trusted provider config rather than a caller-supplied origin",
+    /TrustedProviderConfig/.test(providerTypesSource) &&
+      /allowedOrigin/.test(providerTypesSource) &&
+      /TrustedHandoffUrlBuilder/.test(providerTypesSource),
+  );
+  ok(
+    "55. the provider search contract accepts an AbortSignal",
+    /signal\?:\s*AbortSignal/.test(providerTypesSource),
+  );
+  ok(
+    "56. provider search returns a discriminated success/failure result, with cancellation typed",
+    /search\(request:\s*ProviderSearchRequest\):\s*Promise<ProviderSearchResult>/.test(
+      providerTypesSource,
+    ) &&
+      /ok:\s*true/.test(providerTypesSource) &&
+      /ok:\s*false/.test(providerTypesSource) &&
+      /"cancelled"/.test(providerTypesSource) &&
+      /retryAfterMs/.test(providerTypesSource),
+  );
+
+  // --- 57-59. Still no runtime provider, no network, no new dependency -------------------------
+  const providersDirectoryFiles = readdirSync(
+    join(process.cwd(), "src", "features", "providers"),
+  );
+  check(
+    "57. the providers directory contains only the type-only scaffolding file",
+    [...providersDirectoryFiles].sort(),
+    ["provider-adapter-types.ts"],
+  );
+  ok(
+    "58. no runtime code imports the provider type scaffolding, and the modal still makes no request",
+    !resultCardSourceV251.includes("provider-adapter-types") &&
+      !modalSourceV251.includes("provider-adapter-types") &&
+      !noNetworkOrNav.test(modalSourceV251) &&
+      !/<a[\s>]/.test(modalSourceV251),
+  );
+  const packageJson: { dependencies: Record<string, string> } = JSON.parse(
+    readFileSync(join(process.cwd(), "package.json"), "utf8"),
+  );
+  check(
+    "59. runtime dependencies are unchanged (next, react, react-dom only)",
+    Object.keys(packageJson.dependencies).sort(),
+    ["next", "react", "react-dom"],
   );
 
   const total = passed + failures.length;

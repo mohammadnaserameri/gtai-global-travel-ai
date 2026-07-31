@@ -15,63 +15,39 @@ import type { FlightOffer } from "./flight-offer-types";
 export type HighlightKind =
   "cheapest" | "fastest" | "fewerStops" | "betterDeparture" | "balanced";
 
-function compareOfferIds(a: FlightOffer, b: FlightOffer): number {
-  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-}
-
-/**
- * The offer with the strictly lowest `key(offer)` — `null` if two or more
- * offers tie for lowest, since a tied "only one" claim would be false.
- * Order-independent: a full pass compares every offer against the current
- * best, so the result never depends on the input array's order.
- */
-function pickUniqueMinBy(
-  offers: readonly FlightOffer[],
-  key: (offer: FlightOffer) => number,
-): FlightOffer | null {
-  let best: FlightOffer | null = null;
-  let tie = false;
-  for (const offer of offers) {
-    if (best === null || key(offer) < key(best)) {
-      best = offer;
-      tie = false;
-    } else if (key(offer) === key(best)) {
-      tie = true;
-    }
+function compareTuples(a: readonly number[], b: readonly number[]): number {
+  for (let index = 0; index < a.length; index += 1) {
+    if (a[index] !== b[index]) return a[index] - b[index];
   }
-  return tie ? null : best;
+  return 0;
 }
 
 /**
- * The offer with the lowest `rank(offer)` tuple, comparing entries in order
- * and falling back to the offer id as a final, fully deterministic tiebreak
- * — so the result never depends on traversal order or on two offers being
- * otherwise indistinguishable.
+ * The offer with the strictly lowest `rank(offer)` tuple across the given
+ * set — `null` if two or more offers tie for lowest. Offer id is never
+ * consulted: a tie on the user-facing metric always means "no claim," never
+ * an arbitrary pick. Order-independent — every offer is compared directly
+ * against the current best, so the result never depends on the input
+ * array's order.
  */
-function pickBestBy(
+function pickUniqueBestBy(
   offers: readonly FlightOffer[],
   rank: (offer: FlightOffer) => readonly number[],
 ): FlightOffer | null {
   let best: FlightOffer | null = null;
+  let bestRank: readonly number[] | null = null;
+  let tie = false;
   for (const offer of offers) {
-    if (best === null) {
-      best = offer;
-      continue;
-    }
     const candidate = rank(offer);
-    const current = rank(best);
-    let cmp = 0;
-    for (let index = 0; index < candidate.length; index += 1) {
-      if (candidate[index] !== current[index]) {
-        cmp = candidate[index] - current[index];
-        break;
-      }
-    }
-    if (cmp < 0 || (cmp === 0 && compareOfferIds(offer, best) < 0)) {
+    if (best === null || compareTuples(candidate, bestRank!) < 0) {
       best = offer;
+      bestRank = candidate;
+      tie = false;
+    } else if (compareTuples(candidate, bestRank!) === 0) {
+      tie = true;
     }
   }
-  return best;
+  return tie ? null : best;
 }
 
 /** Lower is "more typical daytime" — morning first, then afternoon, then the fringes. */
@@ -86,14 +62,25 @@ const DEPARTURE_BUCKET_RANK: Record<
 };
 
 /**
- * At most one highlight per offer, so a card is never cluttered with
- * overlapping badges. Priority (highest first): Cheapest, Fastest, Fewer
- * stops, Better departure time, Balanced — an offer already claimed by a
- * higher-priority label is never reconsidered for a lower one. A label is
- * only ever awarded when the offer is the *unique* best on that dimension,
- * or (for the tuple-ranked labels) the unambiguous winner once id ties are
- * broken — this module never asserts "the cheapest" when two offers are
- * tied on price.
+ * At most one highlight per offer. Every category's winner is determined
+ * **once**, against the complete displayed set — never against whatever
+ * offers happen to remain after a higher-priority label was assigned. That
+ * distinction matters: an offer that is genuinely cheapest, fastest, has
+ * the fewest stops, *and* the best departure time must never make a worse
+ * offer look like the "Better departure time" pick just because the real
+ * winner already carries a different label. Priority (Cheapest > Fastest >
+ * Fewer stops > Better departure time > Balanced) only decides which single
+ * label an offer that truly wins more than one category keeps — it never
+ * hands a category to a runner-up. If the true winner of a category is
+ * already labeled from a higher-priority category, that category is simply
+ * left unawarded for this offer set, not reassigned.
+ *
+ * A category is only ever awarded when its true winner is unique — two
+ * offers tied on price, duration, stops, the departure preference tuple, or
+ * the Best score all result in that category being left unawarded. The
+ * offer id is never used to break a tie for the purpose of awarding a
+ * label (it may still be used elsewhere, e.g. Sort's own tiebreaker, but
+ * never here) — a tied metric is never turned into a comparative claim.
  *
  * Requires at least two offers: a single result has nothing to be compared
  * against, so no highlight is awarded.
@@ -104,40 +91,38 @@ export function computeHighlights(
   const highlights = new Map<string, HighlightKind>();
   if (offers.length < 2) return highlights;
 
-  const cheapest = pickUniqueMinBy(offers, (offer) => offer.totalPrice);
-  if (cheapest) highlights.set(cheapest.id, "cheapest");
+  const bounds = computeRankingBounds(offers);
 
-  const fastest = pickUniqueMinBy(
-    offers,
-    (offer) => offer.rankingMetadata.totalDurationMinutes,
-  );
-  if (fastest && !highlights.has(fastest.id)) {
-    highlights.set(fastest.id, "fastest");
-  }
+  const winners: Record<HighlightKind, FlightOffer | null> = {
+    cheapest: pickUniqueBestBy(offers, (offer) => [offer.totalPrice]),
+    fastest: pickUniqueBestBy(offers, (offer) => [
+      offer.rankingMetadata.totalDurationMinutes,
+    ]),
+    fewerStops: pickUniqueBestBy(offers, (offer) => [
+      offer.rankingMetadata.totalStopCount,
+    ]),
+    betterDeparture: pickUniqueBestBy(offers, (offer) => [
+      DEPARTURE_BUCKET_RANK[departureTimeBucketForOffer(offer)],
+      outboundItinerary(offer).departure.epochMinutes,
+    ]),
+    balanced: pickUniqueBestBy(offers, (offer) => [-bestScore(offer, bounds)]),
+  };
 
-  const fewerStops = pickUniqueMinBy(
-    offers,
-    (offer) => offer.rankingMetadata.totalStopCount,
-  );
-  if (fewerStops && !highlights.has(fewerStops.id)) {
-    highlights.set(fewerStops.id, "fewerStops");
-  }
-
-  const remainingForDeparture = offers.filter((offer) => !highlights.has(offer.id));
-  const betterDeparture = pickBestBy(remainingForDeparture, (offer) => [
-    DEPARTURE_BUCKET_RANK[departureTimeBucketForOffer(offer)],
-    outboundItinerary(offer).departure.epochMinutes,
-  ]);
-  if (betterDeparture) highlights.set(betterDeparture.id, "betterDeparture");
-
-  const remainingForBalanced = offers.filter((offer) => !highlights.has(offer.id));
-  if (remainingForBalanced.length > 0) {
-    const bounds = computeRankingBounds(offers);
-    const balanced = pickBestBy(remainingForBalanced, (offer) => [
-      // Higher score is better; negate so the shared "lowest tuple wins" rule applies.
-      -bestScore(offer, bounds),
-    ]);
-    if (balanced) highlights.set(balanced.id, "balanced");
+  const priorityOrder: readonly HighlightKind[] = [
+    "cheapest",
+    "fastest",
+    "fewerStops",
+    "betterDeparture",
+    "balanced",
+  ];
+  for (const kind of priorityOrder) {
+    const winner = winners[kind];
+    if (!winner) continue;
+    // The true winner of this category already carries a higher-priority
+    // label — leave the category unawarded rather than handing it to
+    // whichever offer happens to be second.
+    if (highlights.has(winner.id)) continue;
+    highlights.set(winner.id, kind);
   }
 
   return highlights;

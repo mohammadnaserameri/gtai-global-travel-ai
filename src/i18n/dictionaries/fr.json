@@ -743,9 +743,9 @@
       }
     },
     "outbound": {
-      "cta": "Voir l'offre",
-      "modalTitle": "Continuer vers le fournisseur (démonstration)",
-      "modalDescription": "GTAI ne vous redirige pas vers un vrai site partenaire.",
+      "cta": "Aperçu du transfert fournisseur",
+      "modalTitle": "Aperçu du transfert vers le fournisseur",
+      "modalDescription": "Cette démonstration n'ouvre pas de site partenaire réel.",
       "points": [
         "Il s'agit d'un transfert de démonstration vers un fournisseur, pas d'une véritable redirection.",
         "Le prix affiché est une offre de démonstration, pas un tarif en direct.",

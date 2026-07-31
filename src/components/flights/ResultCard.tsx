@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { ProviderHandoffModal } from "@/components/flights/ProviderHandoffModal";
+import { RouteArrow } from "@/components/flights/RouteArrow";
 
 interface ResultCardProps {
   offer: FlightOffer;
@@ -43,15 +44,6 @@ const ITINERARY_LABEL_KEY: Record<
   outbound: "outbound",
   inbound: "inbound",
 };
-
-/** A route arrow that mirrors under RTL, exactly like the Date Picker's month chevrons. */
-function RouteArrow() {
-  return (
-    <span aria-hidden="true" className="text-foreground-muted rtl:-scale-x-100">
-      →
-    </span>
-  );
-}
 
 /**
  * Renders a `"{token}"` template as structured JSX rather than one opaque
@@ -263,6 +255,7 @@ export function ResultCard({
   const [handoffOpen, setHandoffOpen] = useState(false);
   const headingId = useId();
   const detailId = useId();
+  const handoffDialogId = useId();
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const highlightCopy = highlight ? labels.highlights[highlight] : null;
 
@@ -398,7 +391,13 @@ export function ResultCard({
               <ChevronDownIcon size={16} />
             </span>
           </button>
-          <Button variant="primary" onClick={() => setHandoffOpen(true)}>
+          <Button
+            variant="primary"
+            aria-haspopup="dialog"
+            aria-expanded={handoffOpen}
+            aria-controls={handoffDialogId}
+            onClick={() => setHandoffOpen(true)}
+          >
             {labels.outbound.cta}
           </Button>
         </div>
@@ -464,6 +463,7 @@ export function ResultCard({
       ) : null}
 
       <ProviderHandoffModal
+        dialogId={handoffDialogId}
         open={handoffOpen}
         onClose={() => setHandoffOpen(false)}
         offer={offer}

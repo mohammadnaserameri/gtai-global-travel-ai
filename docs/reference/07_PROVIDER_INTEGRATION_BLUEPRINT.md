@@ -1,8 +1,8 @@
 # GTAI V1.2-G (partial) — Provider Integration Blueprint
 
 **Module:** 07 of 07 — Flight Details and Affiliate Redirect.
-**Status:** Blueprint only. The outbound placeholder it describes the _destination_ for is implemented in V2.5; a real provider adapter is **not** implemented anywhere in this codebase.
-**Base checkpoint:** `83937ce933ba23ce1358176b37fc9f7e4da5da8f` (V2.4 — Functional Flight Filters, frozen)
+**Status:** **Partially frozen.** Frozen: this blueprint and its type contract, plus the outbound _preview_ placeholder it describes the destination for (implemented in V2.5, corrected in V2.5.1). Pending: a dedicated Flight Details route, a real Provider Adapter, live inventory, and a real affiliate redirect. Booking and payment remain permanently outside GTAI core (section 11). A real provider adapter is **not** implemented anywhere in this codebase.
+**Base checkpoints:** `83937ce933ba23ce1358176b37fc9f7e4da5da8f` (V2.4 — Functional Flight Filters, frozen) → `16606abe4dd33b41203a54c11b586f1325eab5f7` (V2.5 — Results Polish and Outbound Blueprint, frozen); corrected in V2.5.1.
 **Type scaffolding:** `src/features/providers/provider-adapter-types.ts` — type-only, never imported by a runtime code path
 **Implementation record:** `docs/implementation/V2_5_FLIGHT_RESULTS_POLISH_AND_OUTBOUND_BLUEPRINT.md`
 
@@ -14,7 +14,11 @@ This document is the forward-looking plan for connecting a **real** flight provi
 
 ## 2. Provider adapter contract
 
-A real integration implements `ProviderAdapter` (`provider-adapter-types.ts`): an `identity` (a provider id and display name — never a bare display name, so audit logs and disclosures can always name the actual provider), a `search(request)` returning raw provider envelopes, and a `normalize(raw, currency)` turning one provider's raw payload into GTAI's own `FlightOffer` shape. GTAI's ranking, filtering and card rendering all already operate on `FlightOffer` — a real adapter's entire job is producing that shape correctly and honestly; nothing downstream needs to change.
+A real integration implements `ProviderAdapter` (`provider-adapter-types.ts`): an `identity` (a provider id and display name — never a bare display name, so audit logs and disclosures can always name the actual provider), a `search(request)` returning a typed `ProviderSearchResult`, and a `normalize(raw, currency)` turning one provider's raw payload into GTAI's own `FlightOffer` shape. GTAI's ranking, filtering and card rendering all already operate on `FlightOffer` — a real adapter's entire job is producing that shape correctly and honestly; nothing downstream needs to change.
+
+**Cancellation.** `ProviderSearchRequest` carries an optional `signal: AbortSignal`. A superseded search (the visitor edited their search before the previous one resolved) must be cancelled through that signal, exactly as `FlightResultsExperience`'s existing demonstration-repository fetch effect already does with `AbortController` — the adapter contract deliberately reuses that model rather than inventing a second one.
+
+**Typed results, not thrown errors.** `search` resolves to a discriminated `ProviderSearchResult` — `{ ok: true, rawOffers, completedAt }` or `{ ok: false, failure }` — so a caller `switch`es on an explicit outcome instead of catching an untyped exception. A genuinely empty result, a cancellation, and a provider outage are three distinct, individually-handleable states, never one ambiguous empty array.
 
 ## 3. Offer normalization
 
@@ -28,17 +32,36 @@ Every normalized offer carries a `PriceFreshness`: `observedAt` (the instant the
 
 A real hand-off carries `AffiliateTrackingParams` (`clickId`, `campaignId`, optional `subId`) as part of the `ProviderHandoffUrlModel`. These identify the referral for commission accounting only — they must never carry traveler-identifying data (name, email, payment details), and must never be logged anywhere the traveler's search history could be reconstructed from them. `clickId` is generated per hand-off attempt, not per session, so one click cannot be correlated across multiple offers.
 
-## 6. Provider handoff URL model
+## 6. Provider handoff URL model — trusted construction only
 
-`ProviderHandoffUrlModel` is `{ baseUrl, providerOfferReference, tracking }`. The `providerOfferReference` is the provider's own id for the specific offer (from `NormalizedProviderOffer.providerOfferReference`) — GTAI never invents or rewrites a provider's reference. The real hand-off, when built, replaces `ProviderHandoffModal`'s "Close"-only interstitial with a real outbound link built from this model, opened the same way the current placeholder is reached (from the card's CTA), so the UI entry point does not need to change — only what it does once opened.
+`ProviderHandoffUrlModel` is `{ providerId, providerOfferReference, tracking }`. It deliberately carries **no destination URL and no origin of its own**. An earlier draft of this blueprint modeled the destination as a `baseUrl: string` on the shared model; that was wrong, because it would let a value that ultimately originates in a raw provider response choose an unrestricted redirect origin — an open-redirect primitive baked straight into the contract. It has been removed.
 
-## 7. Redirect audit logging plan
+Instead:
 
-Every real hand-off attempt logs a `ProviderHandoffAuditEntry`: `occurredAt`, `providerId`, `offerId`, `searchIntentKey` (the same canonical key `FlightResultsExperience` already computes for repository-fetch isolation — reused, not reinvented), and an `outcome` of `opened | redirected | cancelled | failed`. This is what makes "GTAI may earn a commission" (already stated in `dictionary.affiliate`) auditable rather than just a disclosure sentence.
+- `providerId` selects a **server-side, operator-configured** `TrustedProviderConfig`, which owns the single allowlisted origin for that provider. Only `https:` origins may be configured in production.
+- A raw provider payload can never supply, extend, or override that origin. Provider data contributes only the opaque `providerOfferReference` (the provider's own id for the specific offer — GTAI never invents or rewrites it) and nothing that influences _where_ the hand-off points.
+- A trusted URL builder (`TrustedHandoffUrlBuilder`) combines the model with the looked-up config. It must build the result with the `URL` / `URLSearchParams` APIs — never string concatenation — and must reject anything that is not the allowlisted host: other hosts, `javascript:`, `data:`, protocol-relative (`//host`) values, and URLs carrying embedded credentials.
+- The fully-built destination is re-validated **immediately before navigation**, not only at construction time, so a value that passed construction can never be mutated into something else in between.
+
+The real hand-off, when built, replaces `ProviderHandoffModal`'s preview-only interstitial with a real outbound link built this way, reached from the same card CTA — so the UI entry point does not change, only what it does once opened. No URL builder and no redirect exist in this codebase today; `TrustedHandoffUrlBuilder` is a type, not an implementation.
+
+## 7. Redirect audit logging plan — privacy-safe correlation
+
+Every real hand-off attempt logs a `ProviderHandoffAuditEntry`: `occurredAt`, `providerId`, `offerId`, `searchContextId`, and an `outcome` of `opened | redirected | cancelled | failed`.
+
+`searchContextId` is a **randomly generated opaque identifier**, minted per search context. An earlier draft proposed writing the canonical Search Intent key here; that was wrong. That key contains the route, the travel dates and the traveler counts — writing it into an outbound commission log puts a traveler's itinerary directly into an operational log line. Hashing it is **not** an adequate substitute either: the search domain (a few thousand routes × a bounded date window × small traveler counts) is small enough to brute-force a hash back to the original search, so a hash of the canonical intent must not be treated as anonymous.
+
+Requirements for this log:
+
+- `searchContextId` is randomly/securely generated, never reversibly derived from origin, destination, dates or traveler counts.
+- The canonical Search Intent query string never appears in an audit entry.
+- No passenger identity and no payment information ever appears — GTAI holds neither (see section 11).
+- Short, documented retention, and an access-controlled operational log rather than general application logging.
+- Correlation back to a search happens only where genuinely required for support or commission auditing, through a separately access-controlled mapping — not by making the log line itself self-describing.
 
 ## 8. Failure modes
 
-A real adapter must distinguish `timeout`, `rateLimited`, `invalidResponse`, `noAvailability`, `authenticationFailed`, and `unknown` (`ProviderFailureReason`) — never collapse all of these into one generic error state. `rateLimited` and `timeout` are retryable with backoff; `noAvailability` is not an error at all and should present as an empty/partial result, not the Results page's existing error state; `authenticationFailed` and `invalidResponse` are configuration problems that must alert GTAI's own operators, not the traveler.
+A real adapter must distinguish `cancelled`, `timeout`, `rateLimited`, `invalidResponse`, `noAvailability`, `authenticationFailed`, and `unknown` (`ProviderFailureReason`) — never collapse all of these into one generic error state. `cancelled` (a caller-initiated abort via `ProviderSearchRequest.signal`) is explicitly distinct from `timeout` — a search the visitor themselves superseded must never be reported as a provider being slow. `rateLimited` and `timeout` are retryable with backoff, and `rateLimited` may carry an optional `retryAfterMs` when the provider states one. `noAvailability` is not an error at all and should present as an empty/partial result, not the Results page's existing error state. `authenticationFailed` and `invalidResponse` are configuration problems that must alert GTAI's own operators. No raw technical failure detail is ever intended for customer display — the traveler sees GTAI's own localized state, never a provider's error text.
 
 ## 9. Rate limit and cache strategy
 
@@ -52,6 +75,18 @@ Every provider relationship requires: an official API agreement or an approved a
 
 GTAI's own codebase will **never** collect payment details, hold a booking record, or complete a purchase. A real integration only ever hands the traveler off to the provider's own site to finish the transaction there. `ProviderHandoffModal`'s current placeholder copy ("Booking and payment are not handled in this build") is the honest statement of where that boundary sits today; the real version states the same boundary permanently, not just "not yet."
 
-## 12. Status
+## 12. Status — partially frozen
 
-Real providers remain **pending** (V3 — Provider Adapter Integration, not started). Nothing in this document is wired into the running application; `provider-adapter-types.ts` is imported by nothing outside itself.
+Module 07 as a whole is **not** implemented. What is frozen, and what is not:
+
+| Area                                                      | Status                                     |
+| --------------------------------------------------------- | ------------------------------------------ |
+| This blueprint and its type contract                      | **Frozen** (V2.5, corrected in V2.5.1)     |
+| Outbound **preview** placeholder (`ProviderHandoffModal`) | **Frozen** (V2.5, corrected in V2.5.1)     |
+| Dedicated Flight Details route                            | Pending — not analyzed                     |
+| Real Provider Adapter                                     | Pending — V3, not started                  |
+| Live inventory / real prices                              | Pending                                    |
+| Real affiliate redirect                                   | Pending — V4                               |
+| Booking and payment                                       | Permanently outside GTAI core (section 11) |
+
+Nothing in this document is wired into the running application; `provider-adapter-types.ts` is imported by nothing outside itself, and no `TrustedHandoffUrlBuilder`, adapter or redirect exists.

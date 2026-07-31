@@ -1013,9 +1013,9 @@
       }
     },
     "outbound": {
-      "cta": "View deal",
-      "modalTitle": "Continue to provider (demonstration)",
-      "modalDescription": "GTAI is not redirecting you to a real partner site.",
+      "cta": "Preview provider hand-off",
+      "modalTitle": "Provider hand-off preview",
+      "modalDescription": "This demonstration does not open a real partner site.",
       "points": [
         "This is a demonstration provider hand-off, not a real redirect.",
         "The price shown is a demo offer, not a live fare.",
