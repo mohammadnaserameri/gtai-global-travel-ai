@@ -1,4 +1,7 @@
-import { defaultLocale, isSupportedLocale } from "@/config/locales";
+// Relative rather than aliased so these pure string helpers can also be
+// imported by the deterministic `verify-*.ts` scripts, which run under plain
+// Node without the bundler's `@/` path resolution.
+import { defaultLocale, isSupportedLocale } from "../config/locales";
 
 /**
  * URL helpers for the /[locale]/... route shape.

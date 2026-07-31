@@ -40,6 +40,10 @@
     "flightResults": {
       "title": "Flight results — GTAI",
       "description": "Demonstration flight results generated locally by GTAI. Schedules and prices are not live."
+    },
+    "flightDetails": {
+      "title": "Flight details — GTAI",
+      "description": "Full itinerary, fare and baggage detail for a locally generated GTAI demonstration option. Schedules and prices are not live."
     }
   },
   "common": {
@@ -1024,6 +1028,85 @@
         "A future version will connect real providers and affiliate redirects here."
       ],
       "close": "Close"
+    },
+    "viewFlightDetails": "View flight details"
+  },
+  "flightDetails": {
+    "heading": "Flight details",
+    "backToResults": "Back to results",
+    "returnToResults": "Return to flight results",
+    "editSearch": "Edit search",
+    "retry": "Retry",
+    "loading": "Preparing demonstration flight details…",
+    "disclosure": {
+      "title": "Demonstration flight details — schedules and prices are not live.",
+      "points": [
+        "Schedules and prices on this page are generated locally by GTAI.",
+        "No live flight inventory is connected in this version.",
+        "Airport-local times are generated for interface and workflow validation.",
+        "No partner booking or redirect is available yet."
+      ]
+    },
+    "states": {
+      "invalidSearch": "Some flight-search details are missing or invalid.",
+      "invalidOfferId": "This demonstration option link is invalid.",
+      "notFound": "This demonstration option could not be found.",
+      "excludedByFilters": "This option is not available under the current filters.",
+      "excludedHint": "It exists in this demonstration search, but your current filters hide it.",
+      "clearFiltersAndView": "Clear filters and view this option",
+      "error": "We could not prepare these demonstration flight details."
+    },
+    "itinerary": {
+      "overview": "Itinerary overview",
+      "outbound": "Outbound",
+      "inbound": "Return",
+      "segmentDetails": "Segment details",
+      "depart": "Depart",
+      "arrive": "Arrive",
+      "connection": "Connection",
+      "layoverAt": "Layover at {airport}",
+      "totalDuration": "Total duration",
+      "localTimeNotice": "Times are shown in each airport's local time.",
+      "flightLabel": "Flight {number}",
+      "operatedBy": "Operated by {carrier}"
+    },
+    "fare": {
+      "heading": "Fare and baggage",
+      "cabinClass": "Cabin class",
+      "carryOn": "Carry-on baggage",
+      "checkedBag": "Checked baggage",
+      "conditions": "Fare conditions",
+      "included": "Included",
+      "notIncluded": "Not included",
+      "refundable": "Refundable",
+      "nonRefundable": "Non-refundable",
+      "changesPermitted": "Changes permitted",
+      "changesNotPermitted": "Changes not permitted",
+      "scopeNotice": "Only the conditions above are modelled in this demonstration. No baggage weight, fee or fare-brand detail is generated."
+    },
+    "price": {
+      "heading": "Price summary",
+      "demonstrationTotal": "Demonstration total",
+      "perTraveler": "Per traveler",
+      "travelers": "Travelers",
+      "currency": "Currency",
+      "noBreakdownNotice": "This demonstration models a total and a per-traveler amount only — no tax, fee or surcharge breakdown is generated."
+    },
+    "highlight": {
+      "heading": "Why this option?",
+      "scope": "Compared against the {count} options currently shown by your filters and sort.",
+      "scopeOne": "Compared against the 1 option currently shown by your filters and sort.",
+      "metric": {
+        "cheapest": "Lowest demonstration total among the currently displayed options.",
+        "fastest": "Shortest total demonstration journey time among the currently displayed options.",
+        "fewerStops": "Fewest total stops among the currently displayed options.",
+        "betterDeparture": "Outbound departure closest to a typical daytime schedule among the currently displayed options.",
+        "balanced": "Balances demonstration price, duration and stops under GTAI's transparent score."
+      }
+    },
+    "provider": {
+      "heading": "Provider hand-off",
+      "notice": "GTAI is not connected to a provider in this version. The preview below shows what a hand-off would state, and opens nothing."
     }
   }
 }

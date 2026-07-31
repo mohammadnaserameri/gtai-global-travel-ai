@@ -40,6 +40,10 @@
     "flightResults": {
       "title": "Résultats de vol — GTAI",
       "description": "Résultats de vol de démonstration générés localement par GTAI. Les horaires et les prix ne sont pas en direct."
+    },
+    "flightDetails": {
+      "title": "Détails du vol — GTAI",
+      "description": "Itinéraire complet, tarif et bagages d'une option de démonstration générée localement par GTAI. Les horaires et les prix ne sont pas en direct."
     }
   },
   "common": {
@@ -754,6 +758,85 @@
         "Une future version connectera ici de vrais fournisseurs et de vraies redirections d'affiliation."
       ],
       "close": "Fermer"
+    },
+    "viewFlightDetails": "Voir les détails du vol"
+  },
+  "flightDetails": {
+    "heading": "Détails du vol",
+    "backToResults": "Retour aux résultats",
+    "returnToResults": "Retourner aux résultats de vol",
+    "editSearch": "Modifier la recherche",
+    "retry": "Réessayer",
+    "loading": "Préparation des détails de vol de démonstration…",
+    "disclosure": {
+      "title": "Détails de vol de démonstration — les horaires et les prix ne sont pas en direct.",
+      "points": [
+        "Les horaires et les prix de cette page sont générés localement par GTAI.",
+        "Aucun inventaire de vols en direct n'est connecté dans cette version.",
+        "Les heures locales des aéroports sont générées pour valider l'interface et le parcours.",
+        "Aucune réservation ni redirection partenaire n'est encore disponible."
+      ]
+    },
+    "states": {
+      "invalidSearch": "Certains détails de la recherche de vol sont manquants ou invalides.",
+      "invalidOfferId": "Ce lien vers une option de démonstration est invalide.",
+      "notFound": "Cette option de démonstration est introuvable.",
+      "excludedByFilters": "Cette option n'est pas disponible avec les filtres actuels.",
+      "excludedHint": "Elle existe dans cette recherche de démonstration, mais vos filtres actuels la masquent.",
+      "clearFiltersAndView": "Effacer les filtres et voir cette option",
+      "error": "Nous n'avons pas pu préparer ces détails de vol de démonstration."
+    },
+    "itinerary": {
+      "overview": "Aperçu de l'itinéraire",
+      "outbound": "Aller",
+      "inbound": "Retour",
+      "segmentDetails": "Détail des segments",
+      "depart": "Départ",
+      "arrive": "Arrivée",
+      "connection": "Correspondance",
+      "layoverAt": "Escale à {airport}",
+      "totalDuration": "Durée totale",
+      "localTimeNotice": "Les heures sont affichées à l'heure locale de chaque aéroport.",
+      "flightLabel": "Vol {number}",
+      "operatedBy": "Opéré par {carrier}"
+    },
+    "fare": {
+      "heading": "Tarif et bagages",
+      "cabinClass": "Classe de cabine",
+      "carryOn": "Bagage à main",
+      "checkedBag": "Bagage en soute",
+      "conditions": "Conditions tarifaires",
+      "included": "Inclus",
+      "notIncluded": "Non inclus",
+      "refundable": "Remboursable",
+      "nonRefundable": "Non remboursable",
+      "changesPermitted": "Modifications autorisées",
+      "changesNotPermitted": "Modifications non autorisées",
+      "scopeNotice": "Seules les conditions ci-dessus sont modélisées dans cette démonstration. Aucun poids de bagage, frais ou nom de marque tarifaire n'est généré."
+    },
+    "price": {
+      "heading": "Récapitulatif du prix",
+      "demonstrationTotal": "Total de démonstration",
+      "perTraveler": "Par voyageur",
+      "travelers": "Voyageurs",
+      "currency": "Devise",
+      "noBreakdownNotice": "Cette démonstration ne modélise qu'un total et un montant par voyageur — aucun détail de taxes, de frais ou de suppléments n'est généré."
+    },
+    "highlight": {
+      "heading": "Pourquoi cette option ?",
+      "scope": "Comparée aux {count} options actuellement affichées par vos filtres et votre tri.",
+      "scopeOne": "Comparée à la seule option actuellement affichée par vos filtres et votre tri.",
+      "metric": {
+        "cheapest": "Total de démonstration le plus bas parmi les options actuellement affichées.",
+        "fastest": "Durée de trajet de démonstration la plus courte parmi les options actuellement affichées.",
+        "fewerStops": "Nombre total d'escales le plus faible parmi les options actuellement affichées.",
+        "betterDeparture": "Départ aller le plus proche d'un horaire de journée habituel parmi les options actuellement affichées.",
+        "balanced": "Équilibre le prix, la durée et les escales de démonstration selon le score transparent de GTAI."
+      }
+    },
+    "provider": {
+      "heading": "Transfert vers le fournisseur",
+      "notice": "GTAI n'est connecté à aucun fournisseur dans cette version. L'aperçu ci-dessous montre ce qu'un transfert indiquerait, et n'ouvre rien."
     }
   }
 }

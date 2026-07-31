@@ -177,11 +177,72 @@ export function sanitizeFiltersAgainstOffers(
   };
 }
 
+/**
+ * The observed maxima the serializer compares numeric filters against when
+ * deciding whether a value is restrictive enough to be worth writing down.
+ *
+ * The `null` case is the important one, and it is deliberately part of the
+ * type rather than encoded as a magic number. It means **"the complete offer
+ * set is not available here"** — not "there is no maximum", and certainly not
+ * "the maximum is zero". A page that has not (or cannot) fetch offers still
+ * holds a format-valid numeric filter parsed from the URL; it simply has
+ * nothing to assess that value against yet. Dropping the value in that
+ * situation would silently discard part of the visitor's view state on the
+ * way back to Results.
+ *
+ * So: a number means offer-aware serialization (omit anything at or above the
+ * real maximum); `null` means format-level serialization (keep the parsed
+ * value verbatim and let Results sanitize it once its own offer set
+ * resolves). No sentinel — no `Infinity`, no `-Infinity`, no
+ * `Number.MAX_SAFE_INTEGER` — is ever used to fake an unknown bound, and no
+ * sentinel is ever written into a URL.
+ */
+export interface ResultsSerializationBounds {
+  readonly priceMax: number | null;
+  readonly durationMax: number | null;
+}
+
+/**
+ * The single numeric-serialization rule, shared by Price and Duration:
+ *
+ * - `null` value → omit (the filter is unset).
+ * - unknown maximum → serialize (format-valid, not yet assessable).
+ * - known maximum, value below it → serialize (genuinely restrictive).
+ * - known maximum, value at or above it → omit (equivalent to unrestricted).
+ */
+function serializesNumericFilter(
+  value: number | null,
+  max: number | null,
+): value is number {
+  if (value === null) return false;
+  return max === null || value < max;
+}
+
+/**
+ * Derives serialization bounds from an offer set — the one place that decides
+ * what "the bounds are known" means, so Results and Details can never disagree
+ * about it.
+ *
+ * An empty set yields unknown bounds rather than numbers: `Math.min`/`Math.max`
+ * over nothing produce `Infinity`/`-Infinity`, which are exactly the sentinels
+ * this contract refuses to traffic in. Duration is measured per itinerary (see
+ * `durationBounds`), never as a combined round-trip total.
+ */
+export function serializationBoundsForOffers(
+  offers: readonly FlightOffer[],
+): ResultsSerializationBounds {
+  if (offers.length === 0) return { priceMax: null, durationMax: null };
+  return {
+    priceMax: priceBounds(offers).max,
+    durationMax: durationBounds(offers).max,
+  };
+}
+
 /** Writes the canonical filter/sort parameters onto an existing `URLSearchParams`, replacing any previous values for these keys. */
 export function appendResultsViewStateParams(
   params: URLSearchParams,
   state: ResultsViewState,
-  defaults: { readonly priceMax: number; readonly durationMax: number },
+  bounds: ResultsSerializationBounds,
 ): void {
   for (const key of Object.values(FILTER_PARAM)) params.delete(key);
 
@@ -205,16 +266,12 @@ export function appendResultsViewStateParams(
   if (departTimes.length > 0)
     params.set(FILTER_PARAM.departTime, departTimes.join(","));
 
-  if (
-    state.filters.maxTotalPrice !== null &&
-    state.filters.maxTotalPrice < defaults.priceMax
-  ) {
+  if (serializesNumericFilter(state.filters.maxTotalPrice, bounds.priceMax)) {
     params.set(FILTER_PARAM.maxPrice, String(state.filters.maxTotalPrice));
   }
 
   if (
-    state.filters.maxDurationMinutes !== null &&
-    state.filters.maxDurationMinutes < defaults.durationMax
+    serializesNumericFilter(state.filters.maxDurationMinutes, bounds.durationMax)
   ) {
     params.set(FILTER_PARAM.maxDuration, String(state.filters.maxDurationMinutes));
   }
@@ -242,11 +299,15 @@ export function appendResultsViewStateParams(
  * parameter — including a stale or hand-edited filter key — is dropped,
  * since the canonical filter params above are the only ones this contract
  * recognizes.
+ *
+ * `bounds` decides only how the two numeric filters are treated: offer-aware
+ * omission when the maxima are known, verbatim preservation when they are not.
+ * See `ResultsSerializationBounds`.
  */
 export function buildResultsSearchParams(
   currentParams: URLSearchParams,
   state: ResultsViewState,
-  defaults: { readonly priceMax: number; readonly durationMax: number },
+  bounds: ResultsSerializationBounds,
 ): URLSearchParams {
   const next = new URLSearchParams();
   for (const key of Object.values(SEARCH_PARAM)) {
@@ -256,7 +317,7 @@ export function buildResultsSearchParams(
   const devScenario = currentParams.get(DEV_SCENARIO_PARAM);
   if (devScenario !== null) next.set(DEV_SCENARIO_PARAM, devScenario);
 
-  appendResultsViewStateParams(next, state, defaults);
+  appendResultsViewStateParams(next, state, bounds);
   return next;
 }
 

@@ -22,15 +22,13 @@ import {
 } from "@/features/flights/flight-offer-repository";
 import { sortOffers } from "@/features/flights/flight-offer-ranking";
 import { computeHighlights } from "@/features/flights/flight-offer-highlights";
+import { buildFlightDetailsUrl } from "@/features/flights/details/flight-details-url";
 import { applyFilters } from "@/features/flights/filters/flight-filter-application";
-import {
-  durationBounds,
-  priceBounds,
-} from "@/features/flights/filters/flight-filter-facets";
 import {
   buildResultsSearchParams,
   parseResultsViewState,
   sanitizeFiltersAgainstOffers,
+  serializationBoundsForOffers,
 } from "@/features/flights/filters/flight-filter-url";
 import {
   EMPTY_FILTER_STATE,
@@ -254,14 +252,10 @@ export function FlightResultsExperience({
     const currentParams = new URLSearchParams(paramsString);
     const raw = parseResultsViewState(currentParams);
     const sanitized = sanitizeFiltersAgainstOffers(raw.filters, offers);
-    const bounds = {
-      priceMax: priceBounds(offers).max,
-      durationMax: durationBounds(offers).max,
-    };
     const canonicalParams = buildResultsSearchParams(
       currentParams,
       { sort: raw.sort, filters: sanitized },
-      bounds,
+      serializationBoundsForOffers(offers),
     );
     const canonicalString = canonicalParams.toString();
     if (canonicalString !== paramsString) {
@@ -355,14 +349,16 @@ export function FlightResultsExperience({
 
   function commitViewState(next: ResultsViewState) {
     const currentParams = new URLSearchParams(paramsString);
-    const bounds =
-      repositoryOffers.length > 0
-        ? {
-            priceMax: priceBounds(repositoryOffers).max,
-            durationMax: durationBounds(repositoryOffers).max,
-          }
-        : { priceMax: 0, durationMax: 0 };
-    const nextParams = buildResultsSearchParams(currentParams, next, bounds);
+    // Results always reaches this point with a resolved repository set, so the
+    // bounds are concrete whenever there is anything to measure. The empty
+    // case yields unknown bounds rather than a fake zero — though it cannot
+    // change what is written, because `sanitizeFiltersAgainstOffers` has
+    // already reduced both numeric filters to `null` against an empty set.
+    const nextParams = buildResultsSearchParams(
+      currentParams,
+      next,
+      serializationBoundsForOffers(repositoryOffers),
+    );
     const nextQueryString = nextParams.toString();
     // Every user-initiated view-state change (a checkbox, a range commit, a
     // Sort change, a chip removal, Clear all, or the Mobile Sheet's Apply)
@@ -548,6 +544,13 @@ export function FlightResultsExperience({
                       labels={labels}
                       cabinLabel={cabinLabel}
                       highlight={highlights.get(offer.id)}
+                      detailsHref={buildFlightDetailsUrl(
+                        locale,
+                        offer.id,
+                        new URLSearchParams(paramsString),
+                        viewState,
+                        repositoryOffers,
+                      )}
                     />
                   ))}
                 </div>

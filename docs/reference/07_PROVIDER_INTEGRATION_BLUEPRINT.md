@@ -1,7 +1,7 @@
 # GTAI V1.2-G (partial) — Provider Integration Blueprint
 
 **Module:** 07 of 07 — Flight Details and Affiliate Redirect.
-**Status:** **Partially frozen.** Frozen: this blueprint and its type contract, plus the outbound _preview_ placeholder it describes the destination for (implemented in V2.5, corrected in V2.5.1). Pending: a dedicated Flight Details route, a real Provider Adapter, live inventory, and a real affiliate redirect. Booking and payment remain permanently outside GTAI core (section 11). A real provider adapter is **not** implemented anywhere in this codebase.
+**Status:** **Partially frozen.** Frozen: this blueprint and its type contract, plus the outbound _preview_ placeholder it describes the destination for (implemented in V2.5, corrected in V2.5.1 — frozen at `c711662a6ce51b607af9d95cbd395c131fd3fbd0`). The dedicated Flight Details route, which hosts a second copy of that preview, is implemented in V2.6 (`docs/reference/08_FLIGHT_DETAILS.md`). Pending: a real Provider Adapter, live inventory, and a real affiliate redirect. Booking and payment remain permanently outside GTAI core (section 11). A real provider adapter is **not** implemented anywhere in this codebase.
 **Base checkpoints:** `83937ce933ba23ce1358176b37fc9f7e4da5da8f` (V2.4 — Functional Flight Filters, frozen) → `16606abe4dd33b41203a54c11b586f1325eab5f7` (V2.5 — Results Polish and Outbound Blueprint, frozen); corrected in V2.5.1.
 **Type scaffolding:** `src/features/providers/provider-adapter-types.ts` — type-only, never imported by a runtime code path
 **Implementation record:** `docs/implementation/V2_5_FLIGHT_RESULTS_POLISH_AND_OUTBOUND_BLUEPRINT.md`
@@ -79,14 +79,14 @@ GTAI's own codebase will **never** collect payment details, hold a booking recor
 
 Module 07 as a whole is **not** implemented. What is frozen, and what is not:
 
-| Area                                                      | Status                                     |
-| --------------------------------------------------------- | ------------------------------------------ |
-| This blueprint and its type contract                      | **Frozen** (V2.5, corrected in V2.5.1)     |
-| Outbound **preview** placeholder (`ProviderHandoffModal`) | **Frozen** (V2.5, corrected in V2.5.1)     |
-| Dedicated Flight Details route                            | Pending — not analyzed                     |
-| Real Provider Adapter                                     | Pending — V3, not started                  |
-| Live inventory / real prices                              | Pending                                    |
-| Real affiliate redirect                                   | Pending — V4                               |
-| Booking and payment                                       | Permanently outside GTAI core (section 11) |
+| Area                                                      | Status                                           |
+| --------------------------------------------------------- | ------------------------------------------------ |
+| This blueprint and its type contract                      | **Frozen** (V2.5, corrected in V2.5.1)           |
+| Outbound **preview** placeholder (`ProviderHandoffModal`) | **Frozen** (V2.5, corrected in V2.5.1)           |
+| Dedicated Flight Details route                            | **Implemented in V2.6** — `08_FLIGHT_DETAILS.md` |
+| Real Provider Adapter                                     | Pending — V3, not started                        |
+| Live inventory / real prices                              | Pending                                          |
+| Real affiliate redirect                                   | Pending — V4                                     |
+| Booking and payment                                       | Permanently outside GTAI core (section 11)       |
 
 Nothing in this document is wired into the running application; `provider-adapter-types.ts` is imported by nothing outside itself, and no `TrustedHandoffUrlBuilder`, adapter or redirect exists.

@@ -62,6 +62,8 @@ import {
   parseResultsViewState,
   parseSortOption,
   sanitizeFiltersAgainstOffers,
+  serializationBoundsForOffers,
+  type ResultsSerializationBounds,
 } from "../src/features/flights/filters/flight-filter-url";
 
 let passed = 0;
@@ -1508,6 +1510,178 @@ async function main(): Promise<void> {
     "105. the no-op comparison preserves the development-scenario escape hatch unchanged",
     noOpResultParams.get("__devScenario"),
     noOpCurrentParams.get("__devScenario"),
+  );
+
+  // --- 106-118. Serialization bounds: known maxima vs. unknown maxima ------------------------
+  //
+  // The serializer's numeric policy has two modes, and the difference is
+  // carried by the type (`number | null`), not by a sentinel. A number means
+  // the complete offer set is available and offer-aware omission applies; a
+  // null means the caller has no offer set to assess the value against — the
+  // Details page's invalid-offer-id, repository-error and empty-result states,
+  // for instance — and a format-valid value must survive so "Back to results"
+  // does not silently drop part of the visitor's view state. Every check below
+  // drives the real shared serializer; none reimplements the rule.
+  const knownBounds: ResultsSerializationBounds = {
+    priceMax: dynPrice.max,
+    durationMax: dynDuration.max,
+  };
+  const unknownBounds: ResultsSerializationBounds = {
+    priceMax: null,
+    durationMax: null,
+  };
+
+  function serializeWith(
+    filters: Partial<FlightFilterState>,
+    bounds: ResultsSerializationBounds,
+    sort: ResultsViewState["sort"] = "best",
+  ): URLSearchParams {
+    const target = new URLSearchParams();
+    appendResultsViewStateParams(
+      target,
+      { sort, filters: { ...EMPTY_FILTER_STATE, ...filters } },
+      bounds,
+    );
+    return target;
+  }
+
+  check(
+    "106a. serializationBoundsForOffers reports the shared observed maxima for a real offer set",
+    serializationBoundsForOffers(offers),
+    { priceMax: dynPrice.max, durationMax: dynDuration.max },
+  );
+  check(
+    "106b. serializationBoundsForOffers reports unknown bounds for an empty offer set (no sentinel)",
+    serializationBoundsForOffers([]),
+    { priceMax: null, durationMax: null },
+  );
+
+  ok(
+    "106. a concrete Price maximum omits a value sitting at that maximum",
+    !serializeWith({ maxTotalPrice: dynPrice.max }, knownBounds).has("maxPrice"),
+  );
+  check(
+    "107. a concrete Price maximum preserves a restrictive value below it",
+    serializeWith({ maxTotalPrice: dynPrice.max - 1 }, knownBounds).get("maxPrice"),
+    String(dynPrice.max - 1),
+  );
+  ok(
+    "108. a concrete Duration maximum omits a value sitting at that maximum",
+    !serializeWith({ maxDurationMinutes: dynDuration.max }, knownBounds).has(
+      "maxDuration",
+    ),
+  );
+  check(
+    "109. a concrete Duration maximum preserves a restrictive value below it",
+    serializeWith({ maxDurationMinutes: dynDuration.max - 1 }, knownBounds).get(
+      "maxDuration",
+    ),
+    String(dynDuration.max - 1),
+  );
+
+  // A value far above every observed price: dropped when the ceiling is known,
+  // kept when it is not, because "cannot yet be assessed" is not "invalid".
+  const unassessablePrice = dynPrice.max + 500;
+  const unassessableDuration = dynDuration.max + 500;
+  check(
+    "110. an unknown Price maximum preserves a non-null format-valid value",
+    serializeWith({ maxTotalPrice: unassessablePrice }, unknownBounds).get(
+      "maxPrice",
+    ),
+    String(unassessablePrice),
+  );
+  check(
+    "111. an unknown Duration maximum preserves a non-null format-valid value",
+    serializeWith({ maxDurationMinutes: unassessableDuration }, unknownBounds).get(
+      "maxDuration",
+    ),
+    String(unassessableDuration),
+  );
+  ok(
+    "112. the same values are dropped once the maxima are known (the two modes really differ)",
+    !serializeWith({ maxTotalPrice: unassessablePrice }, knownBounds).has(
+      "maxPrice",
+    ) &&
+      !serializeWith({ maxDurationMinutes: unassessableDuration }, knownBounds).has(
+        "maxDuration",
+      ),
+  );
+  ok(
+    "113. unknown maxima plus null filter values emit no numeric parameter at all",
+    !serializeWith(
+      { maxTotalPrice: null, maxDurationMinutes: null },
+      unknownBounds,
+    ).has("maxPrice") &&
+      !serializeWith(
+        { maxTotalPrice: null, maxDurationMinutes: null },
+        unknownBounds,
+      ).has("maxDuration"),
+  );
+
+  const unknownBoundsSerialized = serializeWith(
+    { maxTotalPrice: unassessablePrice, maxDurationMinutes: unassessableDuration },
+    unknownBounds,
+    "cheapest",
+  ).toString();
+  ok(
+    "114. unknown bounds never serialize a sentinel (null/Infinity/-Infinity/undefined/NaN)",
+    !/null|Infinity|undefined|NaN/i.test(unknownBoundsSerialized),
+  );
+  ok(
+    "115. unknown bounds still emit plain digit values for both numeric filters",
+    /(^|&)maxPrice=\d+(&|$)/.test(unknownBoundsSerialized) &&
+      /(^|&)maxDuration=\d+(&|$)/.test(unknownBoundsSerialized),
+  );
+
+  // The two modes must differ *only* in the numeric filters: Sort, the
+  // enum/CSV filters, canonical ordering and default omission are untouched.
+  const orderingFilters: Partial<FlightFilterState> = {
+    stopCategories: ["oneStop", "direct"],
+    carrierIds: ["maple", "aurora"],
+    departureTimeBuckets: ["evening", "morning"],
+    maxTotalPrice: dynPrice.max - 1,
+    maxDurationMinutes: dynDuration.max - 1,
+  };
+  const orderedKnown = serializeWith(orderingFilters, knownBounds, "cheapest");
+  const orderedUnknown = serializeWith(orderingFilters, unknownBounds, "cheapest");
+  check(
+    "116. canonical parameter order and canonical CSV order are unchanged by the bounds model",
+    [
+      [...orderedKnown.keys()],
+      [...orderedKnown.values()],
+      [...orderedUnknown.keys()],
+      [...orderedUnknown.values()],
+    ],
+    [
+      ["sort", "stops", "carriers", "departTime", "maxPrice", "maxDuration"],
+      [
+        "cheapest",
+        "direct,oneStop",
+        "aurora,maple",
+        "morning,evening",
+        String(dynPrice.max - 1),
+        String(dynDuration.max - 1),
+      ],
+      ["sort", "stops", "carriers", "departTime", "maxPrice", "maxDuration"],
+      [
+        "cheapest",
+        "direct,oneStop",
+        "aurora,maple",
+        "morning,evening",
+        String(dynPrice.max - 1),
+        String(dynDuration.max - 1),
+      ],
+    ],
+  );
+  check(
+    "117. default view state still serializes to nothing under known bounds",
+    serializeWith({}, knownBounds).toString(),
+    "",
+  );
+  check(
+    "118. default view state still serializes to nothing under unknown bounds",
+    serializeWith({}, unknownBounds).toString(),
+    "",
   );
 
   // Sanity checks on the pure helpers used throughout, not otherwise exercised above.

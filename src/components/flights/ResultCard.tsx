@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useId, useRef, useState, type ReactNode } from "react";
+import { useId, useRef, useState } from "react";
 
 import type { Dictionary } from "@/i18n/get-dictionary";
 import type { FlightSearchIntent } from "@/features/flights/search-intent-types";
@@ -17,15 +17,15 @@ import {
   formatOfferPrice,
   formatStopCount,
   formatTemplate,
-  splitTemplateSegments,
 } from "@/features/flights/flight-offer-formatting";
 import { cn } from "@/lib/utilities/cn";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { ProviderHandoffModal } from "@/components/flights/ProviderHandoffModal";
 import { RouteArrow } from "@/components/flights/RouteArrow";
+import { renderTemplate } from "@/components/flights/renderTemplate";
 
 interface ResultCardProps {
   offer: FlightOffer;
@@ -35,6 +35,8 @@ interface ResultCardProps {
   cabinLabel: string;
   /** At most one deterministic highlight for this offer within the currently shown set. */
   highlight?: HighlightKind;
+  /** The dedicated Details route for this offer, preserving the current Results view state. */
+  detailsHref: string;
 }
 
 const ITINERARY_LABEL_KEY: Record<
@@ -44,22 +46,6 @@ const ITINERARY_LABEL_KEY: Record<
   outbound: "outbound",
   inbound: "inbound",
 };
-
-/**
- * Renders a `"{token}"` template as structured JSX rather than one opaque
- * interpolated string, so each `values` entry — typically a `<bdi>`-isolated
- * code, time or identifier — keeps its own bidi isolation instead of being
- * flattened into the localized surrounding text.
- */
-function renderTemplate(
-  template: string,
-  values: Readonly<Record<string, ReactNode>>,
-): ReactNode {
-  return splitTemplateSegments(template).map((segment, index) => {
-    if (segment.kind === "text") return segment.value;
-    return <Fragment key={index}>{values[segment.key]}</Fragment>;
-  });
-}
 
 /** One itinerary's collapsed summary row — the departure/arrival/duration line. */
 function ItinerarySummary({
@@ -240,9 +226,15 @@ function ItineraryDetail({
  * in before any itinerary detail. That heading also gives the two itinerary
  * `<h3>`s underneath a real parent instead of a hierarchy gap.
  *
- * "Review option" and "Show details" deliberately drive the same disclosure —
- * V2.3 has nothing further to navigate to, so a second control that opened a
- * different view would be a dead end dressed as a feature.
+ * The card's primary action is a real internal link to the dedicated Flight
+ * Details route (V2.6), carrying the current Search Intent and Results
+ * view-state so the Details page can describe the offer exactly as this list
+ * does — and so the link can be opened in a new tab, bookmarked or shared.
+ * "Show details" remains a cheap inline disclosure for scanning without
+ * leaving the list, and the provider hand-off *preview* now lives inside
+ * that disclosure rather than in the action row: it opens a demonstration
+ * explanation, not a hand-off, so it must not read as the card's main call
+ * to action.
  */
 export function ResultCard({
   offer,
@@ -250,6 +242,7 @@ export function ResultCard({
   labels,
   cabinLabel,
   highlight,
+  detailsHref,
 }: ResultCardProps) {
   const [open, setOpen] = useState(false);
   const [handoffOpen, setHandoffOpen] = useState(false);
@@ -258,11 +251,6 @@ export function ResultCard({
   const handoffDialogId = useId();
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const highlightCopy = highlight ? labels.highlights[highlight] : null;
-
-  function openDetails() {
-    setOpen(true);
-    requestAnimationFrame(() => detailHeadingRef.current?.focus());
-  }
 
   return (
     <Card
@@ -370,9 +358,6 @@ export function ResultCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="secondary" onClick={openDetails}>
-            {labels.card.reviewOption}
-          </Button>
           <button
             type="button"
             aria-expanded={open}
@@ -391,15 +376,13 @@ export function ResultCard({
               <ChevronDownIcon size={16} />
             </span>
           </button>
-          <Button
-            variant="primary"
-            aria-haspopup="dialog"
-            aria-expanded={handoffOpen}
-            aria-controls={handoffDialogId}
-            onClick={() => setHandoffOpen(true)}
-          >
-            {labels.outbound.cta}
-          </Button>
+          {/* A real internal link, not a button with an onClick: middle-click,
+              Cmd/Ctrl-click and "open in new tab" all have to work, and the
+              Details route is a genuine shareable address rather than a
+              client-only view. */}
+          <ButtonLink href={detailsHref} variant="primary">
+            {labels.viewFlightDetails}
+          </ButtonLink>
         </div>
       </div>
 
@@ -459,6 +442,22 @@ export function ResultCard({
           <p className="text-foreground-muted text-xs leading-relaxed">
             {labels.card.partnerBookingUnavailable}
           </p>
+
+          {/* The provider preview lives inside the expanded disclosure, not
+              in the card's action row: it opens a demonstration explanation,
+              not a real hand-off, so it must never read as the card's
+              primary call to action. "View flight details" is. */}
+          <div>
+            <Button
+              variant="secondary"
+              aria-haspopup="dialog"
+              aria-expanded={handoffOpen}
+              aria-controls={handoffDialogId}
+              onClick={() => setHandoffOpen(true)}
+            >
+              {labels.outbound.cta}
+            </Button>
+          </div>
         </div>
       ) : null}
 
