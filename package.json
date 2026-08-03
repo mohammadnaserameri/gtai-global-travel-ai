@@ -16,7 +16,8 @@
     "verify:polish": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-polish.js",
     "verify:details": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-details.js",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "verify:providers": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-providers.js"
   },
   "dependencies": {
     "next": "16.2.12",

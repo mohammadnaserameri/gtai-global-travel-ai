@@ -759,7 +759,14 @@
       ],
       "close": "Fermer"
     },
-    "viewFlightDetails": "Voir les détails du vol"
+    "viewFlightDetails": "Voir les détails du vol",
+    "partialCoverage": {
+      "title": "Certaines sources de démonstration n'ont pas répondu.",
+      "description": "Les options ci-dessous sont peut-être incomplètes. Il s'agit d'une limite de la démonstration, et non d'une indication sur la disponibilité réelle des vols.",
+      "emptyTitle": "Cette recherche de démonstration n'a pas pu être menée à terme.",
+      "emptyDescription": "Aucune source de démonstration n'a répondu : GTAI ne peut donc pas dire si des options existent pour cette recherche.",
+      "retry": "Réessayer"
+    }
   },
   "flightDetails": {
     "heading": "Détails du vol",
@@ -837,6 +844,13 @@
     "provider": {
       "heading": "Transfert vers le fournisseur",
       "notice": "GTAI n'est connecté à aucun fournisseur dans cette version. L'aperçu ci-dessous montre ce qu'un transfert indiquerait, et n'ouvre rien."
+    },
+    "partialCoverage": {
+      "unverified": "Cette option n'a pas pu être vérifiée.",
+      "unverifiedHint": "La recherche de démonstration était incomplète : GTAI ne peut pas confirmer si cette option existe.",
+      "retry": "Réessayer",
+      "title": "Certaines sources de démonstration n'ont pas répondu.",
+      "description": "Les options ci-dessous sont peut-être incomplètes. Il s'agit d'une limite de la démonstration, et non d'une indication sur la disponibilité réelle des vols."
     }
   }
 }

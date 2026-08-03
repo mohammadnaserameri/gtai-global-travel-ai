@@ -10,7 +10,9 @@
     "isolatedModules": false,
     "incremental": false,
     "baseUrl": "..",
-    "paths": { "@/*": ["./src/*"] },
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "plugins": []
   },
   "include": [
@@ -19,6 +21,7 @@
     "verify-flights.ts",
     "verify-filters.ts",
     "verify-polish.ts",
-    "verify-details.ts"
+    "verify-details.ts",
+    "verify-providers.ts"
   ]
 }

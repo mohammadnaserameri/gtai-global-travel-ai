@@ -125,3 +125,20 @@ Not implemented: real flight API or provider adapter, live prices or schedules, 
 ---
 
 > This module is implemented for a first functional Results journey only. It does not authorize filters, provider integration, booking or payment.
+
+## Partial provider coverage (V2.7)
+
+Results receives a `coverage` value alongside its offers. When it is `partial`, at least one demonstration source did not answer, and the page says so rather than presenting a reduced list as the whole picture:
+
+- **With offers** — a visible localized alert sits beside the standing demonstration disclosure, stating that some sources did not respond and that the options may be incomplete. Filters, Sort and Highlights continue to operate over whatever came back.
+- **With no offers** — the definitive “no demonstration options were generated” state is _not_ rendered, because nobody verified that. A truthful incomplete-search state appears instead, offering Retry and Edit search.
+
+`coverage` is presentation only: it never enters the repository request key and never appears in a Filter or Sort URL, so it cannot cause a refetch or change a shareable link.
+
+### Response validity (V2.7)
+
+Offers reaching Results have passed intent-aware validation, not merely a shape check: each one must answer the search that was made (route, dates, cabin, currency, trip shape) and be internally consistent (segment durations matching their own timestamps, itinerary endpoints matching their first and last segments, layovers derived from the route, totals reconciling with the parts).
+
+Three further guarantees hold as of the boundary-integrity round. Every displayed date and time is the offer's own UTC instant **read in that airport's time zone** — a card cannot show a departure time its epoch does not support. Every airport code on a card, including connections, **exists in the GTAI location directory**; a well-formed invention like `ZZZ` is rejected rather than rendered. And every carrier and booking-provider name comes from the **shared demonstration catalog**, so a real airline or travel-agency name cannot appear on a page that calls its offers demonstrations.
+
+The envelope carrying the offers must also be self-consistent — a `success` with no offers, an `empty` with offers, or a `partial` where nothing actually failed is rejected rather than rendered. The count is checked against what the sources claim to have supplied: the **final offer count may be lower** than the providers' combined contribution, because deduplication and the overall ceiling legitimately reduce it, but it can **never be higher**. Anything that fails becomes the ordinary translated error state; nothing is repaired into a different UI state.

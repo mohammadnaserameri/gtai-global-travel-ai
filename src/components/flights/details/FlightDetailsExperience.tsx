@@ -12,13 +12,13 @@ import {
 } from "@/features/flights/search-intent-url";
 import { validateSearchIntentParams } from "@/features/flights/search-intent-validation";
 import {
-  DemoFlightOfferRepository,
-  type DemoOfferScenario,
-} from "@/features/flights/demo-flight-offer-repository";
-import {
   isAbortError,
-  type FlightOfferRepository,
+  type FlightOfferCoverage,
 } from "@/features/flights/flight-offer-repository";
+import {
+  getFlightOfferRepository,
+  readDevelopmentScenario,
+} from "@/features/flights/runtime-repository";
 import {
   formatLocaleNumber,
   formatTemplate,
@@ -57,8 +57,12 @@ interface FlightDetailsExperienceProps {
 
 type OfferState =
   | { status: "loading" }
-  | { status: "ready"; offers: readonly FlightOffer[] }
-  | { status: "empty" }
+  | {
+      status: "ready";
+      offers: readonly FlightOffer[];
+      coverage: FlightOfferCoverage;
+    }
+  | { status: "empty"; coverage: FlightOfferCoverage }
   | { status: "error" };
 
 type FetchedState = Extract<OfferState, { status: "ready" | "empty" | "error" }>;
@@ -70,19 +74,6 @@ const FLEX_LABEL_KEY: Record<
 
 /** One shared empty array, so a not-yet-ready fetch keeps a stable identity across renders. */
 const EMPTY_OFFERS: readonly FlightOffer[] = [];
-
-function readDevScenario(rawParamsString: string): string | null {
-  if (process.env.NODE_ENV === "production") return null;
-  return new URLSearchParams(rawParamsString).get("__devScenario");
-}
-
-function createRepository(devScenario: string | null): FlightOfferRepository {
-  const scenario: DemoOfferScenario | null =
-    devScenario === "empty" || devScenario === "error" ? devScenario : null;
-  return scenario
-    ? new DemoFlightOfferRepository({ scenario })
-    : new DemoFlightOfferRepository();
-}
 
 /**
  * The dedicated Flight Details page for one selected demonstration offer.
@@ -127,7 +118,7 @@ export function FlightDetailsExperience({
   );
   const intent = validation.ok ? validation.intent : null;
   const intentKey = intent ? serializeSearchIntent(intent).toString() : null;
-  const devScenario = readDevScenario(paramsString);
+  const devScenario = readDevelopmentScenario(paramsString);
 
   const [fetched, setFetched] = useState<{
     key: string;
@@ -158,7 +149,7 @@ export function FlightDetailsExperience({
    */
   const fetchKey =
     intentKey !== null && offerIdIsValid
-      ? `${intentKey}#${retryToken}#${devScenario ?? ""}`
+      ? `${intentKey}#${retryToken}#${devScenario}`
       : null;
 
   const offerState: OfferState = useMemo(() => {
@@ -191,17 +182,25 @@ export function FlightDetailsExperience({
 
     const key = fetchKey;
     const controller = new AbortController();
-    const repository = createRepository(devScenario);
+    const repository = getFlightOfferRepository();
 
     repository
-      .search(committedIntent, controller.signal)
+      .search(committedIntent, {
+        signal: controller.signal,
+        retryToken,
+        scenario: devScenario,
+      })
       .then((response) => {
         setFetched({
           key,
           result:
             response.offers.length === 0
-              ? { status: "empty" }
-              : { status: "ready", offers: response.offers },
+              ? { status: "empty", coverage: response.coverage }
+              : {
+                  status: "ready",
+                  offers: response.offers,
+                  coverage: response.coverage,
+                },
         });
       })
       .catch((error: unknown) => {
@@ -210,7 +209,7 @@ export function FlightDetailsExperience({
       });
 
     return () => controller.abort();
-  }, [committedIntent, offerIdIsValid, fetchKey, devScenario]);
+  }, [committedIntent, offerIdIsValid, fetchKey, devScenario, retryToken]);
 
   const currentParams = useMemo(
     () => new URLSearchParams(paramsString),
@@ -227,6 +226,14 @@ export function FlightDetailsExperience({
     () => (offerState.status === "ready" ? offerState.offers : EMPTY_OFFERS),
     [offerState],
   );
+  /**
+   * Whether the search behind these offers heard from every source. Carried
+   * from the repository rather than inferred: a missing offer looks identical
+   * whether it does not exist or whether nobody looked.
+   */
+  const isPartialCoverage =
+    (offerState.status === "ready" || offerState.status === "empty") &&
+    offerState.coverage === "partial";
   const resolution = useMemo(
     () =>
       resolveFlightDetails({
@@ -368,6 +375,33 @@ export function FlightDetailsExperience({
   }
 
   if (offerState.status === "empty" || resolution.status === "notFound") {
+    // "Could not be found" is a definitive claim, and it is only true when
+    // every source answered. Under partial coverage the honest statement is
+    // that the search was incomplete, so the option could not be *verified* —
+    // with Retry as the action, because retrying is what might settle it.
+    if (isPartialCoverage) {
+      return (
+        <Container className="py-10 lg:py-14">
+          <FlightDetailsState
+            title={labels.partialCoverage.unverified}
+            description={labels.partialCoverage.unverifiedHint}
+            tone="notice"
+          >
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Button
+                variant="primary"
+                onClick={() => setRetryToken((token) => token + 1)}
+              >
+                {labels.partialCoverage.retry}
+              </Button>
+              <ButtonLink href={resultsHref} variant="secondary">
+                {labels.returnToResults}
+              </ButtonLink>
+            </div>
+          </FlightDetailsState>
+        </Container>
+      );
+    }
     return (
       <Container className="py-10 lg:py-14">
         <FlightDetailsState title={labels.states.notFound} tone="notice">
@@ -451,6 +485,16 @@ export function FlightDetailsExperience({
           ))}
         </ul>
       </Alert>
+
+      {/* The same reduced-coverage statement Results shows. This offer is
+          real and fully described; what is uncertain is whether it was the
+          best of everything, and that belongs on the page too. */}
+      {isPartialCoverage ? (
+        <Alert tone="warning">
+          <p className="font-semibold">{labels.partialCoverage.title}</p>
+          <p className="mt-1.5">{labels.partialCoverage.description}</p>
+        </Alert>
+      ) : null}
 
       <h1 className="text-foreground text-xl font-bold lg:text-2xl">
         {labels.heading}

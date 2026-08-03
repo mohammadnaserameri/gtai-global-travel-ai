@@ -13,13 +13,13 @@ import {
 import { validateSearchIntentParams } from "@/features/flights/search-intent-validation";
 import type { FlightOffer } from "@/features/flights/flight-offer-types";
 import {
-  DemoFlightOfferRepository,
-  type DemoOfferScenario,
-} from "@/features/flights/demo-flight-offer-repository";
-import {
   isAbortError,
-  type FlightOfferRepository,
+  type FlightOfferCoverage,
 } from "@/features/flights/flight-offer-repository";
+import {
+  getFlightOfferRepository,
+  readDevelopmentScenario,
+} from "@/features/flights/runtime-repository";
 import { sortOffers } from "@/features/flights/flight-offer-ranking";
 import { computeHighlights } from "@/features/flights/flight-offer-highlights";
 import { buildFlightDetailsUrl } from "@/features/flights/details/flight-details-url";
@@ -58,8 +58,12 @@ interface FlightResultsExperienceProps {
 type OfferState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; offers: readonly FlightOffer[] }
-  | { status: "empty" }
+  | {
+      status: "ready";
+      offers: readonly FlightOffer[];
+      coverage: FlightOfferCoverage;
+    }
+  | { status: "empty"; coverage: FlightOfferCoverage }
   | { status: "error" };
 
 /** Only the states a fetch can actually resolve to — never "idle" or "loading". */
@@ -81,25 +85,6 @@ function resolve(rawParamsString: string, locale: string) {
     new URLSearchParams(rawParamsString),
   );
   return validateSearchIntentParams(raw, locale);
-}
-
-/**
- * `__devScenario` only ever does anything outside a production build — in
- * production this whole branch is dead code, so there is no customer-facing
- * way to force an error or empty result set. It is intentionally outside the
- * documented Search Intent parameter contract (see `search-intent-url.ts`)
- * and outside the Results view-state contract (see `flight-filter-url.ts`).
- */
-function readDevScenario(rawParamsString: string): string | null {
-  if (process.env.NODE_ENV === "production") return null;
-  return new URLSearchParams(rawParamsString).get("__devScenario");
-}
-
-function createRepository(devScenario: string | null): FlightOfferRepository {
-  const scenario: DemoOfferScenario | null =
-    devScenario === "empty" || devScenario === "error" ? devScenario : null;
-  if (scenario) return new DemoFlightOfferRepository({ scenario });
-  return new DemoFlightOfferRepository();
 }
 
 /**
@@ -131,7 +116,7 @@ export function FlightResultsExperience({
   const intentKey = validation.ok
     ? serializeSearchIntent(validation.intent).toString()
     : null;
-  const devScenario = readDevScenario(paramsString);
+  const devScenario = readDevelopmentScenario(paramsString);
 
   /**
    * The fetch effect only ever writes here from inside its `.then`/`.catch`
@@ -153,7 +138,7 @@ export function FlightResultsExperience({
   const sortGroupName = useId();
 
   const fetchKey =
-    intentKey !== null ? `${intentKey}#${retryToken}#${devScenario ?? ""}` : null;
+    intentKey !== null ? `${intentKey}#${retryToken}#${devScenario}` : null;
   // Memoized so the canonicalization effect below — which depends on
   // `offerState` — only re-runs when the fetch itself actually resolves
   // (or the key changes), never on an unrelated render.
@@ -184,19 +169,27 @@ export function FlightResultsExperience({
   useEffect(() => {
     if (committedIntent === null) return;
 
-    const key = `${serializeSearchIntent(committedIntent).toString()}#${retryToken}#${devScenario ?? ""}`;
+    const key = `${serializeSearchIntent(committedIntent).toString()}#${retryToken}#${devScenario}`;
     const controller = new AbortController();
-    const repository = createRepository(devScenario);
+    const repository = getFlightOfferRepository();
 
     repository
-      .search(committedIntent, controller.signal)
+      .search(committedIntent, {
+        signal: controller.signal,
+        retryToken,
+        scenario: devScenario,
+      })
       .then((response) => {
         setFetched({
           key,
           result:
             response.offers.length === 0
-              ? { status: "empty" }
-              : { status: "ready", offers: response.offers },
+              ? { status: "empty", coverage: response.coverage }
+              : {
+                  status: "ready",
+                  offers: response.offers,
+                  coverage: response.coverage,
+                },
         });
       })
       .catch((error: unknown) => {
@@ -329,6 +322,14 @@ export function FlightResultsExperience({
   }
 
   const repositoryOffers = offerState.status === "ready" ? offerState.offers : [];
+  /**
+   * Whether the search that produced these offers actually heard from every
+   * source it should have. Carried from the repository rather than inferred:
+   * a short list and a complete one are indistinguishable by inspection.
+   */
+  const isPartialCoverage =
+    (offerState.status === "ready" || offerState.status === "empty") &&
+    offerState.coverage === "partial";
   const rawViewState = parseResultsViewState(new URLSearchParams(paramsString));
   const sanitizedFilters =
     offerState.status === "ready"
@@ -431,6 +432,17 @@ export function FlightResultsExperience({
         </ul>
       </Alert>
 
+      {/* Reduced coverage is stated next to the standing demonstration
+          disclosure rather than buried: a shorter list looks exactly like a
+          complete one, so the only way a visitor can know some sources went
+          missing is to be told. */}
+      {isPartialCoverage && repositoryOffers.length > 0 ? (
+        <Alert tone="warning">
+          <p className="font-semibold">{labels.partialCoverage.title}</p>
+          <p className="mt-1.5">{labels.partialCoverage.description}</p>
+        </Alert>
+      ) : null}
+
       {offerState.status === "error" ? (
         <div
           role="alert"
@@ -474,7 +486,30 @@ export function FlightResultsExperience({
             {liveAnnouncement}
           </span>
 
-          {offerState.status === "empty" ? (
+          {offerState.status === "empty" && isPartialCoverage ? (
+            /* Nothing came back and not every source answered, so "no options
+               exist" would be a claim nobody verified. This state says what is
+               actually known and offers Retry. */
+            <div className="border-border bg-surface-subtle rounded-2xl border px-5 py-10 text-center">
+              <p className="text-foreground text-base font-semibold">
+                {labels.partialCoverage.emptyTitle}
+              </p>
+              <p className="text-foreground-muted mt-2 text-sm">
+                {labels.partialCoverage.emptyDescription}
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <Button
+                  variant="primary"
+                  onClick={() => setRetryToken((token) => token + 1)}
+                >
+                  {labels.partialCoverage.retry}
+                </Button>
+                <ButtonLink href={flightsHref} variant="secondary">
+                  {labels.editSearch}
+                </ButtonLink>
+              </div>
+            </div>
+          ) : offerState.status === "empty" ? (
             <div className="border-border bg-surface-subtle rounded-2xl border px-5 py-10 text-center">
               <p className="text-foreground text-base font-semibold">
                 {labels.empty.title}

@@ -1029,7 +1029,14 @@
       ],
       "close": "Close"
     },
-    "viewFlightDetails": "View flight details"
+    "viewFlightDetails": "View flight details",
+    "partialCoverage": {
+      "title": "Some demonstration sources did not respond.",
+      "description": "The options below may be incomplete. This is a demonstration limitation, not a statement about real flight availability.",
+      "emptyTitle": "This demonstration search could not be completed.",
+      "emptyDescription": "No demonstration source answered, so GTAI cannot say whether options exist for this search.",
+      "retry": "Retry"
+    }
   },
   "flightDetails": {
     "heading": "Flight details",
@@ -1107,6 +1114,13 @@
     "provider": {
       "heading": "Provider hand-off",
       "notice": "GTAI is not connected to a provider in this version. The preview below shows what a hand-off would state, and opens nothing."
+    },
+    "partialCoverage": {
+      "unverified": "This option could not be verified.",
+      "unverifiedHint": "The demonstration search was incomplete, so GTAI cannot confirm whether this option exists.",
+      "retry": "Retry",
+      "title": "Some demonstration sources did not respond.",
+      "description": "The options below may be incomplete. This is a demonstration limitation, not a statement about real flight availability."
     }
   }
 }

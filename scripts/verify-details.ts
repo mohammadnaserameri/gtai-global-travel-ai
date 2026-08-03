@@ -851,24 +851,45 @@ async function main(): Promise<void> {
       /if\s*\(fetchKey\s*===\s*null\)\s*return;/.test(experienceCode),
   );
   ok(
-    "63. the fetch effect returns before constructing a repository or AbortController",
+    "63. the fetch effect returns before acquiring a repository or constructing an AbortController",
     (() => {
+      // Deliberately not keyed to one repository construction expression:
+      // V2.7 moved the runtime from an in-process demo repository to
+      // `getFlightOfferRepository()` behind the internal API, and a check
+      // that only knew the old spelling would have passed vacuously. This
+      // asserts the *property* instead — that nothing capable of starting a
+      // search is reached before the guard — by requiring the guard to
+      // precede every repository acquisition and every AbortController in
+      // the effect body.
       const body = experienceCode.slice(
         experienceCode.indexOf("useEffect(() => {"),
       );
       const guardIndex = body.indexOf("if (!offerIdIsValid) return;");
-      const repoIndex = body.indexOf("createRepository(devScenario)");
-      const abortIndex = body.indexOf("new AbortController()");
-      return (
-        guardIndex >= 0 &&
-        repoIndex > guardIndex &&
-        abortIndex > guardIndex &&
-        // `offerIdIsValid` is a dependency, so an id turning invalid re-runs
-        // the cleanup and aborts an obsolete in-flight search.
-        /\[committedIntent,\s*offerIdIsValid,\s*fetchKey,\s*devScenario\]/.test(
-          experienceCode,
-        )
+      if (guardIndex < 0) return false;
+
+      const repositoryAcquisitions = [
+        ...body.matchAll(/(?:getFlightOfferRepository\(|new\s+\w*Repository\()/g),
+      ].map((match) => match.index ?? -1);
+      const abortConstructions = [...body.matchAll(/new AbortController\(\)/g)].map(
+        (match) => match.index ?? -1,
       );
+      if (repositoryAcquisitions.length === 0) return false;
+      if (abortConstructions.length === 0) return false;
+
+      const everythingAfterGuard = [
+        ...repositoryAcquisitions,
+        ...abortConstructions,
+      ].every((index) => index > guardIndex);
+
+      // Both preconditions must also be effect dependencies, so an id or key
+      // turning invalid re-runs the cleanup and aborts an obsolete search.
+      // Matched independently of the array's exact order or length.
+      const depsMatch = experienceCode.match(/\}, \[([^\]]*)\]\);/g);
+      const hasDeps = (depsMatch ?? []).some(
+        (deps) => deps.includes("offerIdIsValid") && deps.includes("fetchKey"),
+      );
+
+      return everythingAfterGuard && hasDeps;
     })(),
   );
 

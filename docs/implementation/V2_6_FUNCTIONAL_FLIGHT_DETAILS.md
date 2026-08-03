@@ -1,6 +1,7 @@
 # GTAI V2.6 — Functional Flight Details
 
-**Status:** Implemented, with the V2.6.1 pre-approval corrections and the V2.6.2 numeric view-state correction applied — frozen as `Freeze GTAI V2.6 functional flight details`
+**Status:** Implemented, with the V2.6.1 pre-approval corrections and the V2.6.2 numeric view-state correction applied — frozen as `Freeze GTAI V2.6 functional flight details` at `7f0d6ba0baf2609ed8e074c5f6f0ea8faabb7074`.
+**Superseded repository architecture:** V2.7 replaced the in-process `DemoFlightOfferRepository` with `ApiFlightOfferRepository` behind an internal search API, and moved the deterministic generator to `demo-offer-generation.ts`. Every behaviour recorded below is unchanged — same offer ids, same fetch key, same states — but the runtime path described here as "the repository" is now a server round trip. See `docs/implementation/V2_7_FUNCTIONAL_PROVIDER_RUNTIME.md`.
 **Base checkpoint:** `c711662a6ce51b607af9d95cbd395c131fd3fbd0` (V2.5.1 — Results Truthfulness and Provider Blueprint Corrections, frozen)
 **Specification:** `docs/reference/08_FLIGHT_DETAILS.md`
 

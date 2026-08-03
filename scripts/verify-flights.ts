@@ -619,11 +619,19 @@ async function main(): Promise<void> {
   );
 
   // --- 6 (explicit). Dates known to trigger the old repeated-layover defect -----------------
+  // Anchored to `today` rather than written as literals. The original literal
+  // pairs were the dates the repeated-layover defect was first reproduced on,
+  // and they silently became unusable the moment the calendar passed them:
+  // GTAI refuses a past departure date by design, so the fixture stopped
+  // building rather than stopped passing. Relative offsets keep the same shape
+  // — consecutive 5-day-gap round trips — and cannot expire. The sweep is also
+  // widened below to compensate for no longer pinning those exact seeds.
   const knownDefectDatePairs: readonly [string, string][] = [
-    ["2026-07-31", "2026-08-05"],
-    ["2026-08-05", "2026-08-10"],
-    ["2026-08-10", "2026-08-15"],
-  ];
+    1, 6, 11, 16, 21, 26,
+  ].map((offset): [string, string] => [
+    addDays(today, offset),
+    addDays(today, offset + 5),
+  ]);
   let noRepeatedLayoverAcrossKnownDates = true;
   let noSelfSegmentAcrossKnownDates = true;
   for (const [dep, ret] of knownDefectDatePairs) {
@@ -1016,13 +1024,18 @@ async function main(): Promise<void> {
   // localized traveler numbers, Result Card bidi structure.
   // =====================================================================================
 
-  // --- R1. The exact reproduced YTO -> LHR case ---------------------------------------------
+  // --- R1. The reproduced YTO -> LHR case: a one-day round-trip gap -------------------------
+  // Relative for the same reason as the pairs above — the literal dates this
+  // was reproduced on are now in the past, and a past departure is refused.
+  // What made the case load-bearing is the one-day gap, which is preserved.
+  const ytoLhrDeparture = addDays(today, 1);
+  const ytoLhrReturn = addDays(today, 2);
   const ytoLhrIntent = buildSearchIntent({
     tripType: "roundTrip",
     origin: yto,
     destination: lhr,
-    departureDate: "2026-07-31",
-    returnDate: "2026-08-01",
+    departureDate: ytoLhrDeparture,
+    returnDate: ytoLhrReturn,
     travelers: DEFAULT_TRAVELERS,
     cabinClass: "economy",
     flexibilityDays: 0,
@@ -1046,12 +1059,14 @@ async function main(): Promise<void> {
     }),
   );
   ok(
-    "R1c. every offer's outbound still departs 2026-07-31 locally at the origin",
-    ytoLhrRun.offers.every((o) => o.itineraries[0].departure.date === "2026-07-31"),
+    "R1c. every offer's outbound still departs on the selected date locally at the origin",
+    ytoLhrRun.offers.every(
+      (o) => o.itineraries[0].departure.date === ytoLhrDeparture,
+    ),
   );
   ok(
-    "R1d. every offer's inbound still departs 2026-08-01 locally at the return origin",
-    ytoLhrRun.offers.every((o) => o.itineraries[1].departure.date === "2026-08-01"),
+    "R1d. every offer's inbound still departs on the selected return date locally at the return origin",
+    ytoLhrRun.offers.every((o) => o.itineraries[1].departure.date === ytoLhrReturn),
   );
 
   // --- R2. Targeted route sweep: 1/2/5-day gaps, eastbound/westbound, a date-line-scale ------
