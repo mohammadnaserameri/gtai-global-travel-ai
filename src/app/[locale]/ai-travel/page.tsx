@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
+import { resolveContentLocale } from "@/config/locales";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { buildPublicMetadata } from "@/lib/seo/public-metadata";
+import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { Alert } from "@/components/ui/Alert";
@@ -42,8 +45,17 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
-  const { meta } = await getDictionary(locale);
-  return { title: meta.aiTravel.title, description: meta.aiTravel.description };
+  const { meta } = await getDictionary(resolveContentLocale(locale));
+  return buildPublicMetadata({
+    locale,
+    title: meta.aiTravel.title,
+    description: meta.aiTravel.description,
+    siteName: meta.siteName,
+    path: PRODUCT_PAGE_PATHS.aiTravel,
+    // Public and honest, but not a page worth returning for a search:
+    // this route describes a capability GTAI has not built yet.
+    indexable: false,
+  });
 }
 
 /** Paired with `agents.items` by position. Decorative only. */
@@ -72,7 +84,7 @@ const howIcons = [
 
 export default async function AiTravelPage({ params }: PageProps) {
   const { locale } = await params;
-  const dictionary = await getDictionary(locale);
+  const dictionary = await getDictionary(resolveContentLocale(locale));
   const page = dictionary.pages.aiTravel;
   const { agents, common } = dictionary;
   const controls = page.controls;

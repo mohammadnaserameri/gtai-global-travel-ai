@@ -42,6 +42,7 @@ import {
 import { localePath } from "@/i18n/routing";
 import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/ui/Alert";
+import { DemonstrationDataNotice } from "@/components/ui/DemonstrationDataNotice";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { AffiliateDisclosure } from "@/components/ui/AffiliateDisclosure";
 import { SearchSummary } from "@/components/flights/SearchSummary";
@@ -423,14 +424,21 @@ export function FlightResultsExperience({
         editSearchHref={flightsHref}
       />
 
-      <Alert tone="brand">
-        <p className="font-semibold">{labels.disclosure.title}</p>
-        <ul className="mt-1.5 list-disc ps-4">
-          {labels.disclosure.points.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
-      </Alert>
+      {/* The standing demonstration disclosure, rendered through the shared
+          component so Results, Details, the homepage and the public pages all
+          make the identical claim. It sits above the result list, is not
+          dismissible, and survives every filter and sort change because it is
+          outside the state those controls drive. The surface-specific points
+          are passed through; the body sentence is the shared one. */}
+      <DemonstrationDataNotice
+        variant="prominent"
+        labels={{
+          title: labels.disclosure.title,
+          compact: dictionary.demonstrationNotice.compact,
+          body: dictionary.demonstrationNotice.body,
+          points: labels.disclosure.points,
+        }}
+      />
 
       {/* Reduced coverage is stated next to the standing demonstration
           disclosure rather than buried: a shorter list looks exactly like a
@@ -577,6 +585,7 @@ export function FlightResultsExperience({
                       offer={offer}
                       intent={intent}
                       labels={labels}
+                      demonstrationNotice={dictionary.demonstrationNotice}
                       cabinLabel={cabinLabel}
                       highlight={highlights.get(offer.id)}
                       detailsHref={buildFlightDetailsUrl(

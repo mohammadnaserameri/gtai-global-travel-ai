@@ -316,3 +316,37 @@ export function isRtlLocale(code: string): boolean {
 export const dictionaryLocales = locales
   .filter((l) => l.hasDictionary)
   .map((l) => l.code);
+
+/**
+ * Whether a locale has content actually written in that language.
+ *
+ * This is the distinction the rest of the application was missing. GTAI routes
+ * 32 locales but authors 4, and each of the other 28 renders English text. That
+ * a reasonable product decision and a bad *publishing* one when the page still
+ * declares `lang="de"`, still self-canonicalizes to `/de/...`, and is still
+ * indexable: the result is a page that lies about its language and duplicates
+ * the English one under a different URL.
+ */
+export function hasAuthoredDictionary(code: string): boolean {
+  return localeMap.get(code)?.hasDictionary === true;
+}
+
+/**
+ * The locale whose language the visitor will actually read.
+ *
+ * Requested locale and content locale are two different things:
+ *
+ * - **Requested** — what the URL says. It drives routing, the locale selector's
+ *   own state, and the region/currency heuristic, all of which are about the
+ *   visitor's stated preference and stay correct even with no translation.
+ * - **Content** — what the page is written in. It drives `<html lang>`,
+ *   `<html dir>`, the dictionary, the metadata language and the canonical URL.
+ *
+ * For an authored locale the two are identical. For a supported-but-unauthored
+ * locale the content locale is English, because English is what the page
+ * contains. An unknown locale resolves through the existing default policy.
+ */
+export function resolveContentLocale(code: string): string {
+  if (hasAuthoredDictionary(code)) return code;
+  return defaultLocale;
+}

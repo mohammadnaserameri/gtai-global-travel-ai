@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { getDictionary } from "@/i18n/get-dictionary";
+import { buildNonIndexableMetadata } from "@/lib/seo/public-metadata";
 import { Container } from "@/components/layout/Container";
 import { FlightDetailsExperience } from "@/components/flights/details/FlightDetailsExperience";
 import { FlightDetailsLoading } from "@/components/flights/details/FlightDetailsLoading";
@@ -13,14 +14,14 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const { meta } = await getDictionary(locale);
-  return {
-    title: meta.flightDetails.title,
-    description: meta.flightDetails.description,
-    // A Details URL describes one locally generated demonstration option for
-    // one specific search — there is nothing here worth indexing, and a
-    // crawled demo itinerary could easily be mistaken for a real fare.
-    robots: { index: false, follow: false },
-  };
+  // A Details URL describes one locally generated demonstration option for one
+  // specific search — nothing here is worth indexing, and a crawled demo
+  // itinerary could easily be mistaken for a real fare. Built from the same
+  // shared helper as Results so both pages state the identical policy.
+  return buildNonIndexableMetadata(
+    meta.flightDetails.title,
+    meta.flightDetails.description,
+  );
 }
 
 /**

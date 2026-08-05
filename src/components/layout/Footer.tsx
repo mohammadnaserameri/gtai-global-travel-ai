@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { brand } from "@/config/brand";
+import { publicCompanyProfile } from "@/config/public-company-profile";
 import { footerGroups } from "@/config/navigation";
 import { localePath } from "@/i18n/routing";
 import type { Dictionary } from "@/i18n/get-dictionary";
@@ -20,10 +21,18 @@ type LinkDictionary = Record<string, string>;
 /**
  * Global footer.
  *
- * Most destinations are inert placeholders: V1 publishes no legal documents, so
- * linking to a Privacy or Terms page would imply a document that does not
- * exist. Placeholders are rendered as plain text with a stated reason rather
- * than as links to nowhere.
+ * The "Company and legal" group is now entirely real: About, Contact, Privacy,
+ * Terms and the Affiliate Disclosure are published pages, and their paths come
+ * from the shared `PUBLIC_PAGE_PATHS`. The remaining product placeholders stay
+ * inert plain text with a stated reason rather than becoming links to nowhere.
+ *
+ * Every interactive target here is at least 44 × 44 CSS pixels. That was not
+ * true before V2.8-A: the group links rendered at `min-h-9` (36 px), which is
+ * comfortably under the threshold and was the one accessibility defect carried
+ * openly through the V2.7 reports. The fix is `min-h-11` plus vertical padding
+ * on the link itself — the *link* has to be the tall element, because padding
+ * on the surrounding `<li>` grows the row without growing the thing a person
+ * actually has to hit.
  */
 export function Footer({ locale, dictionary }: FooterProps) {
   const { footer, language, region, affiliate } = dictionary;
@@ -57,7 +66,7 @@ export function Footer({ locale, dictionary }: FooterProps) {
                   <h2 className="text-foreground text-xs font-semibold tracking-[0.12em] uppercase">
                     {groupDictionary.heading}
                   </h2>
-                  <ul className="mt-3 flex flex-col gap-1">
+                  <ul className="mt-1 flex flex-col">
                     {group.links.map((link) => {
                       const label = links[link.labelKey] ?? link.labelKey;
                       return (
@@ -65,12 +74,12 @@ export function Footer({ locale, dictionary }: FooterProps) {
                           {link.path ? (
                             <Link
                               href={localePath(locale, link.path)}
-                              className="text-foreground-secondary hover:text-brand-ink focus-visible:outline-focus-ring inline-flex min-h-9 items-center rounded-sm text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                              className="text-foreground-secondary hover:text-brand-ink focus-visible:outline-focus-ring flex min-h-11 items-center rounded-sm py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
                             >
                               {label}
                             </Link>
                           ) : (
-                            <span className="text-foreground-muted inline-flex min-h-9 items-center text-sm">
+                            <span className="text-foreground-muted flex min-h-11 items-center py-2 text-sm">
                               {label}
                             </span>
                           )}
@@ -101,6 +110,13 @@ export function Footer({ locale, dictionary }: FooterProps) {
             <span className="gtai-ltr-numerals">
               © {brand.foundedYear} {footer.copyright}
             </span>
+            <span aria-hidden="true">·</span>
+            {/* The legal entity, from the shared profile. A partner reviewing
+                this site should be able to see who operates it without opening
+                a second page. */}
+            <span>{publicCompanyProfile.legalName}</span>
+            <span aria-hidden="true">·</span>
+            <span>{publicCompanyProfile.publicLocation}</span>
             <span aria-hidden="true">·</span>
             <span>{footer.buildNotice}</span>
           </div>

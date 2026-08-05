@@ -31,6 +31,8 @@ interface ResultCardProps {
   offer: FlightOffer;
   intent: FlightSearchIntent;
   labels: Dictionary["flightResults"];
+  /** The shared demonstration statement, forwarded to the provider preview. */
+  demonstrationNotice: Dictionary["demonstrationNotice"];
   /** Localized cabin name — the offer only carries the internal enum value. */
   cabinLabel: string;
   /** At most one deterministic highlight for this offer within the currently shown set. */
@@ -240,6 +242,7 @@ export function ResultCard({
   offer,
   intent,
   labels,
+  demonstrationNotice,
   cabinLabel,
   highlight,
   detailsHref,
@@ -468,6 +471,7 @@ export function ResultCard({
         offer={offer}
         intent={intent}
         labels={labels}
+        demonstrationNotice={demonstrationNotice}
       />
     </Card>
   );

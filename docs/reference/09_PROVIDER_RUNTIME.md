@@ -221,3 +221,16 @@ Every offer remains locally generated and marked `isDemonstration`. The existing
 Not implemented and not implied: any real provider API, adapter or SDK; provider credentials; outbound network requests of any kind; affiliate redirect or the trusted hand-off URL builder at runtime; commission tracking; real provider branding; booking; payment; seat selection; passenger forms; saved searches; persistent audit logging; persistent caching; analytics or monitoring SDKs; customer accounts; email; PDF; multi-city; whole-month search; AI recommendation.
 
 External provider onboarding and affiliate redirect remain **pending**. Booking and payment remain permanently outside GTAI core.
+
+## Public presentation of the demonstration runtime (V2.8-A)
+
+V2.8-A changed nothing in this module. The registry, adapter contract, cancellation, timeouts, validation, normalization, failure taxonomy and audit model are exactly as frozen in V2.7, and `verify:providers` still passes 294/294.
+
+What changed is how the _public site_ describes the runtime's output. The single enabled provider is `gtai-local-demo`, its offers are locally generated, and the website now says so on the homepage, on Results, on Details, inside the provider preview, and on the About, Terms and Affiliate Disclosure pages — through one shared component reading one shared statement.
+
+Two consequences are worth recording here because they constrain the next stage:
+
+- **The demonstration notice is unconditional.** It is correct while every offer is generated. When an approved integration is activated, the notice has to become conditional on the data's actual source; leaving it unconditional would understate a real result, and removing it wholesale would overstate one.
+- **Results and Details are `noindex`** precisely because their content is generated. If that stops being true, the indexing decision has to be revisited deliberately rather than inherited.
+
+No external provider, credential, environment variable or outbound request was introduced. The V2.7 boundary protections are re-asserted by regression checks in `verify:partner-readiness` as well as by `verify:providers`.

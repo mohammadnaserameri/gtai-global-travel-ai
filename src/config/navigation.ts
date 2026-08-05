@@ -1,3 +1,4 @@
+import { PUBLIC_PAGE_PATHS } from "@/config/public-company-profile";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 type NavLabelKey = keyof Dictionary["nav"];
@@ -31,7 +32,7 @@ export interface FooterLink {
   labelKey: string;
   /**
    * Locale-relative path, or `null` for a placeholder with no destination.
-   * V1 publishes no legal documents, so those links are intentionally inert.
+   * Placeholders render as plain text rather than as links to nowhere.
    */
   path: string | null;
 }
@@ -45,7 +46,6 @@ export const footerGroups: readonly FooterGroup[] = [
   {
     key: "company",
     links: [
-      { labelKey: "about", path: null },
       { labelKey: "howItWorks", path: null },
       { labelKey: "careers", path: null },
       { labelKey: "press", path: null },
@@ -65,18 +65,24 @@ export const footerGroups: readonly FooterGroup[] = [
     key: "support",
     links: [
       { labelKey: "help", path: null },
-      { labelKey: "contact", path: null },
       { labelKey: "accessibility", path: null },
       { labelKey: "partner", path: null },
     ],
   },
   {
+    // Every link in this group is a real published page as of V2.8-A. The
+    // paths come from `PUBLIC_PAGE_PATHS` rather than being retyped, so the
+    // Footer, the sitemap and the routes cannot describe different sets.
     key: "legal",
     links: [
-      { labelKey: "privacy", path: null },
-      { labelKey: "terms", path: null },
-      { labelKey: "affiliate", path: null },
-      { labelKey: "cookies", path: null },
+      { labelKey: "about", path: PUBLIC_PAGE_PATHS.about },
+      { labelKey: "contact", path: PUBLIC_PAGE_PATHS.contact },
+      { labelKey: "privacy", path: PUBLIC_PAGE_PATHS.privacy },
+      { labelKey: "terms", path: PUBLIC_PAGE_PATHS.terms },
+      {
+        labelKey: "affiliateDisclosure",
+        path: PUBLIC_PAGE_PATHS.affiliateDisclosure,
+      },
     ],
   },
 ];

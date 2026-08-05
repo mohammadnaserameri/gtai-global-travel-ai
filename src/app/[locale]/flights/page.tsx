@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
-import { getDirection } from "@/config/locales";
+import { getDirection, resolveContentLocale } from "@/config/locales";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { buildPublicMetadata } from "@/lib/seo/public-metadata";
+import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import {
   rawSearchIntentParamsFromRecord,
   type RawSearchParamsRecord,
@@ -22,13 +24,19 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
-  const { meta } = await getDictionary(locale);
-  return { title: meta.flights.title, description: meta.flights.description };
+  const { meta } = await getDictionary(resolveContentLocale(locale));
+  return buildPublicMetadata({
+    locale,
+    title: meta.flights.title,
+    description: meta.flights.description,
+    siteName: meta.siteName,
+    path: PRODUCT_PAGE_PATHS.flights,
+  });
 }
 
 export default async function FlightsPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const dictionary = await getDictionary(locale);
+  const dictionary = await getDictionary(resolveContentLocale(locale));
   const rawParams = rawSearchIntentParamsFromRecord(await searchParams);
   const initialFlightSearch = parseInitialFlightSearch(rawParams);
 
@@ -36,7 +44,7 @@ export default async function FlightsPage({ params, searchParams }: PageProps) {
     <ProductPageShell
       dictionary={dictionary}
       page={dictionary.pages.flights}
-      dir={getDirection(locale)}
+      dir={getDirection(resolveContentLocale(locale))}
       locale={locale}
       searchProduct="flights"
       initialFlightSearch={initialFlightSearch}

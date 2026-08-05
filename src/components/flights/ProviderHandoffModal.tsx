@@ -6,6 +6,7 @@ import type { FlightSearchIntent } from "@/features/flights/search-intent-types"
 import { formatOfferPrice } from "@/features/flights/flight-offer-formatting";
 import { Button } from "@/components/ui/Button";
 import { ModalShell } from "@/components/ui/ModalShell";
+import { DemonstrationDataNotice } from "@/components/ui/DemonstrationDataNotice";
 import { RouteArrow } from "@/components/flights/RouteArrow";
 
 interface ProviderHandoffModalProps {
@@ -14,6 +15,8 @@ interface ProviderHandoffModalProps {
   offer: FlightOffer;
   intent: FlightSearchIntent;
   labels: Dictionary["flightResults"];
+  /** The shared demonstration statement, so this preview repeats the site-wide claim. */
+  demonstrationNotice: Dictionary["demonstrationNotice"];
   /** Stable id this modal's dialog is rendered with, so the triggering CTA can reference it via `aria-controls`. */
   dialogId?: string;
 }
@@ -34,6 +37,7 @@ export function ProviderHandoffModal({
   offer,
   intent,
   labels,
+  demonstrationNotice,
   dialogId,
 }: ProviderHandoffModalProps) {
   const outbound = labels.outbound;
@@ -48,9 +52,25 @@ export function ProviderHandoffModal({
       description={outbound.modalDescription}
     >
       <div className="flex flex-col gap-4">
+        <DemonstrationDataNotice
+          variant="compact"
+          labels={demonstrationNotice}
+          ariaLabel={outbound.modalTitle}
+        />
+
         <div className="border-border bg-surface-subtle flex flex-col gap-1 rounded-xl border p-4">
           <p className="text-foreground text-sm font-semibold">
             <bdi dir="auto">{offer.validatingCarrierName}</bdi>
+          </p>
+          {/* The carrier and the provider are the two names a visitor is most
+              likely to read as real, so each is labelled as fictional right
+              where it appears rather than only in the bullet list below. */}
+          <p className="text-foreground-muted text-xs">{outbound.carrierNote}</p>
+          <p className="text-foreground-secondary flex flex-wrap items-center gap-1.5 text-sm">
+            <span className="text-foreground-muted">
+              {outbound.demonstrationProvider}:
+            </span>
+            <bdi dir="auto">{offer.provider}</bdi>
           </p>
           <p className="text-foreground-secondary flex flex-wrap items-center gap-1.5 text-sm">
             <bdi dir="auto">{intent.origin.displayName}</bdi>

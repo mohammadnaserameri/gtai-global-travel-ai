@@ -3,6 +3,12 @@
  *
  * Only brand facts live here — never user-facing sentences. Anything a visitor
  * reads must come from a dictionary so it can be localized.
+ *
+ * Public *contact* information deliberately does not live here. It has one
+ * home, `config/public-company-profile.ts`, and the placeholder address this
+ * module used to carry was removed in V2.8-A: an unused second email constant
+ * is a second answer to "how do people reach GTAI", and two answers is one
+ * too many.
  */
 
 export const brand = {
@@ -18,11 +24,6 @@ export const brand = {
   businessModel: "affiliate-travel-metasearch",
   /** Year used for the footer copyright line. */
   foundedYear: 2026,
-  /**
-   * Non-production contact placeholder. Intentionally a non-routable example
-   * address — no real mailbox, no real domain, no secrets in source.
-   */
-  contactPlaceholder: "hello@example.invalid",
 } as const;
 
 export type Brand = typeof brand;

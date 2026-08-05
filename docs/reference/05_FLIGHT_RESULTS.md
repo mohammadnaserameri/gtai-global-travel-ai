@@ -142,3 +142,19 @@ Offers reaching Results have passed intent-aware validation, not merely a shape 
 Three further guarantees hold as of the boundary-integrity round. Every displayed date and time is the offer's own UTC instant **read in that airport's time zone** — a card cannot show a departure time its epoch does not support. Every airport code on a card, including connections, **exists in the GTAI location directory**; a well-formed invention like `ZZZ` is rejected rather than rendered. And every carrier and booking-provider name comes from the **shared demonstration catalog**, so a real airline or travel-agency name cannot appear on a page that calls its offers demonstrations.
 
 The envelope carrying the offers must also be self-consistent — a `success` with no offers, an `empty` with offers, or a `partial` where nothing actually failed is rejected rather than rendered. The count is checked against what the sources claim to have supplied: the **final offer count may be lower** than the providers' combined contribution, because deduplication and the overall ceiling legitimately reduce it, but it can **never be higher**. Anything that fails becomes the ordinary translated error state; nothing is repaired into a different UI state.
+
+## Demonstration disclosure (V2.8-A)
+
+The standing disclosure above the result list is now rendered by the shared `DemonstrationDataNotice` (`prominent` weight) rather than a page-local alert, so Results, Details, the homepage and the public pages make one identical claim. Results keeps its own surface-specific points; the body sentence is the shared one.
+
+The point list gained the statement the V2.7 copy lacked: **airlines and booking providers shown here are fictional demonstration identities**. Naming the itineraries as generated was not the same as naming the _brands_ as invented, and a reader scanning "Aurora Air — Provided by Northstar Travel" had no way to know both were fiction.
+
+The notice is a `role="note"` landmark with an accessible name, carries icon, title and body so nothing depends on colour, works in RTL, is **not dismissible**, and lives outside the state that filters and sorting drive — so it survives every view-state change without a re-render dependency. It renders from already-loaded props and issues no request.
+
+Results is `noindex, nofollow, nocache` through the shared `buildNonIndexableMetadata`, and is excluded from the sitemap structurally: the sitemap enumerates the shared list of pages meant to be public, so a generated itinerary has no route in.
+
+## Crawl policy correction (V2.8-A round 2)
+
+`robots.txt` no longer disallows `/*/flights/results`. That rule was removed because blocking a URL and marking it `noindex` are **alternatives, not layers**: a crawler refused the fetch never reads the `noindex` it was refused, and the URL can still be listed as a bare link discovered elsewhere. Disallowing made the exclusion less reliable.
+
+Results remains `noindex, nofollow, nocache` with the Google-specific directives, and remains absent from the sitemap. Those are now the entire mechanism, and they work precisely because the page stays crawlable enough to state them. The page is `noindex` in every locale, authored or not.

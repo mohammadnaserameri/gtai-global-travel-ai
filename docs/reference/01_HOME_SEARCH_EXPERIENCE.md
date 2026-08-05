@@ -642,3 +642,23 @@ Genuinely unresolved items only.
 ## 28. Implementation prohibition
 
 > **This blueprint authorizes documentation only. It does not authorize implementation of Airport Selector, Date Picker, Search Results, provider integration, booking, affiliate redirect, production AI or analytics.**
+
+## Demonstration disclosure and product status (V2.8-A)
+
+Directly beneath the search surface — before any reassurance copy — the homepage renders the shared `DemonstrationDataNotice` at `standard` weight. A visitor about to run a search learns what the results will be before they read anything about why GTAI is worth using.
+
+A second, restrained card states that travel-provider integrations are being prepared: the product and its provider runtime are under development, live integrations require commercial and technical approval, and results stay demonstration-only until an approved integration is activated. It names no company, endpoint or internal detail.
+
+The hero subtitle and the reassurance items were corrected in the same round. GTAI no longer describes itself as comparing "across trusted travel providers" in the present tense; it describes one comparison surface, states that integrations are being prepared, and says plainly that every provider named in today's results is a demonstration provider.
+
+## Homepage metadata and locale fallback (V2.8-A round 2)
+
+The homepage builds its metadata through the shared `buildPublicMetadata` helper rather than returning a bare title and description. Each authored locale gets a canonical (`/en`, `/fr`, `/fa`, `/ar`), `hreflang` alternates for the four authored locales plus `x-default` to English, Open Graph type/site name/title/description/url, a `summary` Twitter card, and `index, follow`.
+
+The hero, the reassurance strip and the sample-destination section were corrected in V2.8-A round 3 to describe only what works today: a flight-comparison experience running on locally generated demonstration data, with stay, car and package integrations described as planned. The destination section is explicitly illustrative and states that it is not live popularity or trend data.
+
+The homepage is indexable on all four authored locales. Flights is the only other product route that is — it has a working demonstration search — while Stays, Cars, Packages, Explore, Trips and AI Travel are public but `noindex` until they do something substantive. See section 17 of the V2.8-A implementation record for the full policy.
+
+V2.8-A round 4 extended the same split to the seven static product pages, which had been passing the requested locale to `ProductPageShell` and so laid English prose out right-to-left on an unauthored RTL locale.
+
+The homepage also honours the requested-locale / content-locale split: the dictionary and text direction come from the content locale, while the search form and every internal link keep the requested locale, so a visitor on `/de` still navigates within `/de`.

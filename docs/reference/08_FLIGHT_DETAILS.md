@@ -155,3 +155,15 @@ No tax/fee/surcharge/commission breakdown, no crossed-out price, no discount or 
 ## 12. Exclusions
 
 Not implemented and not implied: real provider API or adapter, live inventory, live prices, real airline assets or identifiers, real flight status, terminal/gate data, seat maps, fare-brand APIs, real baggage allowances, affiliate redirect, commission tracking, booking, payment, account persistence, saved options, email or PDF itineraries, social sharing, maps, carbon emissions, AI recommendations, multi-city, whole-month search. Provider integration and a real redirect remain **pending**; booking and payment remain permanently outside GTAI core.
+
+## Demonstration disclosure (V2.8-A)
+
+Details renders the same shared `DemonstrationDataNotice` Results does, at `prominent` weight, positioned above the flight identity and the price so it is read before either. Its point list also names the airlines and booking providers as fictional demonstration identities.
+
+The provider hand-off preview labels each name where it appears rather than only in its bullet list: the validating carrier is captioned as a fictional demonstration airline, and the booking provider is prefixed "Demonstration provider". Those are the two strings a visitor is most likely to read as real. The preview also opens with the shared notice at `compact` weight. It still opens nothing, changes no URL and issues no request.
+
+Details is `noindex, nofollow, nocache` through the same shared helper Results uses, so both pages state one policy rather than two similar ones.
+
+## Crawl policy correction (V2.8-A round 2)
+
+Details is no longer disallowed in `robots.txt`, for the same reason Results is not: a blocked URL is a URL whose `noindex` nobody fetches. The page keeps `noindex, nofollow, nocache` plus the Google-specific directives through the shared `buildNonIndexableMetadata` helper, stays out of the sitemap, and remains `noindex` in every locale including unauthored fallbacks.

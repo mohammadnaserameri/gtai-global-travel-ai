@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { getDictionary } from "@/i18n/get-dictionary";
+import { buildNonIndexableMetadata } from "@/lib/seo/public-metadata";
 import { Container } from "@/components/layout/Container";
 import { FlightResultsExperience } from "@/components/flights/FlightResultsExperience";
 import { ResultsLoadingSkeleton } from "@/components/flights/ResultsLoadingSkeleton";
@@ -13,10 +14,13 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const { meta } = await getDictionary(locale);
-  return {
-    title: meta.flightResults.title,
-    description: meta.flightResults.description,
-  };
+  // Never indexed. A Results URL carries locally generated demonstration
+  // itineraries and prices for one specific query; a crawled copy would
+  // present fictional fares as a findable page.
+  return buildNonIndexableMetadata(
+    meta.flightResults.title,
+    meta.flightResults.description,
+  );
 }
 
 /**

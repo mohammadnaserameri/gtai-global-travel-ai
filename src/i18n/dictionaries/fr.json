@@ -3,23 +3,23 @@
     "siteName": "GTAI — Global Travel AI",
     "home": {
       "title": "GTAI — Cherchez partout. Voyagez intelligemment.",
-      "description": "Comparez vols, hébergements, voitures, forfaits et expériences de voyage auprès de fournisseurs de confiance."
+      "description": "Recherche et comparaison de voyage multilingues par GROUPE AMERI INC. Les résultats de vol de cette version sont des données de démonstration, non des tarifs réels."
     },
     "flights": {
       "title": "Vols — GTAI",
-      "description": "Comparez les vols auprès de fournisseurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
+      "description": "Recherche et comparaison de vols GTAI. Les résultats de cette version sont des données de démonstration générées localement — ni tarifs ni disponibilités réels."
     },
     "stays": {
       "title": "Hébergements — GTAI",
-      "description": "Comparez hôtels et appartements auprès de fournisseurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
+      "description": "Comparaison d'hébergements GTAI. Les intégrations de fournisseurs sont en préparation ; aucun résultat d'hébergement n'est encore disponible."
     },
     "cars": {
       "title": "Location de voiture — GTAI",
-      "description": "Comparez la location de voiture auprès de loueurs de confiance avec GTAI. Les résultats en direct arrivent bientôt."
+      "description": "Comparaison de location de voitures GTAI. Les intégrations de fournisseurs sont en préparation ; aucun résultat n'est encore disponible."
     },
     "packages": {
       "title": "Forfaits — GTAI",
-      "description": "Comparez les forfaits vol + hébergement avec GTAI. Les résultats en direct arrivent bientôt."
+      "description": "Comparaison de forfaits vol et hébergement GTAI. Les intégrations de fournisseurs sont en préparation ; aucun résultat n'est encore disponible."
     },
     "explore": {
       "title": "Explorer — GTAI",
@@ -44,6 +44,26 @@
     "flightDetails": {
       "title": "Détails du vol — GTAI",
       "description": "Itinéraire complet, tarif et bagages d'une option de démonstration générée localement par GTAI. Les horaires et les prix ne sont pas en direct."
+    },
+    "about": {
+      "title": "À propos de GTAI — Global Travel AI",
+      "description": "GTAI est une plateforme multilingue de métarecherche de voyage de GROUPE AMERI INC., Québec, Canada. La version publique actuelle utilise des données de vol de démonstration."
+    },
+    "contact": {
+      "title": "Contact — GTAI",
+      "description": "Contactez GROUPE AMERI INC. au sujet de GTAI par courriel pour toute demande de partenariat, technique ou générale."
+    },
+    "privacy": {
+      "title": "Confidentialité — GTAI",
+      "description": "Comment la version publique actuelle de GTAI traite l'information. Aucun compte, aucune donnée de réservation, aucun outil de mesure d'audience activé."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation — GTAI",
+      "description": "Conditions d'utilisation de GTAI. Le contenu des vols est une donnée de démonstration fictive et n'est pas réservable."
+    },
+    "affiliateDisclosure": {
+      "title": "Divulgation d'affiliation — GTAI",
+      "description": "Comment GTAI entend générer des revenus, et pourquoi aucun lien d'affiliation ou de réservation n'est actif dans cette version de démonstration."
     }
   },
   "common": {
@@ -76,7 +96,12 @@
     "signIn": "Se connecter",
     "signInHint": "Les comptes arrivent bientôt.",
     "profile": "Profil",
-    "goToHome": "Accueil GTAI"
+    "goToHome": "Accueil GTAI",
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation",
+    "affiliateDisclosure": "Divulgation d'affiliation"
   },
   "language": {
     "label": "Langue",
@@ -102,7 +127,7 @@
   },
   "hero": {
     "title": "Cherchez partout. Voyagez intelligemment.",
-    "subtitle": "Comparez vols, hébergements, voitures et forfaits auprès de fournisseurs de confiance — en une seule recherche."
+    "subtitle": "Découvrez l'expérience de comparaison de vols de GTAI avec des résultats de démonstration générés localement. Les intégrations d'hébergement, de voiture et de forfait sont prévues."
   },
   "searchTabs": {
     "label": "Choisissez quoi rechercher",
@@ -165,7 +190,7 @@
     "submit": "Rechercher",
     "submitDisabledHint": "Les résultats de recherche ne sont pas encore disponibles.",
     "helper": "Aéroports proches, dates flexibles et alertes de prix arrivent bientôt.",
-    "notice": "GTAI connecte encore ses fournisseurs de voyage. Vous pourrez bientôt lancer cette recherche.",
+    "notice": "Cette catégorie de produit n'est pas connectée dans la version actuelle. Toute intégration future de fournisseur exigerait une approbation commerciale et technique avant son activation.",
     "locations": {
       "originTitle": "Choisissez votre point de départ",
       "destinationTitle": "Choisissez votre destination",
@@ -278,9 +303,9 @@
     "notice": "La planification guidée arrive bientôt."
   },
   "destinations": {
-    "eyebrow": "Destinations populaires",
-    "title": "Où vont les voyageurs",
-    "description": "Un aperçu des destinations que GTAI comparera. Les tendances réelles suivront une fois les partenaires connectés.",
+    "eyebrow": "Destinations d'exemple",
+    "title": "Destinations d'exemple à explorer",
+    "description": "Des destinations illustratives choisies pour présenter l'interface. Il ne s'agit ni de données de popularité ni de tendances réelles, et aucun fournisseur de voyage ne les fournit.",
     "staticNotice": "Destinations d'exemple",
     "items": [
       {
@@ -351,8 +376,8 @@
   },
   "why": {
     "eyebrow": "Pourquoi GTAI",
-    "title": "Conçu pour la façon dont on planifie vraiment un voyage",
-    "description": "GTAI associe la comparaison familière d'un métamoteur à une planification structurée et explicable.",
+    "title": "Conçu pour la façon dont les gens planifient réellement leurs voyages",
+    "description": "GTAI est conçu pour combiner la comparaison de métarecherche familière avec une planification structurée et explicable. La majeure partie de cette capacité reste prévue.",
     "statusLabels": {
       "active": "Disponible",
       "planned": "Bientôt"
@@ -360,7 +385,7 @@
     "items": [
       {
         "title": "Comparaison mondiale",
-        "description": "Une surface de comparaison cohérente pour les vols, les hébergements, les voitures et les forfaits.",
+        "description": "Une surface de comparaison cohérente. La comparaison de vols fonctionne aujourd'hui sur des données de démonstration ; les hébergements, voitures et forfaits sont prévus.",
         "status": "planned"
       },
       {
@@ -370,8 +395,8 @@
       },
       {
         "title": "Modèle d'affiliation transparent",
-        "description": "Nous indiquons quel partenaire finalise votre réservation et où GTAI perçoit une commission.",
-        "status": "active"
+        "description": "Les endroits où GTAI percevrait une commission seront signalés sur la page concernée. Aucune commission n'est perçue aujourd'hui.",
+        "status": "planned"
       },
       {
         "title": "Vigilance sur les risques du voyage",
@@ -405,7 +430,7 @@
       },
       {
         "title": "Relations d'affiliation visibles",
-        "description": "Les liens rémunérés sont signalés là où ils apparaissent, et non enfouis dans une page de politique."
+        "description": "Si des liens générant une commission sont introduits, ils seront signalés là où ils apparaissent plutôt que dissimulés dans une page de politique. Il n'en existe aucun aujourd'hui."
       },
       {
         "title": "Personnalisation respectueuse de la vie privée",
@@ -419,25 +444,24 @@
   },
   "affiliate": {
     "label": "Divulgation d'affiliation",
-    "short": "GTAI est un service de comparaison de voyages. Sélectionner une offre peut vous rediriger vers un site partenaire qui finalise la réservation et le paiement, et GTAI peut percevoir une commission.",
-    "title": "Comment GTAI gagne de l'argent",
+    "short": "GTAI est un service de comparaison de voyage. Il ne fournit actuellement aucun lien de réservation, et aucune commission n'est perçue sur les résultats de démonstration affichés aujourd'hui.",
+    "title": "Modèle d'affiliation prévu — comment GTAI pourrait générer des revenus",
     "points": [
-      "GTAI compare des offres publiées par des fournisseurs de voyage tiers.",
-      "Sélectionner une offre peut vous rediriger vers un site partenaire.",
-      "Le partenaire — et non GTAI — finalise la réservation et encaisse le paiement.",
-      "GTAI peut percevoir une commission lorsqu'une réservation est finalisée.",
-      "Vérifiez toujours le prix, les dates et les conditions sur le site partenaire avant de payer."
+      "GTAI est conçu pour comparer des offres de voyage publiées par des fournisseurs tiers.",
+      "Dans cette version, aucune offre ne redirige nulle part : les résultats sont des données de démonstration.",
+      "Si des intégrations approuvées sont activées plus tard, c'est le partenaire — et non GTAI — qui effectuerait la réservation et encaisserait le paiement.",
+      "GTAI pourrait alors recevoir une commission lorsqu'une réservation est finalisée.",
+      "Vérifiez toujours le prix, les dates et les conditions sur le site du partenaire avant de payer."
     ],
-    "notice": "GTAI n'affiche pas encore d'offres ni de prix en direct : aucun lien partenaire n'apparaît sur ce site aujourd'hui."
+    "notice": "GTAI n'affiche pas encore d'offres ou de prix réels ; aucun lien partenaire n'apparaît donc sur ce site aujourd'hui."
   },
   "footer": {
-    "tagline": "Comparaison de voyage mondiale, conçue au Canada pour les voyageurs du monde entier.",
+    "tagline": "Une plateforme multilingue de comparaison de voyage en cours de construction au Canada pour les voyageurs du monde entier.",
     "regionHeading": "Région",
     "groups": {
       "company": {
         "heading": "Entreprise",
         "links": {
-          "about": "À propos de GTAI",
           "howItWorks": "Comment ça marche",
           "careers": "Carrières",
           "press": "Presse"
@@ -457,24 +481,24 @@
         "heading": "Assistance",
         "links": {
           "help": "Aide",
-          "contact": "Contact",
           "accessibility": "Accessibilité",
           "partner": "Devenir partenaire"
         }
       },
       "legal": {
-        "heading": "Mentions légales",
+        "heading": "Entreprise et mentions légales",
         "links": {
+          "about": "À propos",
+          "contact": "Contact",
           "privacy": "Confidentialité",
-          "terms": "Conditions",
-          "affiliate": "Divulgation d'affiliation",
-          "cookies": "Préférences de cookies"
+          "terms": "Conditions d'utilisation",
+          "affiliateDisclosure": "Divulgation d'affiliation"
         }
       }
     },
-    "placeholderNotice": "Certaines destinations ci-dessous ne sont pas encore publiées.",
+    "placeholderNotice": "Certaines pages du pied de page ne sont pas encore publiées et apparaissent en texte simple.",
     "copyright": "GTAI — Global Travel AI",
-    "buildNotice": "GTAI compare des offres de voyage. La réservation et le paiement sont finalisés par nos partenaires."
+    "buildNotice": "GTAI démontre actuellement la comparaison de voyage avec des données fictives. La réservation et le paiement ne sont pas disponibles."
   },
   "agents": {
     "eyebrow": "Aperçu de l'architecture",
@@ -487,37 +511,37 @@
     "flights": {
       "eyebrow": "Vols",
       "title": "Comparaison de vols, pensée pour chaque marché",
-      "description": "L'expérience vols de GTAI comparera les tarifs entre fournisseurs approuvés et expliquera le compromis entre la meilleure option, la moins chère et la plus rapide.",
+      "description": "L'expérience de vol GTAI est conçue pour comparer les tarifs entre fournisseurs et expliquer le compromis entre les options les meilleures, les moins chères et les plus rapides. Elle fonctionne aujourd'hui sur des données de démonstration.",
       "emptyTitle": "Aucun résultat de vol",
-      "emptyDescription": "GTAI connecte encore ses fournisseurs de vols. Les résultats de comparaison apparaîtront ici."
+      "emptyDescription": "Aucun résultat de fournisseur en direct n'est disponible. La recherche de vols de cette version fonctionne sur des données de démonstration générées localement ; toute intégration future de fournisseur exigerait une approbation commerciale et technique avant son activation."
     },
     "stays": {
       "eyebrow": "Hébergements",
       "title": "Hôtels, appartements et tout le reste",
-      "description": "L'expérience hébergement de GTAI comparera les logements entre fournisseurs approuvés, en clarifiant ce qui est réellement inclus dans le prix.",
+      "description": "GTAI est conçu pour comparer les hébergements entre fournisseurs, en précisant ce qui est réellement inclus dans le prix. Aucun fournisseur d'hébergement n'est encore connecté.",
       "emptyTitle": "Aucun résultat d'hébergement",
-      "emptyDescription": "GTAI connecte encore ses fournisseurs d'hébergement. Les résultats de comparaison apparaîtront ici."
+      "emptyDescription": "Aucun résultat de fournisseur en direct n'est disponible. Cette catégorie de produit n'est pas connectée dans la version actuelle, et toute intégration future de fournisseur exigerait une approbation commerciale et technique avant son activation."
     },
     "cars": {
       "eyebrow": "Voitures",
       "title": "La location de voiture sans mauvaise surprise",
-      "description": "L'expérience location de GTAI comparera les loueurs et rendra visible le coût réel avant tout engagement.",
+      "description": "GTAI est conçu pour comparer la location de voitures entre fournisseurs, avec le coût total et les conditions affichés d'emblée. Aucun loueur n'est encore connecté.",
       "emptyTitle": "Aucun résultat de location",
-      "emptyDescription": "GTAI connecte encore ses loueurs de voitures. Les résultats de comparaison apparaîtront ici."
+      "emptyDescription": "Aucun résultat de fournisseur en direct n'est disponible. Cette catégorie de produit n'est pas connectée dans la version actuelle, et toute intégration future de fournisseur exigerait une approbation commerciale et technique avant son activation."
     },
     "packages": {
       "eyebrow": "Forfaits",
       "title": "Vol, hébergement et extras — comparés ensemble",
-      "description": "L'expérience forfaits de GTAI comparera le voyage groupé aux mêmes composants réservés séparément, pour que l'économie soit un fait et non une promesse.",
+      "description": "GTAI est conçu pour comparer les forfaits vol et hébergement avec une réservation séparée. Aucun fournisseur de forfaits n'est encore connecté.",
       "emptyTitle": "Aucun résultat de forfait",
-      "emptyDescription": "GTAI connecte encore ses fournisseurs de forfaits. Les résultats de comparaison apparaîtront ici."
+      "emptyDescription": "Aucun résultat de fournisseur en direct n'est disponible. Cette catégorie de produit n'est pas connectée dans la version actuelle, et toute intégration future de fournisseur exigerait une approbation commerciale et technique avant son activation."
     },
     "explore": {
       "eyebrow": "Explorer",
       "title": "Partez d'un budget, pas d'une destination",
       "description": "Explorer vous laissera chercher vers l'extérieur — à partir de ce que vous pouvez dépenser, de quand vous pouvez partir et de ce que vous aimez.",
       "emptyTitle": "Explorer n'est pas encore actif",
-      "emptyDescription": "La découverte de destinations s'ouvrira une fois les partenaires de voyage connectés."
+      "emptyDescription": "La découverte de destinations ne s'ouvrirait que si des intégrations de fournisseurs de voyage sont approuvées et connectées. Aucune ne l'est aujourd'hui."
     },
     "trips": {
       "eyebrow": "Voyages",
@@ -553,15 +577,15 @@
     "cta": "Retour à l'accueil"
   },
   "reassurance": {
-    "label": "Ce que la comparaison GTAI vous apporte",
+    "label": "Ce que GTAI fait aujourd'hui",
     "items": [
       {
-        "title": "Une recherche, plusieurs fournisseurs",
-        "description": "Comparez auprès de fournisseurs de confiance au lieu de consulter chaque site vous-même."
+        "title": "Une surface de comparaison de démonstration",
+        "description": "Un seul endroit pour comparer des options de vol, fonctionnant sur des données de démonstration générées localement. De futures intégrations de fournisseurs sont prévues et exigeraient une approbation commerciale et technique avant leur activation."
       },
       {
-        "title": "Vous savez avec qui vous réservez",
-        "description": "Vous voyez toujours quel fournisseur propose une offre et qui finalise la réservation."
+        "title": "Clair sur l'origine d'une offre",
+        "description": "Chaque offre nomme un fournisseur, et dans cette version chacune de ces identités est fictive et présentée à des fins de démonstration. Aucun fournisseur externe ne fournit de données ici."
       },
       {
         "title": "Meilleur, moins cher ou plus rapide",
@@ -576,6 +600,7 @@
       "title": "Résultats de démonstration — les horaires et les prix ne sont pas en direct.",
       "points": [
         "GTAI n'est pas connecté à un inventaire de vols en direct dans cette version.",
+        "Les compagnies aériennes et les fournisseurs de réservation affichés ici sont des identités de démonstration fictives.",
         "Les offres sont générées localement pour tester l'interface et le parcours.",
         "Aucune réservation ni redirection partenaire n'est encore disponible."
       ]
@@ -757,7 +782,9 @@
         "La réservation et le paiement ne sont pas gérés dans cette version.",
         "Une future version connectera ici de vrais fournisseurs et de vraies redirections d'affiliation."
       ],
-      "close": "Fermer"
+      "close": "Fermer",
+      "demonstrationProvider": "Fournisseur de démonstration",
+      "carrierNote": "Compagnie aérienne de démonstration fictive"
     },
     "viewFlightDetails": "Voir les détails du vol",
     "partialCoverage": {
@@ -779,6 +806,7 @@
       "title": "Détails de vol de démonstration — les horaires et les prix ne sont pas en direct.",
       "points": [
         "Les horaires et les prix de cette page sont générés localement par GTAI.",
+        "Les compagnies aériennes et les fournisseurs de réservation affichés ici sont des identités de démonstration fictives.",
         "Aucun inventaire de vols en direct n'est connecté dans cette version.",
         "Les heures locales des aéroports sont générées pour valider l'interface et le parcours.",
         "Aucune réservation ni redirection partenaire n'est encore disponible."
@@ -843,7 +871,7 @@
     },
     "provider": {
       "heading": "Transfert vers le fournisseur",
-      "notice": "GTAI n'est connecté à aucun fournisseur dans cette version. L'aperçu ci-dessous montre ce qu'un transfert indiquerait, et n'ouvre rien."
+      "notice": "GTAI n'est connecté à aucun fournisseur de voyage dans cette version. Les fournisseurs nommés dans ces résultats de démonstration sont fictifs, et l'aperçu ci-dessous montre ce qu'un transfert indiquerait, sans rien ouvrir."
     },
     "partialCoverage": {
       "unverified": "Cette option n'a pas pu être vérifiée.",
@@ -851,6 +879,207 @@
       "retry": "Réessayer",
       "title": "Certaines sources de démonstration n'ont pas répondu.",
       "description": "Les options ci-dessous sont peut-être incomplètes. Il s'agit d'une limite de la démonstration, et non d'une indication sur la disponibilité réelle des vols."
+    }
+  },
+  "demonstrationNotice": {
+    "title": "Données de démonstration",
+    "compact": "Les résultats de vol sur GTAI sont générés localement : ils ne sont ni réels ni réservables.",
+    "body": "Les itinéraires, compagnies aériennes, fournisseurs de réservation et prix affichés sur GTAI sont des données de démonstration fictives, générées localement. Ils ne reflètent aucune disponibilité réelle, aucun tarif réel, et ne peuvent pas être réservés.",
+    "points": [
+      "Les compagnies aériennes et les fournisseurs affichés dans les résultats sont inventés à des fins de démonstration.",
+      "Aucun fournisseur de voyage en direct n'est connecté dans cette version.",
+      "Aucune réservation, aucun paiement et aucune redirection partenaire n'a lieu sur GTAI."
+    ]
+  },
+  "partnerStatus": {
+    "eyebrow": "État du produit",
+    "title": "Les intégrations de fournisseurs de voyage sont en préparation",
+    "description": "Le produit GTAI et son moteur de fournisseurs sont en cours de développement. La connexion à des données de voyage en direct exige une approbation à la fois commerciale et technique ; jusqu'à l'activation d'une intégration approuvée, les résultats restent des données de démonstration.",
+    "points": [
+      "L'architecture de recherche, de comparaison et de résultats est construite et fonctionnelle.",
+      "La disponibilité en direct et la réservation ne sont pas encore activées.",
+      "Les résultats de vol actuels sont des données de démonstration."
+    ],
+    "homeTitle": "Intégrations en préparation",
+    "homeDescription": "La connexion à des fournisseurs de voyage en direct exige une approbation. Tant qu'aucune n'est active, les résultats restent des données de démonstration."
+  },
+  "publicPages": {
+    "lastUpdated": "Dernière mise à jour",
+    "backToHome": "Retour à l'accueil",
+    "companyHeading": "Coordonnées de l'entreprise",
+    "labels": {
+      "product": "Produit",
+      "legalName": "Entité juridique",
+      "location": "Localisation",
+      "email": "Courriel",
+      "website": "Site Web"
+    },
+    "about": {
+      "title": "À propos de GTAI",
+      "intro": "GTAI signifie Global Travel AI. Il s'agit d'une plateforme multilingue de découverte et de métarecherche de voyage développée par GROUPE AMERI INC., une entreprise établie au Québec, Canada.",
+      "sections": [
+        {
+          "heading": "Ce que GTAI construit",
+          "body": [
+            "GTAI est conçu pour comparer des options de voyage entre fournisseurs et expliquer les compromis en langage clair, plutôt que de présenter un classement unique et inexpliqué.",
+            "La planification de voyage assistée par IA fait partie de l'orientation du produit : des questions structurées qui construisent un profil de voyage, plutôt qu'une zone de conversation vide."
+          ]
+        },
+        {
+          "heading": "Ce que fait la version publique actuelle",
+          "body": [
+            "La version publique que vous utilisez exécute une expérience complète de recherche, de comparaison, de filtrage et de détail sur des données de vol de démonstration générées localement par GTAI.",
+            "Les compagnies aériennes, les fournisseurs de réservation, les horaires et les prix de ces résultats sont fictifs. Ils existent afin que le comportement du produit puisse être évalué de bout en bout avant toute connexion de données réelles."
+          ]
+        },
+        {
+          "heading": "Intégrations de fournisseurs de voyage",
+          "body": [
+            "Les intégrations de fournisseurs de voyage en direct exigent une approbation commerciale et technique. Jusqu'à l'activation d'une intégration approuvée, les résultats de GTAI restent des données de démonstration.",
+            "Aucun partenariat, aval ou affiliation avec une entreprise de voyage ne doit être déduit de cette version publique."
+          ]
+        },
+        {
+          "heading": "Ce que GTAI ne fait pas aujourd'hui",
+          "body": [
+            "GTAI ne vend pas de billets, n'émet pas de documents de voyage et ne traite aucun paiement. Aucun contrat de réservation n'est formé au moyen de ce site Web."
+          ]
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contact",
+      "intro": "Les demandes de partenariat, les questions techniques et les demandes générales sont les bienvenues par courriel.",
+      "emailIntro": "Écrivez-nous à :",
+      "note": "GTAI n'utilise pas de formulaire de contact et ne recueille aucune coordonnée par l'intermédiaire de ce site Web. Le courriel est le seul canal offert, et les messages reçoivent une réponse depuis l'adresse ci-dessus.",
+      "topics": [
+        "Demandes de partenariat et de données de voyage",
+        "Questions techniques et questions sur le produit",
+        "Questions relatives à la vie privée"
+      ]
+    },
+    "privacy": {
+      "title": "Confidentialité",
+      "intro": "Cet avis décrit la façon dont la version publique actuelle de GTAI traite l'information. Il est rédigé pour correspondre à ce que le produit fait réellement aujourd'hui, et non à ce qu'il pourrait faire plus tard.",
+      "sections": [
+        {
+          "heading": "Aucun compte n'est requis",
+          "body": [
+            "Vous pouvez explorer la recherche de vols sur GTAI sans créer de compte. GTAI ne demande ni votre nom, ni votre adresse, ni votre date de naissance, ni vos informations de paiement."
+          ]
+        },
+        {
+          "heading": "Ce qui se passe lors d'une recherche",
+          "body": [
+            "Les paramètres de recherche que vous choisissez — trajet, dates, voyageurs, cabine et devise — sont envoyés à la route serveur interne de GTAI, qui génère des résultats de démonstration et les renvoie à votre navigateur.",
+            "GTAI n'ajoute intentionnellement rien d'autre à cette requête : aucun identifiant de compte, aucune identité de passager, aucune donnée de passeport, aucune donnée de paiement. La livraison web normale comporte toutefois des données techniques de requête telles que votre adresse IP, votre agent utilisateur et les en-têtes, que les fournisseurs d'infrastructure peuvent traiter.",
+            "Ces paramètres figurent également dans l'adresse de la page afin qu'une recherche puisse être partagée ou rouverte. Une URL peut donc rester dans l'historique de votre navigateur, et toute personne à qui vous transmettez le lien peut voir la recherche qu'il décrit."
+          ]
+        },
+        {
+          "heading": "Aucune donnée de réservation ni de paiement",
+          "body": [
+            "GTAI ne traite ni réservations ni paiements : aucune information de passager, de passeport ou de paiement n'est recueillie dans cette version."
+          ]
+        },
+        {
+          "heading": "Stockage dans votre navigateur",
+          "body": [
+            "Lorsque vous choisissez un aéroport ou une ville, GTAI enregistre les identifiants de vos sélections récentes dans le `sessionStorage` de votre navigateur afin de pouvoir vous les reproposer. Seuls des identifiants d'entités sont conservés — aucun texte saisi, aucune coordonnée, aucune donnée de voyageur.",
+            "Le `sessionStorage` est un stockage de navigateur limité à l'onglet, et non un témoin. Il n'est pas envoyé avec les requêtes, il disparaît normalement à la fermeture de l'onglet ou de la session, et GTAI ne l'utilise pas comme identifiant de mesure d'audience."
+          ]
+        },
+        {
+          "heading": "Enregistrements côté serveur",
+          "body": [
+            "Le moteur de recherche de GTAI construit, pour chaque recherche interne, un événement d'audit à données minimisées. Cette structure exclut délibérément votre trajet, vos dates, le nombre de voyageurs, les paramètres complets de la recherche, ainsi que tout contenu de requête ou de réponse.",
+            "Dans cette version, le collecteur par défaut ne conserve pas ces événements : GTAI n'exploite aucun journal d'audit applicatif persistant des recherches. Cela concerne l'application GTAI elle-même, et non l'hébergement — des journaux d'infrastructure peuvent exister. La mise en place ultérieure d'un audit persistant exigerait au préalable une politique de conservation et d'accès.",
+            "Aucun identifiant de fournisseur de voyage n'existe dans le code transmis à votre navigateur."
+          ]
+        },
+        {
+          "heading": "Fournisseurs d'infrastructure",
+          "body": [
+            "GTAI est hébergé par des fournisseurs d'infrastructure tiers. Ces fournisseurs peuvent traiter des informations techniques limitées — telles que l'adresse IP et les métadonnées de requête inhérentes à la livraison d'une page Web — afin d'exploiter et de sécuriser le service. GTAI n'affirme pas qu'aucun journal d'infrastructure n'existe."
+          ]
+        },
+        {
+          "heading": "Mesure d'audience et suivi",
+          "body": [
+            "GTAI n'a activé intentionnellement aucun produit de mesure d'audience, gestionnaire de balises, traceur publicitaire ou module de clavardage tiers dans cette version.",
+            "Aucun témoin non essentiel n'est déposé par GTAI, ce qui explique l'absence de bandeau de témoins sur ce site."
+          ]
+        },
+        {
+          "heading": "Questions",
+          "body": [
+            "Les questions relatives à la vie privée peuvent être envoyées à l'adresse de contact publique. Cet avis décrit la pratique actuelle ; il ne constitue pas une revendication de certification formelle de conformité au titre d'une réglementation particulière."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "intro": "Ces conditions s'appliquent à votre utilisation du site GTAI dans sa forme publique actuelle. Veuillez les lire avec l'avis de confidentialité et la divulgation d'affiliation.",
+      "sections": [
+        {
+          "heading": "Contenu de démonstration",
+          "body": [
+            "Les itinéraires, compagnies aériennes, fournisseurs de réservation, horaires et prix affichés sur GTAI sont des données de démonstration fictives, générées localement.",
+            "Ce contenu ne constitue pas une offre, n'est pas réservable et ne doit pas servir de fondement à l'achat d'un voyage. Les prix et itinéraires affichés ici ne correspondent à aucun vol réel."
+          ]
+        },
+        {
+          "heading": "Ce que GTAI n'est pas",
+          "body": [
+            "GTAI n'agit actuellement ni comme transporteur aérien, ni comme agence de voyage en ligne, ni comme agent de voyage, ni comme processeur de paiement. Aucun billet n'est émis par GTAI et aucun contrat de réservation n'est conclu avec GTAI ou par l'intermédiaire de ce site Web."
+          ]
+        },
+        {
+          "heading": "Disponibilité du service",
+          "body": [
+            "GTAI est en cours de développement. Les fonctionnalités, le contenu et ce site Web lui-même peuvent changer, être suspendus ou devenir indisponibles à tout moment, sans préavis."
+          ]
+        },
+        {
+          "heading": "Utilisation acceptable",
+          "body": [
+            "Vous pouvez utiliser GTAI pour vos recherches de voyage personnelles et non commerciales. Vous ne devez pas tenter d'accéder sans autorisation à une partie quelconque du service, nuire à son fonctionnement, l'attaquer, ni l'extraire de manière à en perturber la disponibilité pour autrui."
+          ]
+        },
+        {
+          "heading": "Propriété intellectuelle",
+          "body": [
+            "Le nom GTAI, l'interface et le contenu appartiennent à GROUPE AMERI INC. ou à ses concédants. Les noms ou marques de tiers susceptibles d'apparaître demeurent la propriété de leurs titulaires respectifs, et leur présence n'implique aucun aval, affiliation ou approbation."
+          ]
+        },
+        {
+          "heading": "Dispositions générales",
+          "body": [
+            "Ces conditions sont soumises au droit applicable. Rien dans celles-ci ne limite les protections impératives du consommateur qui vous sont applicables.",
+            "Cette page est fournie à titre informatif. Elle ne constitue pas un avis juridique et n'a pas fait l'objet d'un examen indépendant par un avocat."
+          ]
+        }
+      ]
+    },
+    "affiliateDisclosure": {
+      "title": "Divulgation d'affiliation",
+      "intro": "Cette page explique comment GTAI entend générer des revenus, et ce qui se passe — ou non — aujourd'hui.",
+      "currentHeading": "Aujourd'hui",
+      "current": [
+        "GTAI ne fournit aucun lien d'affiliation ou de réservation en direct dans cette version de démonstration.",
+        "Les compagnies aériennes, les fournisseurs de réservation et les prix affichés dans les résultats sont fictifs : aucune réservation ne peut en découler.",
+        "Aucune commission n'est perçue à partir de quoi que ce soit sur ce site aujourd'hui."
+      ],
+      "futureHeading": "Prévu",
+      "future": [
+        "GTAI pourra ultérieurement travailler avec des partenaires d'affiliation ou de recommandation approuvés.",
+        "GTAI pourra recevoir une rémunération lorsqu'un voyageur suit un lien approuvé et conclut une transaction avec un tiers.",
+        "Toute réservation et tout paiement auraient lieu auprès de ce tiers, et non auprès de GTAI.",
+        "Une rémunération ne doit jamais modifier le prix factuel communiqué par un fournisseur.",
+        "Des relations commerciales peuvent influencer les options disponibles ou leur placement. Le cas échéant, cela sera divulgué sur la page concernée."
+      ],
+      "note": "Aucun partenariat, aval ou approbation d'une entreprise de voyage ne doit être déduit de cette page ni de quoi que ce soit d'autre sur ce site Web."
     }
   }
 }

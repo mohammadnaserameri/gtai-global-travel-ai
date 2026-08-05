@@ -260,3 +260,28 @@ Documentation approval is never implementation approval — see the closing rule
 ---
 
 **This index authorizes documentation only.** It does not authorize any implementation, provider integration, AI execution or analytics.
+
+## Public pages, Footer and localization (V2.8-A)
+
+Five localized public routes exist under the standard locale architecture — `/[locale]/about`, `/contact`, `/privacy`, `/terms`, `/affiliate-disclosure` — built from one `PublicPageShell` and one set of structured dictionary content. There is no per-language page implementation.
+
+Every fact those pages state about the company comes from `src/config/public-company-profile.ts`, which is also what the Footer, the sitemap, `robots.ts` and the metadata helpers read. `PUBLIC_DOCUMENTS_LAST_UPDATED` is a single constant rendered by each policy page.
+
+The Footer's legal group links to all five pages through the shared path map, the legal entity and location are visible in the footer bar, and the duplicated `about`/`contact` placeholders were removed from the Company and Support groups.
+
+**Footer interactive targets are now at least 44 × 44 CSS pixels.** They previously rendered at `min-h-9` (36 px) — the one accessibility item carried openly through the V2.7 reports. The fix puts `min-h-11` plus vertical padding on the _link_, not the row: padding on the surrounding `<li>` grows the layout without growing what a person has to hit.
+
+All new content is authored in English, French, Persian and Arabic. Persian and Arabic render RTL with Gregorian dates, and the ISO "Last updated" value is wrapped in `<time>` with `gtai-ltr-numerals` so it reads left-to-right inside an RTL paragraph.
+
+## Requested locale vs content locale (V2.8-A round 2)
+
+GTAI routes 32 locales but authors four dictionaries. Two shared helpers in `config/locales.ts` make the consequence explicit rather than implicit:
+
+- `hasAuthoredDictionary(locale)` — whether content is actually written in that language.
+- `resolveContentLocale(locale)` — the language the visitor will read: itself for an authored locale, English otherwise.
+
+**Requested locale** drives the URL, the locale selector state, the region/currency heuristic and internal routing. **Content locale** drives `<html lang>`, `<html dir>`, the dictionary, the metadata language and the canonical URL. They are identical for `en`, `fr`, `fa` and `ar`.
+
+For an unauthored locale such as `/de/about`, the page renders English at `lang="en" dir="ltr"`, is `noindex, follow, nocache`, canonicalizes to `/en/about`, and lists only the four authored translations as `hreflang` alternates plus `x-default`. Previously it declared `lang="de"`, self-canonicalized and stayed indexable — a page misstating its own language and duplicating the English one.
+
+The sitemap still lists only the four authored locales.

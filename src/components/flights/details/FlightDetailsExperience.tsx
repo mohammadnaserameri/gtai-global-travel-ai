@@ -36,6 +36,7 @@ import {
 import { localePath } from "@/i18n/routing";
 import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/ui/Alert";
+import { DemonstrationDataNotice } from "@/components/ui/DemonstrationDataNotice";
 import { Badge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -477,14 +478,17 @@ export function FlightDetailsExperience({
         </ButtonLink>
       </div>
 
-      <Alert tone="brand">
-        <p className="font-semibold">{labels.disclosure.title}</p>
-        <ul className="mt-1.5 list-disc ps-4">
-          {labels.disclosure.points.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
-      </Alert>
+      {/* The same shared notice Results renders, placed above the flight
+          identity and price so it is read before either. */}
+      <DemonstrationDataNotice
+        variant="prominent"
+        labels={{
+          title: labels.disclosure.title,
+          compact: dictionary.demonstrationNotice.compact,
+          body: dictionary.demonstrationNotice.body,
+          points: labels.disclosure.points,
+        }}
+      />
 
       {/* The same reduced-coverage statement Results shows. This offer is
           real and fully described; what is uncertain is whether it was the
@@ -656,6 +660,7 @@ export function FlightDetailsExperience({
         offer={offer}
         intent={readyIntent}
         labels={resultsLabels}
+        demonstrationNotice={dictionary.demonstrationNotice}
       />
     </Container>
   );
