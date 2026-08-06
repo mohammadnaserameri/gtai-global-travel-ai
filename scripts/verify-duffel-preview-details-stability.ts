@@ -7,6 +7,7 @@ import {
   readPreviewOfferSnapshot,
   type PreviewOfferStorage,
 } from "../src/features/flights/details/preview-offer-snapshot";
+import { normalizeOfferIdPathSegment } from "../src/features/flights/details/flight-details-url";
 import type { FlightSearchIntent } from "../src/features/flights/search-intent-types";
 
 let checks = 0;
@@ -72,6 +73,14 @@ check(isPreviewOfferId("duffel:off_safe_123"), "namespaced live id accepted");
 check(!isPreviewOfferId("off_safe_123"), "raw provider id rejected");
 check(!isPreviewOfferId("demo-abc-1"), "demo id is not Preview live id");
 check(!isPreviewOfferId("duffel:../off_safe"), "path-like id rejected");
+check(
+  normalizeOfferIdPathSegment("duffel%3Aoff_safe_123") === "duffel:off_safe_123",
+  "encoded namespace is decoded once",
+);
+check(
+  normalizeOfferIdPathSegment("duffel%253Aoff_safe_123") === null,
+  "double encoding is rejected",
+);
 const memory = new MemoryStorage();
 check(
   readPreviewOfferSnapshot(intent, "duffel:off_missing", 1, memory) === null,

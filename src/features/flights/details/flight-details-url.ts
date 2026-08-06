@@ -55,6 +55,17 @@ export function isValidOfferId(rawOfferId: string | undefined | null): boolean {
   );
 }
 
+/** Decode one Next.js path-segment representation before strict validation. */
+export function normalizeOfferIdPathSegment(rawOfferId: string): string | null {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(rawOfferId);
+  } catch {
+    return null;
+  }
+  return isValidOfferId(decoded) ? decoded : null;
+}
+
 /**
  * The Results query string for a given view-state — the single shared builder
  * both Results and Details use, so the two can never drift into two

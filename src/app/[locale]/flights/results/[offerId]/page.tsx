@@ -6,6 +6,7 @@ import { buildNonIndexableMetadata } from "@/lib/seo/public-metadata";
 import { Container } from "@/components/layout/Container";
 import { FlightDetailsExperience } from "@/components/flights/details/FlightDetailsExperience";
 import { FlightDetailsLoading } from "@/components/flights/details/FlightDetailsLoading";
+import { normalizeOfferIdPathSegment } from "@/features/flights/details/flight-details-url";
 
 interface PageProps {
   params: Promise<{ locale: string; offerId: string }>;
@@ -38,6 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FlightDetailsPage({ params }: PageProps) {
   const { locale, offerId } = await params;
   const dictionary = await getDictionary(locale);
+  const normalizedOfferId = normalizeOfferIdPathSegment(offerId) ?? offerId;
 
   return (
     <Suspense
@@ -49,7 +51,7 @@ export default async function FlightDetailsPage({ params }: PageProps) {
     >
       <FlightDetailsExperience
         locale={locale}
-        offerId={offerId}
+        offerId={normalizedOfferId}
         dictionary={dictionary}
       />
     </Suspense>
