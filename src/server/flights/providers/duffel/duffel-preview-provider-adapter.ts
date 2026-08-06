@@ -258,11 +258,24 @@ export function createDuffelPreviewProviderAdapter(options: {
         context.intent.travelers.adults +
         context.intent.travelers.children +
         context.intent.travelers.infantsInSeat;
-      const offers = mapped.offers.map((offer) => canonical(offer, travelers));
-      const rejectedCanonical = offers.filter(
-        (offer) => !isCanonicalFlightOfferForIntent(offer, context.intent),
-      ).length;
-      if (rejectedCanonical > 0) {
+      const offers: FlightOffer[] = [];
+      let rejectedCanonical = 0;
+      for (const mappedOffer of mapped.offers) {
+        try {
+          const candidate = canonical(mappedOffer, travelers);
+          if (isCanonicalFlightOfferForIntent(candidate, context.intent)) {
+            offers.push(candidate);
+          } else {
+            rejectedCanonical += 1;
+          }
+        } catch {
+          // Most commonly an intermediate airport outside GTAI's trusted
+          // timezone directory. The offer is rejected; no provider value is
+          // inspected, logged, repaired or exposed.
+          rejectedCanonical += 1;
+        }
+      }
+      if (offers.length === 0) {
         recordDuffelPreviewDiagnostic(options.diagnosticsEnabled === true, {
           phase: "mapping",
           category: "mappingFailure",
@@ -270,9 +283,9 @@ export function createDuffelPreviewProviderAdapter(options: {
           retryable: false,
           offerRequestIdPresent: true,
           responseParsed: true,
-          mappedOfferCount: offers.length - rejectedCanonical,
+          mappedOfferCount: 0,
           rejectedOfferCount: mapped.rejected.length + rejectedCanonical,
-          safeReasonCode: "canonical-offer-rejected",
+          safeReasonCode: "all-canonical-offers-rejected",
         });
         return {
           ok: false as const,
@@ -287,8 +300,11 @@ export function createDuffelPreviewProviderAdapter(options: {
         offerRequestIdPresent: true,
         responseParsed: true,
         mappedOfferCount: offers.length,
-        rejectedOfferCount: mapped.rejected.length,
-        safeReasonCode: "preview-search-mapped",
+        rejectedOfferCount: mapped.rejected.length + rejectedCanonical,
+        safeReasonCode:
+          rejectedCanonical > 0
+            ? "preview-search-partially-mapped"
+            : "preview-search-mapped",
       });
       return {
         ok: true as const,
