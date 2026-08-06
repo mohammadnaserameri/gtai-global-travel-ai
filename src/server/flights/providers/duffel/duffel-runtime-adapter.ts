@@ -15,6 +15,7 @@ import {
   type BuildDuffelListOffersInput,
 } from "./duffel-request-builder";
 import type { DuffelRuntimeTransport } from "./duffel-runtime-transport";
+import type { DuffelManualTestGateDecision } from "./duffel-manual-test-gate";
 
 export interface DuffelRuntimeAdapter {
   readonly providerId: typeof DUFFEL_PROVIDER_ID;
@@ -28,6 +29,15 @@ export interface DuffelRuntimeAdapter {
   buildListOffersRequest(
     input: BuildDuffelListOffersInput,
   ): DuffelListOffersRequestContract;
+}
+
+export interface DuffelEligibleManualTestRuntimeAdapter {
+  readonly providerId: typeof DUFFEL_PROVIDER_ID;
+  readonly activationState: typeof DUFFEL_ACTIVATION_STATE;
+  readonly activationDirective: "manualTestEligible";
+  readonly runnable: false;
+  readonly manualTestEligible: true;
+  readonly transport: DuffelRuntimeTransport;
 }
 
 /** Composition exists for controlled future tests but is never registered. */
@@ -44,5 +54,24 @@ export function composeDisabledDuffelRuntimeAdapter(
     transport,
     buildCreateOfferRequest: buildDuffelCreateOfferRequest,
     buildListOffersRequest: buildDuffelListOffersRequest,
+  });
+}
+
+/** Composed only by the server-only manual harness; never registered. */
+export function composeDuffelRuntimeAdapterForEligibleManualTest(
+  transport: DuffelRuntimeTransport,
+  credential: DuffelCredentialResolution,
+  gate: Extract<DuffelManualTestGateDecision, { eligible: true }>,
+): DuffelEligibleManualTestRuntimeAdapter {
+  if (credential.state !== "presentButInactive" || !gate.eligible) {
+    throw new Error("Duffel manual-test composition refused");
+  }
+  return Object.freeze({
+    providerId: DUFFEL_PROVIDER_ID,
+    activationState: DUFFEL_ACTIVATION_STATE,
+    activationDirective: gate.activationDirective,
+    runnable: false,
+    manualTestEligible: true,
+    transport,
   });
 }

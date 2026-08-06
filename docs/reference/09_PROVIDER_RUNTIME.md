@@ -328,3 +328,17 @@ V2.8-E adds a server-only authenticated transport and runtime-adapter
 composition seam. Both remain excluded from the registry. The activation
 directive is `withheld`, normal search still uses `gtai-local-demo`, and
 automated verification uses only injected in-memory fetch doubles.
+
+## V2.8-F Preview-only manual-test gate
+
+V2.8-F adds a server-only eligibility decision around the disabled Duffel
+runtime. Eligibility requires local or Vercel Preview runtime, a valid-shaped
+server token, the explicit `DUFFEL_MANUAL_TEST_ENABLED=1` directive, an
+available adapter seam, and a server-created internal capability. Production
+is refused before those conditions are evaluated.
+
+The decision remains `unavailable` and `runnable: false`; it is not a registry
+activation state. The public registry still contains only `gtai-local-demo`,
+the public search route imports no Duffel module, and automated checks use the
+harness's fake fetch. See
+`docs/implementation/V2_8_F_DUFFEL_PREVIEW_MANUAL_TEST_GATE.md`.

@@ -27,6 +27,7 @@
     "verify-provider-integration-readiness.ts",
     "verify-duffel-adapter-contract.ts",
     "verify-duffel-credential-deployment.ts",
-    "verify-duffel-runtime-adapter-disabled.ts"
+    "verify-duffel-runtime-adapter-disabled.ts",
+    "verify-duffel-preview-manual-test-gate.ts"
   ]
 }

@@ -73,3 +73,7 @@ or any booking/payment/passenger-data surface.
 No production activation, booking, payment, Orders API, price action, passenger
 identity, passport, loyalty account, affiliate redirect, public provider claim,
 or dependency change is included.
+
+> V2.8-F adds a separate server-only, fake-first manual-test eligibility gate.
+> It remains local/Vercel Preview-only, blocks Production, keeps this default
+> adapter disabled, and does not register Duffel in public search.

@@ -6,6 +6,8 @@ export * from "./duffel-contract";
 export * from "./duffel-credential-redaction";
 export * from "./duffel-credential-resolver";
 export * from "./duffel-failures";
+export * from "./duffel-manual-test-gate";
+export * from "./duffel-manual-test-harness";
 export * from "./duffel-request-builder";
 export * from "./duffel-response-mapper";
 export * from "./duffel-runtime-adapter";

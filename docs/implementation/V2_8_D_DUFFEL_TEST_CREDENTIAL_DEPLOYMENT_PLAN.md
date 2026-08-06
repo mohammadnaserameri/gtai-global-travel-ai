@@ -2,6 +2,10 @@
 
 > V2.8-E adds a disabled runtime transport seam. It remains unregistered and
 > does not change this credential or activation policy.
+>
+> V2.8-F adds an optional `DUFFEL_MANUAL_TEST_ENABLED` eligibility directive
+> for a server-only local/Preview harness. It is absent by default, ignored in
+> Production, and never makes credential presence sufficient for activation.
 
 ## Purpose and scope
 
