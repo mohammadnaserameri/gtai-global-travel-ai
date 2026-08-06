@@ -6,6 +6,10 @@ import { evaluateDuffelPreviewActivation } from "./duffel/duffel-preview-activat
 import { createDuffelPreviewProviderAdapter } from "./duffel/duffel-preview-provider-adapter";
 import type { DuffelFetchLike } from "./duffel/duffel-runtime-transport";
 import type { ProviderRegistration } from "./provider-runtime-types";
+import {
+  isProductionRuntime,
+  productionLaunchAllowsLiveProvider,
+} from "./production-launch-control";
 
 /**
  * The one trusted place that decides which providers exist and how they run.
@@ -157,9 +161,11 @@ export function resolveRuntimeProviderRegistry(
     readonly fetch?: DuffelFetchLike;
   } = {},
 ): ProviderRegistry {
-  const activation = evaluateDuffelPreviewActivation(
-    options.environment ?? process.env,
-  );
+  const environment = options.environment ?? process.env;
+  if (isProductionRuntime(environment) && !productionLaunchAllowsLiveProvider()) {
+    return runtimeProviderRegistry;
+  }
+  const activation = evaluateDuffelPreviewActivation(environment);
   if (!activation.eligible) return runtimeProviderRegistry;
   const fetchImplementation =
     options.fetch ?? (globalThis.fetch as unknown as DuffelFetchLike);

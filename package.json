@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "verify:public-beta-closure-production-launch-control": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-public-beta-closure-production-launch-control.js",
     "verify:duffel-preview-live-ux-production-readiness": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-live-ux-production-readiness.js",
     "verify:duffel-preview-details-stability": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-details-stability.js",
     "verify:duffel-preview-real-provider-activation": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-real-provider-activation.js",
