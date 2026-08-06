@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -135,7 +136,13 @@ async function main(): Promise<void> {
     !/^DUFFEL_MANUAL_TEST_ENABLED=/m.test(envExample),
   );
   ok("token placeholder inactive", !/^DUFFEL_ACCESS_TOKEN=/m.test(envExample));
-  ok("env local absent", !existsSync(join(root, ".env.local")));
+  ok(
+    "env local ignored and untracked",
+    /^\.env\*/m.test(read(".gitignore")) &&
+      !execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" })
+        .split(/\r?\n/)
+        .includes(".env.local"),
+  );
   ok(
     "manual name not public in env",
     !/^#?\s*NEXT_PUBLIC_DUFFEL_MANUAL_TEST_ENABLED=/m.test(envExample),

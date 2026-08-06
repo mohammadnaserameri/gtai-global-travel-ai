@@ -6,6 +6,11 @@ import {
   type CurrencyCode,
 } from "../../../../config/currencies";
 import type { CabinClass } from "../../../../features/flights/search-intent-types";
+import type { IsoDate } from "../../../../features/dates/date-types";
+import {
+  fromLocalDateTime,
+  toLocalDateTime,
+} from "../../../../features/flights/utc-timeline";
 import { buildExternalFailure } from "../external/external-provider-failures";
 import type { NormalizedExternalFailure } from "../external/external-provider-failures";
 import type { ExternalTripShape } from "../external/external-provider-search-shape";
@@ -32,6 +37,8 @@ const OFFER_ID = /^off_[A-Za-z0-9_]+$/;
 const RESOURCE_ID = /^[a-z]{2,4}_[A-Za-z0-9_]+$/;
 const ISO_INSTANT =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
+const LOCAL_DATE_TIME =
+  /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(\.\d{1,3})?)?$/;
 
 export type DuffelOfferRejection =
   | "invalidOfferId"
@@ -60,7 +67,12 @@ export type DuffelOfferMappingResult =
       readonly partial: boolean;
       readonly warnings: readonly DuffelMappingWarning[];
     }
-  | { readonly ok: false; readonly failure: NormalizedExternalFailure };
+  | {
+      readonly ok: false;
+      readonly failure: NormalizedExternalFailure;
+      readonly rejected?: readonly DuffelOfferRejection[];
+      readonly diagnostics?: readonly string[];
+    };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -72,6 +84,93 @@ function isIsoInstant(value: unknown): value is string {
     ISO_INSTANT.test(value) &&
     !Number.isNaN(Date.parse(value))
   );
+}
+
+interface ParsedDuffelDateTime {
+  readonly instant: string;
+  readonly epochMs: number;
+}
+
+function parseDuffelDateTime(
+  value: unknown,
+  timeZone: unknown,
+): ParsedDuffelDateTime | null {
+  if (isIsoInstant(value)) {
+    const epochMs = Date.parse(value);
+    return { instant: new Date(epochMs).toISOString(), epochMs };
+  }
+  if (typeof value !== "string" || typeof timeZone !== "string") return null;
+  const match = LOCAL_DATE_TIME.exec(value);
+  if (!match) return null;
+  const date = match[1] as IsoDate;
+  const hour = Number(match[2]);
+  const minute = Number(match[3]);
+  const second = Number(match[4] ?? "0");
+  const millisecond = Number((match[5] ?? ".0").slice(1).padEnd(3, "0"));
+  if (hour > 23 || minute > 59 || second > 59) return null;
+  try {
+    const epochMinutes = fromLocalDateTime(date, hour, minute, timeZone);
+    const roundTrip = toLocalDateTime(epochMinutes, timeZone);
+    if (roundTrip.date !== date || roundTrip.time !== `${match[2]}:${match[3]}`) {
+      return null;
+    }
+    const epochMs = epochMinutes * 60_000 + second * 1_000 + millisecond;
+    return { instant: new Date(epochMs).toISOString(), epochMs };
+  } catch {
+    return null;
+  }
+}
+
+function timestampDiagnostics(raw: unknown): readonly string[] {
+  if (!isRecord(raw)) return ["offer:type-mismatch"];
+  const diagnostics: string[] = [];
+  for (const name of ["created_at", "expires_at"] as const) {
+    if (!(name in raw)) diagnostics.push(`${name}:missing`);
+    else if (typeof raw[name] !== "string")
+      diagnostics.push(`${name}:type-mismatch`);
+    else if (!isIsoInstant(raw[name])) diagnostics.push(`${name}:invalid-format`);
+  }
+  if (
+    raw.updated_at !== undefined &&
+    raw.updated_at !== null &&
+    typeof raw.updated_at !== "string"
+  ) {
+    diagnostics.push("updated_at:type-mismatch");
+  } else if (typeof raw.updated_at === "string" && !isIsoInstant(raw.updated_at)) {
+    diagnostics.push("updated_at:invalid-format");
+  }
+  const updatedAt = raw.updated_at ?? raw.created_at;
+  if (
+    isIsoInstant(raw.created_at) &&
+    isIsoInstant(updatedAt) &&
+    Date.parse(updatedAt) < Date.parse(raw.created_at)
+  ) {
+    diagnostics.push("updated_at:before-created_at");
+  }
+  if (
+    isIsoInstant(updatedAt) &&
+    isIsoInstant(raw.expires_at) &&
+    Date.parse(raw.expires_at) <= Date.parse(updatedAt)
+  ) {
+    diagnostics.push("expires_at:not-after-effective-updated_at");
+  }
+  if (Array.isArray(raw.slices)) {
+    for (const slice of raw.slices) {
+      if (!isRecord(slice) || !Array.isArray(slice.segments)) continue;
+      for (const segment of slice.segments) {
+        if (!isRecord(segment)) continue;
+        for (const name of ["departing_at", "arriving_at"] as const) {
+          if (!(name in segment)) diagnostics.push(`segment.${name}:missing`);
+          else if (typeof segment[name] !== "string") {
+            diagnostics.push(`segment.${name}:type-mismatch`);
+          } else if (!isIsoInstant(segment[name])) {
+            diagnostics.push(`segment.${name}:invalid-format`);
+          }
+        }
+      }
+    }
+  }
+  return diagnostics;
 }
 
 export function parseDuffelDuration(value: unknown): number | null {
@@ -163,10 +262,14 @@ function mapSegment(raw: unknown): DuffelMappedSegment | DuffelOfferRejection {
   ) {
     return "missingAirportCode";
   }
-  if (!isIsoInstant(raw.departing_at) || !isIsoInstant(raw.arriving_at)) {
+  const departure = parseDuffelDateTime(raw.departing_at, origin.time_zone);
+  const arrival = parseDuffelDateTime(raw.arriving_at, destination.time_zone);
+  if (departure === null || arrival === null) {
     return "invalidTimestamp";
   }
-  const calculatedDuration = minutesBetween(raw.departing_at, raw.arriving_at);
+  const calculatedDuration = Math.round(
+    (arrival.epochMs - departure.epochMs) / 60_000,
+  );
   const statedDuration = parseDuffelDuration(raw.duration);
   if (
     calculatedDuration <= 0 ||
@@ -225,8 +328,8 @@ function mapSegment(raw: unknown): DuffelMappedSegment | DuffelOfferRejection {
     segmentId: raw.id,
     originCode: origin.iata_code,
     destinationCode: destination.iata_code,
-    departureAt: raw.departing_at,
-    arrivalAt: raw.arriving_at,
+    departureAt: departure.instant,
+    arrivalAt: arrival.instant,
     durationMinutes: calculatedDuration,
     marketingCarrierCode: marketing.iata_code,
     marketingCarrierName: marketing.name,
@@ -332,12 +435,16 @@ export function mapDuffelOffer(
   }
   if (total === 0) return { ok: false, reason: "zeroPrice" };
   if (base + tax !== total) return { ok: false, reason: "invalidPrice" };
+  const updatedAt =
+    raw.updated_at === undefined || raw.updated_at === null
+      ? raw.created_at
+      : raw.updated_at;
   if (
     !isIsoInstant(raw.created_at) ||
-    !isIsoInstant(raw.updated_at) ||
+    !isIsoInstant(updatedAt) ||
     !isIsoInstant(raw.expires_at) ||
-    Date.parse(raw.updated_at) < Date.parse(raw.created_at) ||
-    Date.parse(raw.expires_at) <= Date.parse(raw.updated_at)
+    Date.parse(updatedAt) < Date.parse(raw.created_at) ||
+    Date.parse(raw.expires_at) <= Date.parse(updatedAt)
   ) {
     return { ok: false, reason: "invalidTimestamp" };
   }
@@ -380,7 +487,7 @@ export function mapDuffelOffer(
       currency: currency as CurrencyCode,
       legs,
       createdAt: raw.created_at,
-      updatedAt: raw.updated_at,
+      updatedAt,
       expiresAt: raw.expires_at,
       liveMode: false,
       partial,
@@ -416,12 +523,18 @@ export function mapDuffelListOffers(
   const bounded = input.response.data.slice(0, maximum);
   const offers: DuffelMappedOffer[] = [];
   const rejected: DuffelOfferRejection[] = [];
+  const diagnostics = new Set<string>();
   const warnings = new Set<DuffelMappingWarning>();
   const ids = new Set<string>();
   for (const candidate of bounded) {
     const mapped = mapDuffelOffer(candidate, input.tripShape);
     if (!mapped.ok) {
       rejected.push(mapped.reason);
+      if (mapped.reason === "invalidTimestamp") {
+        for (const diagnostic of timestampDiagnostics(candidate)) {
+          diagnostics.add(diagnostic);
+        }
+      }
       continue;
     }
     if (ids.has(mapped.offer.offerId)) {
@@ -438,6 +551,8 @@ export function mapDuffelListOffers(
   if (input.response.data.length > 0 && offers.length === 0) {
     return {
       ok: false,
+      rejected: Object.freeze([...rejected]),
+      diagnostics: Object.freeze([...diagnostics].sort()),
       failure: buildExternalFailure({
         category: "mappingFailure",
         providerId: DUFFEL_PROVIDER_ID,

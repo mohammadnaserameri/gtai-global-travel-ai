@@ -107,6 +107,7 @@ export interface DuffelSegment {
   readonly id: string;
   readonly origin: DuffelAirport;
   readonly destination: DuffelAirport;
+  /** Duffel supplies airport-local ISO date-times without an offset. */
   readonly departing_at: string;
   readonly arriving_at: string;
   readonly duration: string;
@@ -142,7 +143,8 @@ export interface DuffelOffer {
   readonly slices: readonly DuffelSlice[];
   readonly expires_at: string;
   readonly created_at: string;
-  readonly updated_at: string;
+  /** Duffel Offer responses may omit this; the mapper falls back to created_at. */
+  readonly updated_at?: string | null;
   readonly live_mode: boolean;
   readonly partial: boolean;
 }

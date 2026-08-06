@@ -506,6 +506,94 @@ async function main(): Promise<void> {
   check("mapper: updated freshness", offer?.updatedAt, "2026-08-05T00:05:00.000Z");
   check("mapper: expiry freshness", offer?.expiresAt, "2026-08-05T01:00:00.000Z");
   ok("mapper: test mode only", offer?.liveMode === false);
+  const fixtureSlice = fixtures.validOffer.slices[0];
+  const fixtureSegment = fixtureSlice?.segments[0];
+  if (!fixtureSlice || !fixtureSegment)
+    throw new Error("Duffel fixture incomplete");
+  const realShapeOffer = {
+    ...fixtures.validOffer,
+    updated_at: undefined,
+    slices: [
+      {
+        ...fixtureSlice,
+        segments: [
+          {
+            ...fixtureSegment,
+            departing_at: "2026-09-01T14:00:00",
+            arriving_at: "2026-09-02T03:30:00",
+          },
+        ],
+      },
+    ],
+  };
+  const realShapeMapped = mapDuffelOffer(realShapeOffer, "oneWay");
+  ok("mapper: real local timestamp shape maps", realShapeMapped.ok);
+  check(
+    "mapper: local departure normalized UTC",
+    realShapeMapped.ok
+      ? realShapeMapped.offer.legs[0]?.segments[0]?.departureAt
+      : null,
+    "2026-09-01T18:00:00.000Z",
+  );
+  check(
+    "mapper: local arrival normalized UTC",
+    realShapeMapped.ok
+      ? realShapeMapped.offer.legs[0]?.segments[0]?.arrivalAt
+      : null,
+    "2026-09-02T01:30:00.000Z",
+  );
+  check(
+    "mapper: missing updated timestamp falls back to created",
+    realShapeMapped.ok ? realShapeMapped.offer.updatedAt : null,
+    fixtures.validOffer.created_at,
+  );
+  const invalidLocalTime = mapDuffelOffer(
+    {
+      ...realShapeOffer,
+      slices: [
+        {
+          ...realShapeOffer.slices[0],
+          segments: [
+            {
+              ...realShapeOffer.slices[0]?.segments[0],
+              departing_at: "2026-09-01T25:00:00",
+            },
+          ],
+        },
+      ],
+    },
+    "oneWay",
+  );
+  check(
+    "mapper: invalid local timestamp rejected",
+    invalidLocalTime.ok ? "accepted" : invalidLocalTime.reason,
+    "invalidTimestamp",
+  );
+  const invalidTimeZone = mapDuffelOffer(
+    {
+      ...realShapeOffer,
+      slices: [
+        {
+          ...realShapeOffer.slices[0],
+          segments: [
+            {
+              ...realShapeOffer.slices[0]?.segments[0],
+              origin: {
+                ...realShapeOffer.slices[0]?.segments[0]?.origin,
+                time_zone: "Not/A_Zone",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    "oneWay",
+  );
+  check(
+    "mapper: invalid airport time zone rejected",
+    invalidTimeZone.ok ? "accepted" : invalidTimeZone.reason,
+    "invalidTimestamp",
+  );
   check(
     "mapper: exact safe fields",
     Object.keys(offer ?? {}).sort(),

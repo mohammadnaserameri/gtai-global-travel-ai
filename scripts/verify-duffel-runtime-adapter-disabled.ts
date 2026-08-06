@@ -1,4 +1,5 @@
 /** Deterministic verification for GTAI V2.8-E's disabled runtime adapter. */
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -349,7 +350,13 @@ async function main(): Promise<void> {
 
   ok("env placeholder commented", /^# DUFFEL_ACCESS_TOKEN=$/m.test(envExample));
   ok("env placeholder inactive", !/^DUFFEL_ACCESS_TOKEN=/m.test(envExample));
-  ok("env local absent", !existsSync(join(root, ".env.local")));
+  ok(
+    "env local ignored and untracked",
+    /^\.env\*/m.test(read(".gitignore")) &&
+      !execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" })
+        .split(/\r?\n/)
+        .includes(".env.local"),
+  );
   ok("no SDK dependency", !/@duffel|duffel-sdk/i.test(packageLock));
   ok("authorization absent API", !/Authorization/.test(apiSource));
   ok(

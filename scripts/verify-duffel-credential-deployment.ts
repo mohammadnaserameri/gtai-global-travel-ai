@@ -1,5 +1,6 @@
 /** Deterministic verification for GTAI V2.8-D credential deployment planning. */
 
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -224,7 +225,13 @@ async function main(): Promise<void> {
     /Not required in V2\.8-D/.test(envExample),
   );
   ok("environment: env local ignore rule", /^\.env\*/m.test(gitignore));
-  ok("environment: env local absent", !exists(".env.local"));
+  ok(
+    "environment: env local ignored and untracked",
+    /^\.env\*/m.test(read(".gitignore")) &&
+      !execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" })
+        .split(/\r?\n/)
+        .includes(".env.local"),
+  );
   ok(
     "environment: package lock unchanged by feature",
     !/duffel/i.test(read("package-lock.json")),

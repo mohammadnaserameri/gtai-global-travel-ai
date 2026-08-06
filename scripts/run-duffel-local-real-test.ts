@@ -258,7 +258,12 @@ export async function runDuffelLocalRealTest(
     maximumOffers: 50,
   });
   if (!mapped.ok) {
-    write("REAL_TEST_FAILED reason=offer-mapping-failed");
+    const reasons = [...new Set(mapped.rejected ?? [])].sort();
+    const diagnostic =
+      mapped.rejected === undefined
+        ? "response-shape-invalid"
+        : `rejected=${mapped.rejected.length} reasons=${reasons.join(",")} fields=${(mapped.diagnostics ?? []).join(",") || "none"}`;
+    write(`REAL_TEST_FAILED reason=offer-mapping-failed ${diagnostic}`);
     return { status: "REAL_TEST_FAILED", reason: "offer-mapping-failed" };
   }
   const summary = safeSummary(mapped);
