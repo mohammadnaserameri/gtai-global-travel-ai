@@ -291,7 +291,9 @@ export function ResultCard({
             {cabinLabel}
           </Badge>
           <Badge tone="info" size="sm">
-            {labels.demoOffer}
+            {offer.isDemonstration
+              ? labels.demoOffer
+              : labels.livePreview.offerBadge}
           </Badge>
         </div>
       </div>
@@ -356,7 +358,9 @@ export function ResultCard({
             </bdi>
           </p>
           <p className="text-foreground-muted text-xs">
-            {labels.card.demonstrationTotal}
+            {offer.isDemonstration
+              ? labels.card.demonstrationTotal
+              : labels.livePreview.totalLabel}
           </p>
         </div>
 

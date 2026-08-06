@@ -398,6 +398,22 @@ export function FlightDetailsExperience({
   }
 
   if (offerState.status === "empty" || resolution.status === "notFound") {
+    if (isPreviewOfferId(offerId)) {
+      return (
+        <Container className="py-10 lg:py-14">
+          <FlightDetailsState title={labels.livePreview.unavailable} tone="invalid">
+            <p className="text-foreground-muted text-sm">
+              {labels.livePreview.unavailableHint}
+            </p>
+            <DetailsStateActions
+              resultsHref={resultsHref}
+              editSearchHref={flightsHref}
+              labels={labels}
+            />
+          </FlightDetailsState>
+        </Container>
+      );
+    }
     // "Could not be found" is a definitive claim, and it is only true when
     // every source answered. Under partial coverage the honest statement is
     // that the search was incomplete, so the option could not be *verified* —
@@ -512,7 +528,11 @@ export function FlightDetailsExperience({
             points: labels.disclosure.points,
           }}
         />
-      ) : null}
+      ) : (
+        <Alert tone="success" title={labels.livePreview.title}>
+          <p>{labels.livePreview.description}</p>
+        </Alert>
+      )}
 
       {/* The same reduced-coverage statement Results shows. This offer is
           real and fully described; what is uncertain is whether it was the
@@ -534,6 +554,7 @@ export function FlightDetailsExperience({
         cabinLabel={cabinLabel}
         flexibilityLabel={flexibilityLabel}
         tripTypeLabel={tripTypeLabel}
+        isDemonstration={offer.isDemonstration}
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
@@ -657,20 +678,24 @@ export function FlightDetailsExperience({
               {labels.provider.heading}
             </h2>
             <p className="text-foreground-muted mt-2 text-xs leading-relaxed">
-              {labels.provider.notice}
+              {offer.isDemonstration
+                ? labels.provider.notice
+                : labels.livePreview.providerNotice}
             </p>
-            <div className="mt-3">
-              <Button
-                variant="primary"
-                fullWidth
-                aria-haspopup="dialog"
-                aria-expanded={handoffOpen}
-                aria-controls={handoffDialogId}
-                onClick={() => setHandoffOpen(true)}
-              >
-                {resultsLabels.outbound.cta}
-              </Button>
-            </div>
+            {offer.isDemonstration ? (
+              <div className="mt-3">
+                <Button
+                  variant="primary"
+                  fullWidth
+                  aria-haspopup="dialog"
+                  aria-expanded={handoffOpen}
+                  aria-controls={handoffDialogId}
+                  onClick={() => setHandoffOpen(true)}
+                >
+                  {resultsLabels.outbound.cta}
+                </Button>
+              </div>
+            ) : null}
           </Card>
         </div>
       </div>

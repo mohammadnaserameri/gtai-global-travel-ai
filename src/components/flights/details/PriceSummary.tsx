@@ -57,7 +57,11 @@ export function PriceSummary({
           {formatOfferPrice(offer.totalPrice, offer.currency, locale)}
         </bdi>
       </p>
-      <p className="text-foreground-muted text-xs">{price.demonstrationTotal}</p>
+      <p className="text-foreground-muted text-xs">
+        {offer.isDemonstration
+          ? price.demonstrationTotal
+          : labels.livePreview.totalLabel}
+      </p>
 
       <dl className="border-border mt-4 border-t pt-3">
         <div className="flex items-start justify-between gap-4 py-1.5">

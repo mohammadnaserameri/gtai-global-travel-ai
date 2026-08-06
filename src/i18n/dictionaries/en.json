@@ -875,6 +875,14 @@
         "No booking or partner redirect is available yet."
       ]
     },
+    "livePreview": {
+      "title": "Live Preview — Duffel test inventory",
+      "description": "These results came from Duffel's test environment for Preview validation only. Availability and prices may change, and booking and payment are not available.",
+      "offerBadge": "Live Preview",
+      "totalLabel": "Live Preview test total",
+      "partialTitle": "Some live Preview offers could not be mapped.",
+      "partialDescription": "The usable test offers below are incomplete. Retry the search before relying on this Preview validation."
+    },
     "resultCount": {
       "one": "1 demonstration option",
       "other": "{count} demonstration options"
@@ -897,7 +905,7 @@
       "changeDestination": "Choose another destination"
     },
     "error": {
-      "title": "We could not prepare the demonstration results.",
+      "title": "We could not complete this flight search safely. Retry in a moment.",
       "retry": "Retry"
     },
     "invalid": {
@@ -1081,6 +1089,14 @@
         "Airport-local times are generated for interface and workflow validation.",
         "No partner booking or redirect is available yet."
       ]
+    },
+    "livePreview": {
+      "title": "Live Preview flight details",
+      "description": "This normalized Duffel test offer was selected from the current same-tab Preview results. It is not bookable and may expire.",
+      "unavailable": "This live Preview offer is no longer available in this tab.",
+      "unavailableHint": "Return to results and run the Preview search again. GTAI will not repeat a provider search from this Details link.",
+      "providerNotice": "Duffel test inventory supplied this Preview-only offer. GTAI does not provide booking, payment or an external redirect.",
+      "totalLabel": "Live Preview test total"
     },
     "states": {
       "invalidSearch": "Some flight-search details are missing or invalid.",

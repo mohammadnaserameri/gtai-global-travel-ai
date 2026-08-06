@@ -32,6 +32,7 @@
     "verify-duffel-local-real-test-harness.ts",
     "verify-duffel-preview-real-provider-activation.ts",
     "verify-duffel-preview-details-stability.ts",
+    "verify-duffel-preview-live-ux-production-readiness.ts",
     "run-duffel-local-real-test.ts"
   ]
 }

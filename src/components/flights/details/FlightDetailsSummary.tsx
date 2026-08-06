@@ -18,6 +18,7 @@ interface FlightDetailsSummaryProps {
   cabinLabel: string;
   flexibilityLabel: string;
   tripTypeLabel: string;
+  isDemonstration: boolean;
 }
 
 /** A localized place name and its code, isolated separately — the same rule the Results summary follows. */
@@ -86,6 +87,7 @@ export function FlightDetailsSummary({
   cabinLabel,
   flexibilityLabel,
   tripTypeLabel,
+  isDemonstration,
 }: FlightDetailsSummaryProps) {
   const departureLabel = formatFieldDate(intent.departureDate, intent.locale);
   const dateLine =
@@ -114,7 +116,9 @@ export function FlightDetailsSummary({
           {flexibilityLabel}
         </Badge>
         <Badge tone="info" size="sm">
-          {resultsLabels.demoOffer}
+          {isDemonstration
+            ? resultsLabels.demoOffer
+            : resultsLabels.livePreview.offerBadge}
         </Badge>
       </div>
 

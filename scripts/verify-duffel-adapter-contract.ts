@@ -896,25 +896,42 @@ async function main(): Promise<void> {
     /FLIGHT_SEARCH_API_PATH/.test(apiRepository) &&
       !/https?:\/\//.test(apiRepository),
   );
+  const dictionaryProviderClaims: string[] = [];
+  const collectProviderClaims = (value: unknown, claimPath: string): void => {
+    if (typeof value === "string" && /duffel/i.test(value)) {
+      dictionaryProviderClaims.push(claimPath);
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) =>
+        collectProviderClaims(item, `${claimPath}.${index}`),
+      );
+    } else if (typeof value === "object" && value !== null) {
+      Object.entries(value).forEach(([key, item]) =>
+        collectProviderClaims(item, `${claimPath}.${key}`),
+      );
+    }
+  };
+  for (const file of filesUnder("src/i18n/dictionaries").filter((candidate) =>
+    candidate.endsWith(".json"),
+  )) {
+    collectProviderClaims(JSON.parse(readFileSync(file, "utf8")), file);
+  }
   ok(
-    "regression: no Duffel in dictionaries",
-    !/duffel/i.test(
-      filesUnder("src/i18n")
-        .map((file) => readFileSync(file, "utf8"))
-        .join("\n"),
-    ),
+    "regression: Duffel dictionary copy is Preview-scoped in every locale",
+    dictionaryProviderClaims.length > 0 &&
+      dictionaryProviderClaims.every((claimPath) =>
+        claimPath.includes(".livePreview."),
+      ),
   );
   ok(
-    "regression: no public-copy provider claim",
-    !/duffel/i.test(
-      [
-        ...filesUnder("src/app"),
-        ...filesUnder("src/components"),
-        ...filesUnder("src/i18n"),
-      ]
-        .map((file) => stripComments(readFileSync(file, "utf8")))
-        .join("\n"),
-    ),
+    "regression: no unscoped public-copy provider claim",
+    dictionaryProviderClaims.every((claimPath) =>
+      claimPath.includes(".livePreview."),
+    ) &&
+      !/duffel/i.test(
+        [...filesUnder("src/app"), ...filesUnder("src/components")]
+          .map((file) => stripComments(readFileSync(file, "utf8")))
+          .join("\n"),
+      ),
   );
   ok(
     "regression: no booking implementation in Duffel module",

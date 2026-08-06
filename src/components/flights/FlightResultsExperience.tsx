@@ -323,6 +323,7 @@ export function FlightResultsExperience({
   }
 
   const repositoryOffers = offerState.status === "ready" ? offerState.offers : [];
+  const isLivePreview = repositoryOffers.some((offer) => !offer.isDemonstration);
   /**
    * Whether the search that produced these offers actually heard from every
    * source it should have. Carried from the repository rather than inferred:
@@ -440,6 +441,10 @@ export function FlightResultsExperience({
             points: labels.disclosure.points,
           }}
         />
+      ) : isLivePreview ? (
+        <Alert tone="success" title={labels.livePreview.title}>
+          <p>{labels.livePreview.description}</p>
+        </Alert>
       ) : null}
 
       {/* Reduced coverage is stated next to the standing demonstration
@@ -448,8 +453,16 @@ export function FlightResultsExperience({
           missing is to be told. */}
       {isPartialCoverage && repositoryOffers.length > 0 ? (
         <Alert tone="warning">
-          <p className="font-semibold">{labels.partialCoverage.title}</p>
-          <p className="mt-1.5">{labels.partialCoverage.description}</p>
+          <p className="font-semibold">
+            {isLivePreview
+              ? labels.livePreview.partialTitle
+              : labels.partialCoverage.title}
+          </p>
+          <p className="mt-1.5">
+            {isLivePreview
+              ? labels.livePreview.partialDescription
+              : labels.partialCoverage.description}
+          </p>
         </Alert>
       ) : null}
 
