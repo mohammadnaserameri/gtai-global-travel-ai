@@ -287,6 +287,54 @@ check(
 );
 check("case and surrounding whitespace fold away", foldQuery("  YuL  "), "yul");
 
+// --- 21. Progressive and typo-tolerant discovery ---------------------------
+check(
+  "one-letter input returns useful alphabetical-prefix suggestions",
+  rankedIds("i").includes("city-ist"),
+  true,
+);
+check(
+  "two-letter input keeps Istanbul discoverable",
+  rankedIds("is").includes("city-ist"),
+  true,
+);
+check(
+  "misspelled istanl resolves Istanbul first",
+  rankedIds("istanl")[0],
+  "city-ist",
+);
+check(
+  "misspelled istanl promotes Istanbul as the Best match",
+  groupOf(
+    searchLocationsSync({
+      query: "istanl",
+      context: "destination",
+      locale: "en",
+    }).groups,
+    "city-ist",
+  ),
+  "best",
+);
+check("misspelled tehrn resolves Tehran first", rankedIds("tehrn")[0], "city-thr");
+check(
+  "fuzzy matching remains conservative for unrelated text",
+  rankedIds("zzzzzzzz").length,
+  0,
+);
+const stayStyleDestination = searchLocationsSync({
+  query: "",
+  context: "destination",
+  locale: "en",
+  allowFlexibleDestination: false,
+});
+check(
+  "product location fields can suppress Everywhere",
+  flatten(stayStyleDestination.groups).some(
+    (location) => location.id === EVERYWHERE_LOCATION.id,
+  ),
+  false,
+);
+
 // --- Report -----------------------------------------------------------------
 const total = passed + failures.length;
 if (failures.length > 0) {

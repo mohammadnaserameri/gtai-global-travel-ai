@@ -75,7 +75,8 @@ export type LocationMatchTier =
   | 4 // exact airport name
   | 5 // display name starts with the query
   | 6 // alias, localized name, or a related city/member-code match
-  | 7; // partial substring match
+  | 7 // partial substring match
+  | 8; // conservative typo-tolerant match
 
 export interface LocationMatch {
   readonly location: TravelLocation;
@@ -97,6 +98,8 @@ export interface LocationSearchRequest {
   readonly locale: string;
   /** Recent entity ids for this context, newest first. */
   readonly recentIds?: readonly string[];
+  /** Product fields such as stays and cars do not offer "Everywhere". */
+  readonly allowFlexibleDestination?: boolean;
   readonly limit?: number;
 }
 

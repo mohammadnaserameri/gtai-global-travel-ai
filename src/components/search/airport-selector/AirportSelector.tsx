@@ -56,6 +56,8 @@ interface AirportSelectorProps {
   onClear: () => void;
   invalid?: boolean;
   errorMessage?: string;
+  /** Whether the destination-only "Everywhere" choice belongs in this field. */
+  allowFlexibleDestination?: boolean;
   /** Called after a selection so the form can advance focus. */
   onSelectionComplete?: () => void;
   className?: string;
@@ -97,6 +99,7 @@ export function AirportSelector({
   onClear,
   invalid = false,
   errorMessage,
+  allowFlexibleDestination = true,
   onSelectionComplete,
   className,
 }: AirportSelectorProps) {
@@ -122,6 +125,7 @@ export function AirportSelector({
     context,
     locale,
     recentIds,
+    allowFlexibleDestination,
   });
 
   const flat = useMemo(() => groups.flatMap((group) => group.locations), [groups]);

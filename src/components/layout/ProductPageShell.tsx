@@ -65,7 +65,7 @@ export function ProductPageShell({
 
   return (
     <>
-      <section className="border-border/70 from-brand-25 to-background relative isolate overflow-hidden border-b bg-linear-to-b">
+      <section className="border-border/70 from-brand-25 to-background relative isolate border-b bg-linear-to-b">
         <div className="gtai-aurora" aria-hidden="true" />
         <Container className="relative py-12 lg:py-16">
           <SectionHeading
@@ -78,7 +78,7 @@ export function ProductPageShell({
         </Container>
 
         {searchProduct ? (
-          <Container className="relative pb-12 lg:pb-16">
+          <Container className="relative z-20 pb-12 lg:pb-16">
             <SearchShell
               tabs={searchTabs}
               labels={search}

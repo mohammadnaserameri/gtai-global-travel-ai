@@ -75,6 +75,56 @@ function fieldsFor(location: TravelLocation): SearchableFields {
   return fields;
 }
 
+/** Bounded Levenshtein distance with an early length rejection. */
+function editDistanceWithin(
+  query: string,
+  candidate: string,
+  maximum: number,
+): boolean {
+  if (Math.abs(query.length - candidate.length) > maximum) return false;
+
+  let previous = Array.from({ length: candidate.length + 1 }, (_, i) => i);
+  for (let row = 1; row <= query.length; row += 1) {
+    const current = [row];
+    let rowMinimum = row;
+    for (let column = 1; column <= candidate.length; column += 1) {
+      const cost = query[row - 1] === candidate[column - 1] ? 0 : 1;
+      const value = Math.min(
+        current[column - 1] + 1,
+        previous[column] + 1,
+        previous[column - 1] + cost,
+      );
+      current.push(value);
+      rowMinimum = Math.min(rowMinimum, value);
+    }
+    if (rowMinimum > maximum) return false;
+    previous = current;
+  }
+
+  return previous[candidate.length] <= maximum;
+}
+
+function isConservativeFuzzyMatch(
+  query: string,
+  fields: SearchableFields,
+): boolean {
+  if (query.length < 3) return false;
+  const maximum = query.length <= 4 ? 1 : query.length <= 8 ? 2 : 3;
+  const candidates = [
+    fields.displayName,
+    fields.cityName,
+    fields.cityCode,
+    fields.iataCode,
+    fields.countryName,
+    ...fields.airportCodes,
+    ...fields.extras,
+  ].filter((value) => value.length >= 3);
+
+  return candidates.some((candidate) =>
+    editDistanceWithin(query, candidate, maximum),
+  );
+}
+
 /**
  * Scores one location against a folded query.
  *
@@ -110,11 +160,17 @@ function matchTier(
   if (f.countryName.includes(query)) return 7;
   if (f.extras.some((extra) => extra.includes(query))) return 7;
 
+  if (isConservativeFuzzyMatch(query, f)) return 8;
+
   return null;
 }
 
 function compareMatches(a: LocationMatch, b: LocationMatch): number {
   if (a.tier !== b.tier) return a.tier - b.tier;
+  if (a.tier === 8 && a.location.entityType !== b.location.entityType) {
+    if (a.location.entityType === "CITY_ALL_AIRPORTS") return -1;
+    if (b.location.entityType === "CITY_ALL_AIRPORTS") return 1;
+  }
   if (a.location.popularity !== b.location.popularity) {
     return a.location.popularity - b.location.popularity;
   }
@@ -176,7 +232,7 @@ function buildEmptyState(request: LocationSearchRequest): readonly LocationGroup
   const popular = popularLocations().filter((l) => !recentIds.has(l.id));
 
   const groups = [
-    request.context === "destination"
+    request.context === "destination" && request.allowFlexibleDestination !== false
       ? group("flexible", [EVERYWHERE_LOCATION])
       : null,
     group("recent", recent),
@@ -199,7 +255,7 @@ function buildQueryState(
 ): readonly LocationGroup[] {
   const folded = foldQuery(request.query);
   const candidates =
-    request.context === "destination"
+    request.context === "destination" && request.allowFlexibleDestination !== false
       ? [EVERYWHERE_LOCATION, ...DEMO_LOCATIONS]
       : DEMO_LOCATIONS;
 
@@ -209,8 +265,9 @@ function buildQueryState(
   const rest = [...ranked];
   const best: TravelLocation[] = [];
 
-  // Only a genuinely exact code match earns the "Best match" slot.
-  if (rest[0].tier <= 2 && folded.length >= 3) {
+  // Exact codes and the highest-ranked conservative typo correction earn the
+  // "Best match" slot. Prefix/substring matches remain grouped by entity.
+  if (folded.length >= 3 && (rest[0].tier <= 2 || rest[0].tier === 8)) {
     best.push(rest.shift()!.location);
   }
 

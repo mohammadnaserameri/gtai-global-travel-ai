@@ -40,7 +40,6 @@ import {
   CarIcon,
   FlightIcon,
   PackageIcon,
-  PinIcon,
   SearchIcon,
   SeatIcon,
   StayIcon,
@@ -153,6 +152,14 @@ export function SearchShell({
       ? { selected: initialFlightSearch.destination, query: "", error: null }
       : EMPTY_FIELD,
   );
+  const [stayDestination, setStayDestination] =
+    useState<LocationFieldState>(EMPTY_FIELD);
+  const [carPickUp, setCarPickUp] = useState<LocationFieldState>(EMPTY_FIELD);
+  const [carDropOff, setCarDropOff] = useState<LocationFieldState>(EMPTY_FIELD);
+  const [packageOrigin, setPackageOrigin] =
+    useState<LocationFieldState>(EMPTY_FIELD);
+  const [packageDestination, setPackageDestination] =
+    useState<LocationFieldState>(EMPTY_FIELD);
 
   const [dates, setDatesState] = useState<DateSelection>(
     initialFlightSearch
@@ -528,11 +535,22 @@ export function SearchShell({
           </div>
 
           <FieldGroup>
-            <InputShell
+            <AirportSelector
               id={field("stay-destination")}
+              context="destination"
               label={labels.fields.destination}
-              placeholder={labels.placeholders.destination}
-              icon={<PinIcon size={18} />}
+              labels={locationLabels}
+              locale={locale}
+              value={stayDestination.selected}
+              query={stayDestination.query}
+              onQueryChange={(query) =>
+                setStayDestination({ selected: null, query, error: null })
+              }
+              onSelect={(selected) =>
+                setStayDestination({ selected, query: "", error: null })
+              }
+              onClear={() => setStayDestination(EMPTY_FIELD)}
+              allowFlexibleDestination={false}
               className="sm:col-span-2 lg:col-span-4"
             />
             <InputShell
@@ -565,18 +583,39 @@ export function SearchShell({
           </div>
 
           <FieldGroup>
-            <InputShell
+            <AirportSelector
               id={field("pick-up")}
+              context="origin"
               label={labels.fields.pickUp}
-              placeholder={labels.placeholders.pickUp}
-              icon={<PinIcon size={18} />}
+              labels={locationLabels}
+              locale={locale}
+              value={carPickUp.selected}
+              query={carPickUp.query}
+              onQueryChange={(query) =>
+                setCarPickUp({ selected: null, query, error: null })
+              }
+              onSelect={(selected) =>
+                setCarPickUp({ selected, query: "", error: null })
+              }
+              onClear={() => setCarPickUp(EMPTY_FIELD)}
               className="lg:col-span-3"
             />
-            <InputShell
+            <AirportSelector
               id={field("drop-off")}
+              context="destination"
               label={labels.fields.dropOff}
-              placeholder={labels.placeholders.pickUp}
-              icon={<PinIcon size={18} />}
+              labels={locationLabels}
+              locale={locale}
+              value={carDropOff.selected}
+              query={carDropOff.query}
+              onQueryChange={(query) =>
+                setCarDropOff({ selected: null, query, error: null })
+              }
+              onSelect={(selected) =>
+                setCarDropOff({ selected, query: "", error: null })
+              }
+              onClear={() => setCarDropOff(EMPTY_FIELD)}
+              allowFlexibleDestination={false}
               className="lg:col-span-3"
             />
             <InputShell
@@ -609,18 +648,39 @@ export function SearchShell({
           </div>
 
           <FieldGroup>
-            <InputShell
+            <AirportSelector
               id={field("package-origin")}
+              context="origin"
               label={labels.fields.origin}
-              placeholder={labels.placeholders.from}
-              icon={<PinIcon size={18} />}
+              labels={locationLabels}
+              locale={locale}
+              value={packageOrigin.selected}
+              query={packageOrigin.query}
+              onQueryChange={(query) =>
+                setPackageOrigin({ selected: null, query, error: null })
+              }
+              onSelect={(selected) =>
+                setPackageOrigin({ selected, query: "", error: null })
+              }
+              onClear={() => setPackageOrigin(EMPTY_FIELD)}
               className="lg:col-span-3"
             />
-            <InputShell
+            <AirportSelector
               id={field("package-destination")}
+              context="destination"
               label={labels.fields.packageDestination}
-              placeholder={labels.placeholders.destination}
-              icon={<PinIcon size={18} />}
+              labels={locationLabels}
+              locale={locale}
+              value={packageDestination.selected}
+              query={packageDestination.query}
+              onQueryChange={(query) =>
+                setPackageDestination({ selected: null, query, error: null })
+              }
+              onSelect={(selected) =>
+                setPackageDestination({ selected, query: "", error: null })
+              }
+              onClear={() => setPackageDestination(EMPTY_FIELD)}
+              allowFlexibleDestination={false}
               className="lg:col-span-3"
             />
             <InputShell

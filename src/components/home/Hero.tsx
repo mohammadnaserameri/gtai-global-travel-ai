@@ -25,7 +25,7 @@ export function Hero({ dictionary, dir, locale }: HeroProps) {
   const { hero, searchTabs, search } = dictionary;
 
   return (
-    <section className="border-border/70 from-brand-25 via-background to-background relative isolate overflow-hidden border-b bg-linear-to-b">
+    <section className="border-border/70 from-brand-25 via-background to-background relative isolate border-b bg-linear-to-b">
       <HeroBackdrop />
 
       <Container className="relative pt-8 pb-10 sm:pt-10 lg:pt-12 lg:pb-14">
@@ -43,7 +43,7 @@ export function Hero({ dictionary, dir, locale }: HeroProps) {
           labels={search}
           dir={dir}
           locale={locale}
-          className="mt-6 lg:mt-8"
+          className="relative z-20 mt-6 lg:mt-8"
         />
       </Container>
     </section>

@@ -13,6 +13,7 @@ interface UseLocationSearchOptions {
   readonly context: LocationContext;
   readonly locale: string;
   readonly recentIds: readonly string[];
+  readonly allowFlexibleDestination?: boolean;
 }
 
 interface LocationSearchState {
@@ -53,6 +54,7 @@ export function useLocationSearch({
   context,
   locale,
   recentIds,
+  allowFlexibleDestination = true,
 }: UseLocationSearchOptions): LocationSearchState {
   const [settled, setSettled] = useState<Settled | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -60,7 +62,14 @@ export function useLocationSearch({
 
   const trimmed = query.trim();
   const key = enabled
-    ? JSON.stringify([trimmed, context, locale, recentIds, attempt])
+    ? JSON.stringify([
+        trimmed,
+        context,
+        locale,
+        recentIds,
+        allowFlexibleDestination,
+        attempt,
+      ])
     : null;
 
   useEffect(() => {
@@ -72,7 +81,16 @@ export function useLocationSearch({
 
     const timer = setTimeout(() => {
       locationRepository
-        .search({ query: trimmed, context, locale, recentIds }, controller.signal)
+        .search(
+          {
+            query: trimmed,
+            context,
+            locale,
+            recentIds,
+            allowFlexibleDestination,
+          },
+          controller.signal,
+        )
         .then((response) => {
           if (id !== requestId.current) return;
           setSettled({
@@ -96,7 +114,7 @@ export function useLocationSearch({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [key, trimmed, context, locale, recentIds]);
+  }, [key, trimmed, context, locale, recentIds, allowFlexibleDestination]);
 
   const retry = useCallback(() => setAttempt((value) => value + 1), []);
 
