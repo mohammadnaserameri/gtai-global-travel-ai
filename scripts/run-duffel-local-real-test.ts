@@ -1,5 +1,8 @@
 import "../src/server/server-only";
 
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import type { ExternalNeutralSearch } from "../src/server/flights/providers/external/external-provider-search-shape";
 import {
   buildDuffelCreateOfferRequest,
@@ -18,6 +21,12 @@ import {
 export const GTAI_DUFFEL_LOCAL_REAL_TEST_ENV_NAME =
   "GTAI_DUFFEL_LOCAL_REAL_TEST_ENABLED" as const;
 export const LOCAL_REAL_TEST_SKIP_MARKER = "SKIPPED_LOCAL_REAL_TEST" as const;
+
+const LOCAL_ENV_NAMES = Object.freeze([
+  "DUFFEL_ACCESS_TOKEN",
+  "DUFFEL_MANUAL_TEST_ENABLED",
+  GTAI_DUFFEL_LOCAL_REAL_TEST_ENV_NAME,
+] as const);
 
 type LocalRealTestResult =
   | { readonly status: "SKIPPED"; readonly reason: string }
@@ -41,6 +50,36 @@ export interface LocalRealTestOptions {
   readonly fetch?: DuffelFetchLike;
   readonly now?: () => Date;
   readonly write?: (line: string) => void;
+}
+
+/** Loads only the local harness allowlist; BOM-safe and never logs values. */
+export function loadDuffelLocalEnvironment(
+  base: DuffelCredentialEnvironment = process.env,
+  path = resolve(process.cwd(), ".env.local"),
+): DuffelCredentialEnvironment {
+  const merged: Record<string, string | undefined> = { ...base };
+  if (!existsSync(path)) return Object.freeze(merged);
+  const source = readFileSync(path, "utf8").replace(/^\uFEFF/, "");
+  for (const line of source.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0 || trimmed.startsWith("#")) continue;
+    const equals = trimmed.indexOf("=");
+    if (equals < 1) continue;
+    const name = trimmed.slice(0, equals).trim();
+    if (!LOCAL_ENV_NAMES.includes(name as (typeof LOCAL_ENV_NAMES)[number])) {
+      continue;
+    }
+    let value = trimmed.slice(equals + 1).trim();
+    if (
+      value.length >= 2 &&
+      ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'")))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if ((merged[name] ?? "").trim().length === 0) merged[name] = value;
+  }
+  return Object.freeze(merged);
 }
 
 function futureDate(now: Date): string {
@@ -80,7 +119,7 @@ function skipReason(environment: DuffelCredentialEnvironment): string | null {
   }
   const credential = resolveDuffelCredential(environment);
   if (credential.state === "missing") return "credential-required";
-  if (credential.state !== "presentButInactive") return "credential-invalid";
+  if (credential.state !== "presentButInactive") return "invalid-token-shape";
   return null;
 }
 
@@ -228,7 +267,9 @@ export async function runDuffelLocalRealTest(
 }
 
 if (require.main === module) {
-  void runDuffelLocalRealTest().then((result) => {
-    if (result.status === "REAL_TEST_FAILED") process.exitCode = 1;
-  });
+  void runDuffelLocalRealTest({ environment: loadDuffelLocalEnvironment() }).then(
+    (result) => {
+      if (result.status === "REAL_TEST_FAILED") process.exitCode = 1;
+    },
+  );
 }

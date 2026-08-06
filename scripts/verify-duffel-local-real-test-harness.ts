@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { validListOffersResponse } from "../src/server/flights/providers/duffel/duffel-fixtures";
@@ -8,6 +9,7 @@ import { runtimeProviderRegistry } from "../src/server/flights/providers/provide
 import {
   GTAI_DUFFEL_LOCAL_REAL_TEST_ENV_NAME,
   LOCAL_REAL_TEST_SKIP_MARKER,
+  loadDuffelLocalEnvironment,
   runDuffelLocalRealTest,
 } from "./run-duffel-local-real-test";
 
@@ -89,7 +91,6 @@ async function main(): Promise<void> {
   ok("no dependency change", !/@duffel|duffel-sdk/i.test(packageLock));
   ok("env local ignored", /^\.env\*/m.test(gitignore));
   ok("env local not tracked", !tracked.split(/\r?\n/).includes(".env.local"));
-  ok("env local absent", !existsSync(join(root, ".env.local")));
   check(
     "local flag name",
     GTAI_DUFFEL_LOCAL_REAL_TEST_ENV_NAME,
@@ -97,6 +98,35 @@ async function main(): Promise<void> {
   );
 
   const token = `duffel_${"test"}_${"A".repeat(32)}`;
+  const temporaryDirectory = mkdtempSync(join(tmpdir(), "gtai-duffel-env-"));
+  const bomEnvironmentPath = join(temporaryDirectory, ".env.local");
+  writeFileSync(
+    bomEnvironmentPath,
+    `\uFEFFDUFFEL_ACCESS_TOKEN=${token}\nDUFFEL_MANUAL_TEST_ENABLED=true\nGTAI_DUFFEL_LOCAL_REAL_TEST_ENABLED=true\nIGNORED_UNRELATED_SECRET=do-not-load\n`,
+    "utf8",
+  );
+  const loadedEnvironment = loadDuffelLocalEnvironment({}, bomEnvironmentPath);
+  check(
+    "BOM token loaded length",
+    loadedEnvironment.DUFFEL_ACCESS_TOKEN?.length,
+    token.length,
+  );
+  check(
+    "BOM token shape preserved",
+    loadedEnvironment.DUFFEL_ACCESS_TOKEN === token,
+    true,
+  );
+  check("manual true loaded", loadedEnvironment.DUFFEL_MANUAL_TEST_ENABLED, "true");
+  check(
+    "local true loaded",
+    loadedEnvironment.GTAI_DUFFEL_LOCAL_REAL_TEST_ENABLED,
+    "true",
+  );
+  check(
+    "unrelated variable not loaded",
+    loadedEnvironment.IGNORED_UNRELATED_SECRET,
+    undefined,
+  );
   await skippedScenario("default", {});
   await skippedScenario("development default", { NODE_ENV: "development" });
   await skippedScenario("missing token", {
