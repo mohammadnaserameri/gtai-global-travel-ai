@@ -14,7 +14,7 @@ import {
   RESPONSE_HEADERS,
 } from "@/server/flights/flight-search-response";
 import { orchestrateProviderSearch } from "@/server/flights/providers/provider-search-orchestrator";
-import { runtimeProviderRegistry } from "@/server/flights/providers/provider-registry";
+import { resolveRuntimeProviderRegistry } from "@/server/flights/providers/provider-registry";
 
 /**
  * The internal GTAI flight-search endpoint.
@@ -92,7 +92,7 @@ export async function POST(request: Request): Promise<Response> {
       signal: request.signal,
       scenario: validation.scenario,
     },
-    { registry: runtimeProviderRegistry },
+    { registry: resolveRuntimeProviderRegistry() },
   );
 
   if (result.status === "failed") {

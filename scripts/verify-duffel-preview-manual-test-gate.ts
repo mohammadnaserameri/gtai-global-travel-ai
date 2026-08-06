@@ -349,7 +349,10 @@ async function main(): Promise<void> {
     runtimeProviderRegistry.enabledProviders()[0]?.providerId,
     "gtai-local-demo",
   );
-  ok("registry excludes Duffel source", !/duffel/i.test(registrySource));
+  ok(
+    "default registry excludes Duffel",
+    runtimeProviderRegistry.get("duffel-test-contract") === null,
+  );
   ok("API excludes Duffel", !/duffel/i.test(apiSource));
   ok(
     "API cannot select provider",

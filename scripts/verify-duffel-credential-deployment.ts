@@ -170,8 +170,9 @@ async function main(): Promise<void> {
     /environment[^=]*= process\.env/.test(resolverCode),
   );
   ok(
-    "architecture: runtime registry excludes Duffel",
-    !/duffel/i.test(registryCode),
+    "architecture: default runtime registry excludes Duffel",
+    runtimeProviderRegistry.get("duffel-test-contract") === null &&
+      /evaluateDuffelPreviewActivation/.test(registryCode),
   );
   check(
     "architecture: runtime registry count",

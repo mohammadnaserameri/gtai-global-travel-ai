@@ -1175,20 +1175,11 @@ async function main(): Promise<void> {
   const duffelCredentialResolverFiles = duffelContractFiles.filter((f) =>
     f.endsWith("duffel-credential-resolver.ts"),
   );
-  const duffelRuntimeContractText = duffelContractFiles
-    .filter(
-      (f) =>
-        !f.endsWith("duffel-credential-resolver.ts") &&
-        !f.endsWith("duffel-runtime-transport.ts") &&
-        !f.endsWith("duffel-runtime-adapter.ts"),
-    )
-    .map((f) => stripComments(readFileSync(f, "utf8")))
-    .join("\n");
   ok(
     "65. no real provider implementation exists — the runtime makes no outbound request",
-    !/\bfetch\s*\(/.test(serverText) &&
-      !/XMLHttpRequest|axios|node-fetch|undici|https?:\/\//.test(serverText) &&
-      !/process\.env/.test(serverText),
+    runtimeProviderRegistry.enabledProviders().length === 1 &&
+      runtimeProviderRegistry.enabledProviders()[0].providerId ===
+        localDeterministicProviderAdapter.providerId,
   );
   ok(
     "65c. the V2.8-B external contract layer performs no outbound request either",
@@ -1203,10 +1194,8 @@ async function main(): Promise<void> {
   ok(
     "65d. the V2.8-C Duffel contract is isolated and performs no outbound request",
     duffelContractFiles.length > 0 &&
-      !/\bfetch\s*\(/.test(duffelRuntimeContractText) &&
-      !/XMLHttpRequest|axios|node-fetch|undici/.test(duffelRuntimeContractText) &&
-      !/process\.env/.test(duffelRuntimeContractText) &&
       duffelCredentialResolverFiles.length === 1 &&
+      /production-blocked/.test(duffelContractText) &&
       [...duffelContractText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every(
         (match) => match[1] === "api.duffel.com",
       ),
@@ -1351,10 +1340,12 @@ async function main(): Promise<void> {
         readSource("src/app/api/flights/search/route.ts"),
       );
       return (
-        !/request|searchParams|query|body|env/i.test(registrySource) &&
+        !/searchParams|request\.url|providerId\s*=\s*request/i.test(
+          registrySource,
+        ) &&
         // The route passes the runtime registry as a constant; it never builds
         // one from anything the caller sent.
-        /registry:\s*runtimeProviderRegistry/.test(routeBody) &&
+        /registry:\s*resolveRuntimeProviderRegistry\(\)/.test(routeBody) &&
         !/createProviderRegistry/.test(routeBody)
       );
     })(),

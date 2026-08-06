@@ -81,7 +81,10 @@ async function main(): Promise<void> {
     runtimeProviderRegistry.enabledProviders()[0]?.providerId,
     "gtai-local-demo",
   );
-  ok("registry excludes Duffel", !/duffel/i.test(registrySource));
+  ok(
+    "default registry excludes Duffel",
+    runtimeProviderRegistry.get("duffel-test-contract") === null,
+  );
 
   const token = ["duffel", "test", "R".repeat(36)].join("_");
   const resolution = resolveDuffelCredential({ DUFFEL_ACCESS_TOKEN: token });
@@ -311,7 +314,10 @@ async function main(): Promise<void> {
   check("valid token withheld", adapter.activationDirective, "withheld");
   ok("production cannot activate", !/NODE_ENV|VERCEL_ENV/.test(activationSource));
   ok("client cannot select provider", !/providerId|providerName/.test(apiSource));
-  ok("module does not register", !/duffel/i.test(registrySource));
+  ok(
+    "module registers only through activation gate",
+    /evaluateDuffelPreviewActivation/.test(registrySource),
+  );
   ok("adapter does not register", !/duffel-runtime-adapter/.test(registrySource));
 
   for (const [name, pattern] of [

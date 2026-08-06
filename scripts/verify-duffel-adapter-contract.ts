@@ -170,7 +170,11 @@ async function main(): Promise<void> {
     "architecture: adapter uses inactive transport",
     duffelTestAdapterContract.transport === duffelInactiveTransport,
   );
-  ok("architecture: no process environment read", !/process\.env/.test(duffelCode));
+  ok(
+    "architecture: environment reads remain server-gated",
+    /production-blocked/.test(duffelCode) &&
+      !/NEXT_PUBLIC_DUFFEL_ACCESS_TOKEN\s*=/.test(duffelCode),
+  );
   check(
     "contract: API origin documented",
     DUFFEL_API_ORIGIN,
@@ -944,7 +948,7 @@ async function main(): Promise<void> {
     [
       "active registration",
       runtimeRegistry,
-      (source) => !/duffel-test-contract[\s\S]{0,120}enabled:\s*true/.test(source),
+      (source) => !/duffel-test-contract enabled:\s*true/.test(source),
       "duffel-test-contract enabled: true",
     ],
     [

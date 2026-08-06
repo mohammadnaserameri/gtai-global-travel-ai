@@ -480,15 +480,17 @@ export function FlightDetailsExperience({
 
       {/* The same shared notice Results renders, placed above the flight
           identity and price so it is read before either. */}
-      <DemonstrationDataNotice
-        variant="prominent"
-        labels={{
-          title: labels.disclosure.title,
-          compact: dictionary.demonstrationNotice.compact,
-          body: dictionary.demonstrationNotice.body,
-          points: labels.disclosure.points,
-        }}
-      />
+      {offer.isDemonstration ? (
+        <DemonstrationDataNotice
+          variant="prominent"
+          labels={{
+            title: labels.disclosure.title,
+            compact: dictionary.demonstrationNotice.compact,
+            body: dictionary.demonstrationNotice.body,
+            points: labels.disclosure.points,
+          }}
+        />
+      ) : null}
 
       {/* The same reduced-coverage statement Results shows. This offer is
           real and fully described; what is uncertain is whether it was the

@@ -430,15 +430,17 @@ export function FlightResultsExperience({
           dismissible, and survives every filter and sort change because it is
           outside the state those controls drive. The surface-specific points
           are passed through; the body sentence is the shared one. */}
-      <DemonstrationDataNotice
-        variant="prominent"
-        labels={{
-          title: labels.disclosure.title,
-          compact: dictionary.demonstrationNotice.compact,
-          body: dictionary.demonstrationNotice.body,
-          points: labels.disclosure.points,
-        }}
-      />
+      {repositoryOffers.every((offer) => offer.isDemonstration) ? (
+        <DemonstrationDataNotice
+          variant="prominent"
+          labels={{
+            title: labels.disclosure.title,
+            compact: dictionary.demonstrationNotice.compact,
+            body: dictionary.demonstrationNotice.body,
+            points: labels.disclosure.points,
+          }}
+        />
+      ) : null}
 
       {/* Reduced coverage is stated next to the standing demonstration
           disclosure rather than buried: a shorter list looks exactly like a

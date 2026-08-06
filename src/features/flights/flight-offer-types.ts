@@ -93,5 +93,5 @@ export interface FlightOffer {
   readonly baggage: BaggageSummary;
   readonly fare: FareSummary;
   readonly rankingMetadata: FlightOfferRankingMetadata;
-  readonly isDemonstration: true;
+  readonly isDemonstration: boolean;
 }

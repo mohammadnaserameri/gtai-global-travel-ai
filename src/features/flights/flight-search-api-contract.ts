@@ -211,12 +211,15 @@ export interface ClientProviderSummary {
  * quietly reuse the demonstration client.
  */
 export const RESPONSE_MODE = "demonstration";
+export const LIVE_PREVIEW_RESPONSE_MODE = "livePreview";
+export type FlightSearchResponseMode =
+  typeof RESPONSE_MODE | typeof LIVE_PREVIEW_RESPONSE_MODE;
 
 export type FlightSearchApiResponse =
   | {
       readonly version: 1;
       readonly status: "success" | "partial" | "empty";
-      readonly mode: typeof RESPONSE_MODE;
+      readonly mode: FlightSearchResponseMode;
       readonly offers: readonly FlightOffer[];
       readonly providerSummary: readonly ClientProviderSummary[];
     }

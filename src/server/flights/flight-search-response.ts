@@ -3,6 +3,7 @@ import "../server-only";
 import {
   FLIGHT_SEARCH_API_VERSION,
   RESPONSE_MODE,
+  LIVE_PREVIEW_RESPONSE_MODE,
   type ClientFlightSearchErrorCode,
   type ClientProviderSummary,
   type FlightSearchApiResponse,
@@ -54,7 +55,9 @@ export function buildSuccessResponse(
   return {
     version: FLIGHT_SEARCH_API_VERSION,
     status,
-    mode: RESPONSE_MODE,
+    mode: result.offers.some((offer) => !offer.isDemonstration)
+      ? LIVE_PREVIEW_RESPONSE_MODE
+      : RESPONSE_MODE,
     offers: result.offers,
     providerSummary: toProviderSummary(result),
   };

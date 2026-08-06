@@ -30,6 +30,7 @@
     "verify-duffel-runtime-adapter-disabled.ts",
     "verify-duffel-preview-manual-test-gate.ts",
     "verify-duffel-local-real-test-harness.ts",
+    "verify-duffel-preview-real-provider-activation.ts",
     "run-duffel-local-real-test.ts"
   ]
 }

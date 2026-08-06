@@ -314,7 +314,11 @@ async function main(): Promise<void> {
     runtimeProviderRegistry.enabledProviders()[0]?.providerId,
     "gtai-local-demo",
   );
-  ok("registry excludes harness", !/local-real-test|duffel/i.test(registry));
+  ok(
+    "default registry excludes local real harness",
+    runtimeProviderRegistry.get("duffel-test-contract") === null &&
+      !/runDuffelLocalRealTest/.test(registry),
+  );
   ok(
     "API excludes harness",
     !/GTAI_DUFFEL_LOCAL_REAL_TEST_ENABLED|runDuffelLocalRealTest|duffel/i.test(api),

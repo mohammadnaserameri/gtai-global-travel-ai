@@ -1044,7 +1044,7 @@ function main(): void {
     ),
   );
   ok(
-    "99. the current runtime uses no provider credential",
+    "99. the default runtime is credential-free and Production is blocked",
     !/process\.env/.test(
       stripComments(
         readSource(
@@ -1052,9 +1052,9 @@ function main(): void {
         ),
       ),
     ) &&
-      !/process\.env/.test(
-        stripComments(
-          readSource("src/server/flights/providers/provider-registry.ts"),
+      /production-blocked/.test(
+        readSource(
+          "src/server/flights/providers/duffel/duffel-preview-activation-gate.ts",
         ),
       ),
   );

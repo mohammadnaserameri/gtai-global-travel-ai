@@ -229,7 +229,7 @@ function validateEnvelope(
   if (containsForbiddenKey(record)) return null;
 
   if (record.version !== FLIGHT_SEARCH_API_VERSION) return null;
-  if (record.mode !== RESPONSE_MODE) return null;
+  if (record.mode !== RESPONSE_MODE && record.mode !== "livePreview") return null;
 
   const status = record.status;
   if (typeof status !== "string") return null;
@@ -284,7 +284,7 @@ function validateEnvelope(
   return {
     version: FLIGHT_SEARCH_API_VERSION,
     status,
-    mode: RESPONSE_MODE,
+    mode: record.mode,
     offers: offers as readonly FlightOffer[],
     providerSummary: summary.map((entry) => {
       const item = entry as Record<string, unknown>;

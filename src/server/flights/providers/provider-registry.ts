@@ -2,6 +2,9 @@ import "../../server-only";
 
 import { MAX_PROVIDER_OFFER_COUNT } from "../../../features/flights/flight-search-api-contract";
 import { localDeterministicProviderAdapter } from "./adapters/local-deterministic-provider-adapter";
+import { evaluateDuffelPreviewActivation } from "./duffel/duffel-preview-activation-gate";
+import { createDuffelPreviewProviderAdapter } from "./duffel/duffel-preview-provider-adapter";
+import type { DuffelFetchLike } from "./duffel/duffel-runtime-transport";
 import type { ProviderRegistration } from "./provider-runtime-types";
 
 /**
@@ -147,3 +150,31 @@ export const runtimeProviderRegistry: ProviderRegistry = createProviderRegistry(
     priority: 0,
   },
 ]);
+
+export function resolveRuntimeProviderRegistry(
+  options: {
+    readonly environment?: Readonly<Record<string, string | undefined>>;
+    readonly fetch?: DuffelFetchLike;
+  } = {},
+): ProviderRegistry {
+  const activation = evaluateDuffelPreviewActivation(
+    options.environment ?? process.env,
+  );
+  if (!activation.eligible) return runtimeProviderRegistry;
+  const fetchImplementation =
+    options.fetch ?? (globalThis.fetch as unknown as DuffelFetchLike);
+  return createProviderRegistry([
+    {
+      providerId: "duffel-test-contract",
+      enabled: true,
+      label: "Duffel Preview test inventory",
+      adapter: createDuffelPreviewProviderAdapter({
+        credential: activation.credential,
+        fetch: fetchImplementation,
+      }),
+      timeoutMs: 25_000,
+      maximumOfferCount: 60,
+      priority: 0,
+    },
+  ]);
+}

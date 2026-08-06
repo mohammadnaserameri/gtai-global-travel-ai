@@ -297,7 +297,7 @@ export function isCanonicalFlightOffer(value: unknown): value is FlightOffer {
 
   // The demonstration marker is required, not defaulted: an offer that does
   // not assert it is demonstrative is not one this product will display.
-  return value.isDemonstration === true;
+  return typeof value.isDemonstration === "boolean";
 }
 
 export function isCanonicalFlightOfferArray(
