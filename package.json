@@ -23,7 +23,9 @@
     "verify:duffel-adapter-contract": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-adapter-contract.js",
     "verify:duffel-credential-deployment": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-credential-deployment.js",
     "verify:duffel-runtime-adapter-disabled": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-runtime-adapter-disabled.js",
-    "verify:duffel-preview-manual-test-gate": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-manual-test-gate.js"
+    "verify:duffel-preview-manual-test-gate": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-manual-test-gate.js",
+    "verify:duffel-local-real-test-harness": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-local-real-test-harness.js",
+    "test:duffel-local-real": "tsc -p scripts/tsconfig.verify.json && node --env-file-if-exists=.env.local node_modules/.cache/gtai-verify/scripts/run-duffel-local-real-test.js"
   },
   "dependencies": {
     "next": "16.2.12",

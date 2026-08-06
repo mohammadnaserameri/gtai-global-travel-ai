@@ -28,6 +28,8 @@
     "verify-duffel-adapter-contract.ts",
     "verify-duffel-credential-deployment.ts",
     "verify-duffel-runtime-adapter-disabled.ts",
-    "verify-duffel-preview-manual-test-gate.ts"
+    "verify-duffel-preview-manual-test-gate.ts",
+    "verify-duffel-local-real-test-harness.ts",
+    "run-duffel-local-real-test.ts"
   ]
 }
