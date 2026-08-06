@@ -732,3 +732,23 @@ Genuinely unresolved items only.
 | 5   | Final URL parameter names                                            | URL state implementation     |
 | 6   | Approved privacy model for safe search-state persistence             | Session restore              |
 | 7   | Final analytics and consent platform                                 | Any analytics implementation |
+
+---
+
+## V2.8-B — the Flight Search API is unchanged
+
+The internal wire contract in `features/flights/flight-search-api-contract.ts`
+is untouched by V2.8-B: same version, same path, same request shape, same
+narrow response envelope.
+
+What V2.8-B adds is a **server-side** neutral search shape
+(`ExternalNeutralSearch`) that widens a validated `FlightSearchIntent` into a
+form a live provider could be asked in — including multi-city, which the
+product's own intent deliberately does not model. The widening is one-way:
+nothing narrows back, so a three-leg search can never be smuggled into a
+two-leg product type.
+
+That shape never crosses the wire. The browser continues to send a validated
+Search Intent and receive normalized offers, and the client-safe contract still
+declares no credential-bearing field — asserted by
+`verify:provider-integration-readiness`.

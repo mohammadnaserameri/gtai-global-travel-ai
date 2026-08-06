@@ -23,6 +23,7 @@
     "verify-polish.ts",
     "verify-details.ts",
     "verify-providers.ts",
-    "verify-partner-readiness.ts"
+    "verify-partner-readiness.ts",
+    "verify-provider-integration-readiness.ts"
   ]
 }

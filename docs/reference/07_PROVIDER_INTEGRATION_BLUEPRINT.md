@@ -91,3 +91,43 @@ Module 07 as a whole is **not** implemented. What is frozen, and what is not:
 | Booking and payment                                       | Permanently outside GTAI core (section 11)       |
 
 Nothing in this document is wired into the running application; `provider-adapter-types.ts` is imported by nothing outside itself, and no `TrustedHandoffUrlBuilder`, adapter or redirect exists.
+
+---
+
+## Status after V2.8-B
+
+The blueprint's type scaffolding has been **superseded** by a working contract
+layer under `src/server/flights/providers/external/`. That layer is exercised
+by 305 deterministic checks rather than existing only as prose and unreferenced
+types.
+
+What has not changed: no provider is connected, no credential exists, no
+external call is made, and no booking, payment or affiliate redirection is
+implemented anywhere in GTAI.
+
+The security and privacy positions this blueprint described are now enforced in
+code:
+
+- **Credentials** are opaque holders that redact on every stringification path,
+  with a single greppable `revealSecret` call site.
+- **Redaction** is allowlist-based, so it fails closed on an unrecognized field
+  rather than publishing it.
+- **Audit** records cannot carry a trip: the identifying fields are absent from
+  the type, not filtered at write time.
+- **Outbound URLs** are built with `URL`/`URLSearchParams` against an
+  operator-configured allowlisted origin, and the _finished_ URL is re-validated
+  against that origin.
+
+### Deployment and environment
+
+V2.8-B requires **no environment variable**. `.env.example` remains fully
+commented and documents no active provider credential.
+
+When a provider is eventually configured, its credential is named by an
+`ExternalProviderSecretReference` — a server-side variable name only. A
+`NEXT_PUBLIC_*` name is refused structurally, because Next.js inlines that
+prefix into the browser bundle: such a value is already published, and resolving
+it would launder a public string into something the code treats as confidential.
+
+Setting those variables moves a provider to `configured` and no further.
+Activation additionally requires an explicit server-side operator directive.

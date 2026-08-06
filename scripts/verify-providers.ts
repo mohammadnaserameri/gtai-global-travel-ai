@@ -1145,8 +1145,24 @@ async function main(): Promise<void> {
       FLIGHT_SEARCH_API_PATH.startsWith("/"),
   );
 
-  const serverFiles = collectSourceFiles("src/server");
+  const allServerFiles = collectSourceFiles("src/server");
+  // The V2.8-B external-provider layer is a *contract* layer, held to stricter
+  // rules by `verify:provider-integration-readiness` (no transport, no hostname outside
+  // `.invalid`, `process.env` in exactly one module, `revealSecret` at exactly
+  // one call site). It is separated here so this check keeps asserting what it
+  // was written to assert: that the **running** V2.7 provider runtime reaches
+  // nothing and reads no environment.
+  const externalLayerSegment = join("providers", "external");
+  const serverFiles = allServerFiles.filter(
+    (f) => !f.includes(externalLayerSegment),
+  );
+  const externalFiles = allServerFiles.filter((f) =>
+    f.includes(externalLayerSegment),
+  );
   const serverText = serverFiles
+    .map((f) => stripComments(readFileSync(f, "utf8")))
+    .join("\n");
+  const externalText = externalFiles
     .map((f) => stripComments(readFileSync(f, "utf8")))
     .join("\n");
   ok(
@@ -1154,6 +1170,16 @@ async function main(): Promise<void> {
     !/\bfetch\s*\(/.test(serverText) &&
       !/XMLHttpRequest|axios|node-fetch|undici|https?:\/\//.test(serverText) &&
       !/process\.env/.test(serverText),
+  );
+  ok(
+    "65c. the V2.8-B external contract layer performs no outbound request either",
+    !/\bfetch\s*\(/.test(externalText) &&
+      !/XMLHttpRequest|axios|node-fetch|undici/.test(externalText) &&
+      // Its one permitted hostname is the RFC 2606 reserved TLD, which can
+      // never resolve. Any other host here would be a real endpoint.
+      [...externalText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every((m) =>
+        m[1].endsWith(".invalid"),
+      ),
   );
   ok(
     "65b. only the local deterministic adapter is enabled in the runtime registry",

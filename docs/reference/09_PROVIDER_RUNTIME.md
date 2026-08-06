@@ -234,3 +234,52 @@ Two consequences are worth recording here because they constrain the next stage:
 - **Results and Details are `noindex`** precisely because their content is generated. If that stops being true, the indexing decision has to be revisited deliberately rather than inherited.
 
 No external provider, credential, environment variable or outbound request was introduced. The V2.7 boundary protections are re-asserted by regression checks in `verify:partner-readiness` as well as by `verify:providers`.
+
+---
+
+## V2.8-B — the external provider contract layer
+
+The V2.7 runtime described above is **unchanged**. One provider is enabled,
+`gtai-local-demo`, it is local and deterministic, and `provider-registry.ts`
+does not import the external layer at all.
+
+V2.8-B adds a sibling layer under `providers/external/` that describes what a
+_live_ provider integration must satisfy, without performing one.
+
+### Inactive transport
+
+`ExternalProviderTransport` is the interface a live transport will implement.
+The only implementation shipped is `InactiveExternalProviderTransport`: zero
+network calls, a typed `notConfigured` failure, an already-aborted signal
+honoured first so a cancelled caller yields `aborted` rather than a
+configuration fault, and fully deterministic. It is a member of each provider
+definition, so a future integration must replace it rather than merely add the
+first call.
+
+### Activation
+
+Four states — `unavailable`, `configured`, `active`, `suspended`. The operator
+directive is consulted before configuration completeness, so credentials landing
+in a deployment can never activate a provider on their own. GTAI ships
+`withheld` and an empty provider list.
+
+### Failure taxonomy
+
+Fifteen external categories map onto V2.7's eight runtime codes, with the
+external category preserved in `internalCode`. The orchestrator continues to see
+only the V2.7 vocabulary it already acts on.
+
+### Policies
+
+Retry (bounded attempts, deterministic backoff, parameterized jitter, abort
+checked first), timeout (connect / request / total deadline), and rate limiting
+(sliding window, burst, concurrency, bounded queue) are pure functions over
+caller-owned state. None performs I/O.
+
+### Audit
+
+A separate privacy-minimized summary type whose fields cannot reconstruct a
+trip. The shipped sink is non-persistent; a persistent one requires retention,
+access, encryption and deletion policies first.
+
+See `docs/implementation/V2_8_B_PROVIDER_INTEGRATION_READINESS.md`.

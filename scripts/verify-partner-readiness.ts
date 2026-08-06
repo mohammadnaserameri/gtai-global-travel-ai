@@ -102,6 +102,9 @@ const readCode = (relativePath: string): string =>
 const SELF_REFERENTIAL: readonly string[] = [
   join("scripts", "verify-partner-readiness.ts"),
   join("scripts", "verify-providers.ts"),
+  // V2.8-B's suite asserts that no travel company is named anywhere in the
+  // external provider layer, which it can only do by naming them itself.
+  join("scripts", "verify-provider-integration-readiness.ts"),
 ];
 const isSelfReferential = (file: string): boolean =>
   SELF_REFERENTIAL.some((suffix) => file.endsWith(suffix));
@@ -608,7 +611,14 @@ function main(): void {
   ok(
     "47. no booking or payment implementation exists",
     allAppSources.every((file) => {
-      const body = stripComments(readFileSync(file, "utf8"));
+      // V2.8-B's request contract and audit summary enumerate payment-adjacent
+      // field names in `PROHIBITED_*_FIELDS` arrays precisely so no such field
+      // can be sent or recorded. Those arrays are the guard, not a breach, and
+      // are removed before the sweep exactly as comments already are.
+      const body = stripComments(readFileSync(file, "utf8")).replace(
+        /PROHIBITED_[A-Z_]+_FIELDS[\s\S]*?\];/g,
+        " ",
+      );
       return !/stripe|paypal|checkout\.session|createPaymentIntent|\bcardNumber\b/i.test(
         body,
       );

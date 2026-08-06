@@ -167,3 +167,16 @@ Details is `noindex, nofollow, nocache` through the same shared helper Results u
 ## Crawl policy correction (V2.8-A round 2)
 
 Details is no longer disallowed in `robots.txt`, for the same reason Results is not: a blocked URL is a URL whose `noindex` nobody fetches. The page keeps `noindex, nofollow, nocache` plus the Google-specific directives through the shared `buildNonIndexableMetadata` helper, stays out of the sitemap, and remains `noindex` in every locale including unauthored fallbacks.
+
+---
+
+## V2.8-B — no change to Details
+
+Details is unaffected by V2.8-B. It resolves an offer by id from a re-run
+search against the internal same-origin API, and an invalid offer id still
+produces zero search requests.
+
+One V2.8-B decision is relevant here: external offer ids are **deterministic**
+(`ext-<provider>-<hash>` over provider id and provider offer reference), not
+random. Details depends on an id surviving a refetch, so a random id would break
+resolution the first time a live provider was connected.

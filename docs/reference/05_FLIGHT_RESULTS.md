@@ -158,3 +158,18 @@ Results is `noindex, nofollow, nocache` through the shared `buildNonIndexableMet
 `robots.txt` no longer disallows `/*/flights/results`. That rule was removed because blocking a URL and marking it `noindex` are **alternatives, not layers**: a crawler refused the fetch never reads the `noindex` it was refused, and the URL can still be listed as a bare link discovered elsewhere. Disallowing made the exclusion less reliable.
 
 Results remains `noindex, nofollow, nocache` with the Google-specific directives, and remains absent from the sitemap. Those are now the entire mechanism, and they work precisely because the page stays crawlable enough to state them. The page is `noindex` in every locale, authored or not.
+
+---
+
+## V2.8-B — no change to Results
+
+Results is unaffected by V2.8-B. It continues to call the internal same-origin
+`/api/flights/search`, receives only normalized `FlightOffer` objects, and
+renders demonstration data produced by the local deterministic provider.
+
+No external provider is connected, no raw provider payload reaches the browser,
+and no booking or affiliate link is present in any offer — the normalized
+external offer type has no field for one, and a provider-supplied deep link is
+discarded during mapping with a recorded warning.
+
+Filtering and sorting still add zero network requests.
