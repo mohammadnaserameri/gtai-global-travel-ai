@@ -173,3 +173,12 @@ external offer type has no field for one, and a provider-supplied deep link is
 discarded during mapping with a recorded warning.
 
 Filtering and sorting still add zero network requests.
+
+---
+
+## V2.8-C behavior
+
+The Duffel test adapter contract is server-only and inactive. Results continue
+to render the same 12 local demonstration offers, with the existing disclosure,
+filters, sorting, and `noindex` policy. No provider request, booking link,
+payment action, or affiliate redirect is introduced.

@@ -283,3 +283,21 @@ trip. The shipped sink is non-persistent; a persistent one requires retention,
 access, encryption and deletion policies first.
 
 See `docs/implementation/V2_8_B_PROVIDER_INTEGRATION_READINESS.md`.
+
+---
+
+## V2.8-C Duffel test adapter contract
+
+V2.8-C adds an unavailable `duffel-test-contract` facade outside the runtime
+registry. It cannot be selected by the provider strategy, and its transport
+contains no outbound network implementation. The only modeled origin is
+`https://api.duffel.com`, used as contract metadata; request builders emit
+relative paths only.
+
+The future secret reference is `DUFFEL_ACCESS_TOKEN`. It is server-only,
+unresolved, absent from client configuration, and never logged or included in a
+request description. The minimal response subset excludes passenger identity,
+documents, booking, order, payment, and raw provider payloads. Safe failures
+retain no authorization header or provider response body.
+
+See `docs/implementation/V2_8_C_DUFFEL_TEST_ADAPTER_CONTRACT.md`.

@@ -752,3 +752,16 @@ That shape never crosses the wire. The browser continues to send a validated
 Search Intent and receive normalized offers, and the client-safe contract still
 declares no credential-bearing field — asserted by
 `verify:provider-integration-readiness`.
+
+---
+
+## V2.8-C Duffel test adapter contract
+
+V2.8-C adds only a server-side, inactive request contract for a possible future
+Duffel test adapter. The current Search Intent wire format is unchanged. Pure
+builders translate a validated internal search into future Create Offer Request
+and List Offers descriptions, but the transport is unavailable, no credential is
+read, and the adapter is not registered. Children and infants remain unsupported
+until their age semantics are defined explicitly.
+
+See `docs/implementation/V2_8_C_DUFFEL_TEST_ADAPTER_CONTRACT.md`.

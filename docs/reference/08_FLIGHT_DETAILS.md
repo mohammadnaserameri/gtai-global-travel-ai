@@ -180,3 +180,12 @@ One V2.8-B decision is relevant here: external offer ids are **deterministic**
 (`ext-<provider>-<hash>` over provider id and provider offer reference), not
 random. Details depends on an id surviving a refetch, so a random id would break
 resolution the first time a live provider was connected.
+
+---
+
+## V2.8-C behavior
+
+Details still resolves only the current demonstration-offer identifiers. The
+inactive Duffel contract does not add provider ID resolution, raw payloads,
+booking, payment, order creation, or external redirects. Invalid IDs continue to
+produce zero search requests.

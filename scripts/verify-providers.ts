@@ -1153,8 +1153,9 @@ async function main(): Promise<void> {
   // was written to assert: that the **running** V2.7 provider runtime reaches
   // nothing and reads no environment.
   const externalLayerSegment = join("providers", "external");
+  const duffelContractSegment = join("providers", "duffel");
   const serverFiles = allServerFiles.filter(
-    (f) => !f.includes(externalLayerSegment),
+    (f) => !f.includes(externalLayerSegment) && !f.includes(duffelContractSegment),
   );
   const externalFiles = allServerFiles.filter((f) =>
     f.includes(externalLayerSegment),
@@ -1163,6 +1164,12 @@ async function main(): Promise<void> {
     .map((f) => stripComments(readFileSync(f, "utf8")))
     .join("\n");
   const externalText = externalFiles
+    .map((f) => stripComments(readFileSync(f, "utf8")))
+    .join("\n");
+  const duffelContractFiles = allServerFiles.filter((f) =>
+    f.includes(duffelContractSegment),
+  );
+  const duffelContractText = duffelContractFiles
     .map((f) => stripComments(readFileSync(f, "utf8")))
     .join("\n");
   ok(
@@ -1179,6 +1186,16 @@ async function main(): Promise<void> {
       // never resolve. Any other host here would be a real endpoint.
       [...externalText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every((m) =>
         m[1].endsWith(".invalid"),
+      ),
+  );
+  ok(
+    "65d. the V2.8-C Duffel contract is isolated and performs no outbound request",
+    duffelContractFiles.length > 0 &&
+      !/\bfetch\s*\(/.test(duffelContractText) &&
+      !/XMLHttpRequest|axios|node-fetch|undici/.test(duffelContractText) &&
+      !/process\.env/.test(duffelContractText) &&
+      [...duffelContractText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every(
+        (match) => match[1] === "api.duffel.com",
       ),
   );
   ok(

@@ -1362,11 +1362,11 @@ function main(): void {
 
   // --- `.env.example` accuracy -------------------------------------------------
   ok(
-    "130. .env.example describes V2.8-A rather than an unpublished V1 site",
+    "130. .env.example describes the current V2.8-C contract rather than an unpublished V1 site",
     (() => {
       const env = readSource(".env.example");
       return (
-        /V2\.8-A requires NO environment variable/.test(env) &&
+        /V2\.8-C requires NO environment variable/.test(env) &&
         !/no published domain yet/i.test(env) &&
         !/V1 \(Global Foundation\)/.test(env) &&
         /public-company-profile/.test(env) &&
