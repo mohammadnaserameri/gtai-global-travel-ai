@@ -171,6 +171,7 @@ export function resolveRuntimeProviderRegistry(
       adapter: createDuffelPreviewProviderAdapter({
         credential: activation.credential,
         fetch: fetchImplementation,
+        diagnosticsEnabled: activation.environment === "preview",
       }),
       timeoutMs: 25_000,
       maximumOfferCount: 60,

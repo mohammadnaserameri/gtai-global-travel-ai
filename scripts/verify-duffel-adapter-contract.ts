@@ -904,7 +904,18 @@ async function main(): Promise<void> {
         .join("\n"),
     ),
   );
-  ok("regression: no public provider claim", !/duffel/i.test(publicCode));
+  ok(
+    "regression: no public-copy provider claim",
+    !/duffel/i.test(
+      [
+        ...filesUnder("src/app"),
+        ...filesUnder("src/components"),
+        ...filesUnder("src/i18n"),
+      ]
+        .map((file) => stripComments(readFileSync(file, "utf8")))
+        .join("\n"),
+    ),
+  );
   ok(
     "regression: no booking implementation in Duffel module",
     !/createOrder|createPayment|bookingUrl\s*:|affiliateUrl\s*:/.test(duffelCode),

@@ -84,6 +84,17 @@ const files = [
 const source = files
   .map((file) => fs.readFileSync(path.join(root, file), "utf8"))
   .join("\n");
+const diagnosticSource = fs.readFileSync(
+  path.join(
+    root,
+    "src/server/flights/providers/duffel/duffel-preview-diagnostics.ts",
+  ),
+  "utf8",
+);
+const intentValidationSource = fs.readFileSync(
+  path.join(root, "src/features/flights/flight-offer-intent-validation.ts"),
+  "utf8",
+);
 const forbidden = [
   /NEXT_PUBLIC_DUFFEL_ACCESS_TOKEN\s*=/,
   /bookingUrl\s*:/,
@@ -106,4 +117,19 @@ check(!/searchParams.*duffel/i.test(source), "query cannot select Duffel");
 check(/isDemonstration:\s*false/.test(source), "live Preview marker");
 check(/production-blocked/.test(source), "production block reason");
 check(/raw Duffel payload/i.test(source), "documentation forbids raw payload");
+check(
+  /GTAI_DUFFEL_PREVIEW_DIAGNOSTIC/.test(diagnosticSource),
+  "Preview diagnostic event exists",
+);
+check(
+  !/Authorization|DUFFEL_ACCESS_TOKEN|rawPayload|request body|response body/i.test(
+    diagnosticSource,
+  ),
+  "diagnostic schema excludes secrets and payloads",
+);
+check(
+  /offer\.isDemonstration/.test(intentValidationSource) &&
+    /Duffel test inventory/.test(intentValidationSource),
+  "live Preview offers use a distinct strict validation path",
+);
 console.log(`DUFFEL_PREVIEW_REAL_PROVIDER_ACTIVATION_PASSED ${checks}/${checks}`);

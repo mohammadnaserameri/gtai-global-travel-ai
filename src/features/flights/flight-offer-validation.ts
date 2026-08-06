@@ -139,7 +139,7 @@ function epochOf(value: unknown): number | null {
   return isValidEpochMinutes(epoch) ? epoch : null;
 }
 
-function isSegment(value: unknown): boolean {
+function isSegment(value: unknown, demonstration: boolean): boolean {
   if (!isRecord(value)) return false;
   if (!hasExactKeys(value, SEGMENT_KEYS)) return false;
   if (!isNonEmptyString(value.id)) return false;
@@ -147,10 +147,11 @@ function isSegment(value: unknown): boolean {
   if (!isNonEmptyString(value.carrierName)) return false;
   // Demonstration flight identifiers are prefixed so they can never be
   // mistaken for, or matched against, a real airline's schedule.
-  if (
-    typeof value.flightNumber !== "string" ||
-    !value.flightNumber.startsWith("DEMO-")
-  ) {
+  if (typeof value.flightNumber !== "string") {
+    return false;
+  }
+  if (demonstration && !value.flightNumber.startsWith("DEMO-")) return false;
+  if (!demonstration && !/^[A-Z0-9]{2}[A-Z0-9]{1,8}$/.test(value.flightNumber)) {
     return false;
   }
   if (
@@ -181,7 +182,7 @@ function isSegment(value: unknown): boolean {
   return (CABIN_CLASSES as readonly string[]).includes(value.cabinClass);
 }
 
-function isItinerary(value: unknown): boolean {
+function isItinerary(value: unknown, demonstration: boolean): boolean {
   if (!isRecord(value)) return false;
   if (!hasExactKeys(value, ITINERARY_KEYS)) return false;
   if (
@@ -192,7 +193,7 @@ function isItinerary(value: unknown): boolean {
   }
   const segments = value.segments;
   if (!Array.isArray(segments) || segments.length === 0) return false;
-  if (!segments.every(isSegment)) return false;
+  if (!segments.every((segment) => isSegment(segment, demonstration))) return false;
 
   // Chronology is checked on the authoritative epoch minutes, never on the
   // wall-clock strings — those belong to different airports and cannot be
@@ -257,6 +258,8 @@ export function isCanonicalFlightOffer(value: unknown): value is FlightOffer {
   // Exact keys, so a provider-specific field cannot ride in alongside valid ones.
   if (!hasExactKeys(value, OFFER_KEYS)) return false;
 
+  if (typeof value.isDemonstration !== "boolean") return false;
+
   if (!isNonEmptyString(value.id) || !isValidOfferId(value.id)) return false;
   if (!isKnownCurrency(value.currency)) return false;
   if (!isFiniteInteger(value.totalPrice) || value.totalPrice <= 0) return false;
@@ -267,7 +270,12 @@ export function isCanonicalFlightOffer(value: unknown): value is FlightOffer {
   const itineraries = value.itineraries;
   if (!Array.isArray(itineraries)) return false;
   if (itineraries.length < 1 || itineraries.length > 2) return false;
-  if (!itineraries.every(isItinerary)) return false;
+  if (
+    !itineraries.every((itinerary) =>
+      isItinerary(itinerary, value.isDemonstration as boolean),
+    )
+  )
+    return false;
   if (itineraries.length === 2) {
     // A return leg that departs before the outbound lands is not a schedule.
     const outboundArrival = epochOf(
@@ -297,7 +305,7 @@ export function isCanonicalFlightOffer(value: unknown): value is FlightOffer {
 
   // The demonstration marker is required, not defaulted: an offer that does
   // not assert it is demonstrative is not one this product will display.
-  return typeof value.isDemonstration === "boolean";
+  return true;
 }
 
 export function isCanonicalFlightOfferArray(

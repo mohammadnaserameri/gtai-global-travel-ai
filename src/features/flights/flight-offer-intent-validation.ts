@@ -146,6 +146,7 @@ function withinFlexWindow(
 function segmentIsConsistent(
   segment: FlightSegment,
   intent: FlightSearchIntent,
+  demonstration: boolean,
 ): boolean {
   // Both endpoints must be airports GTAI actually knows. This is checked
   // before anything derived from them, because an unknown code makes the
@@ -176,10 +177,15 @@ function segmentIsConsistent(
   // Demonstration identity, checked as a pair. A catalogued id with another
   // catalogued carrier's name is as wrong as a real airline's name — it makes
   // the offer internally inconsistent about who is flying it.
-  const carrier = findDemoCarrierById(segment.carrierId);
-  if (carrier === null) return false;
-  if (segment.carrierName !== carrier.name) return false;
-  if (!isDemoFlightNumberFor(segment.flightNumber, carrier)) return false;
+  if (demonstration) {
+    const carrier = findDemoCarrierById(segment.carrierId);
+    if (carrier === null) return false;
+    if (segment.carrierName !== carrier.name) return false;
+    if (!isDemoFlightNumberFor(segment.flightNumber, carrier)) return false;
+  } else {
+    if (!/^[A-Z0-9]{2}$/.test(segment.carrierId)) return false;
+    if (!/^[A-Z0-9]{2}[A-Z0-9]{1,8}$/.test(segment.flightNumber)) return false;
+  }
 
   return segment.cabinClass === intent.cabinClass;
 }
@@ -381,7 +387,8 @@ export function isCanonicalFlightOfferForIntent(
   for (const itinerary of offer.itineraries) {
     if (!itineraryIsConsistent(itinerary)) return false;
     for (const segment of itinerary.segments) {
-      if (!segmentIsConsistent(segment, intent)) return false;
+      if (!segmentIsConsistent(segment, intent, offer.isDemonstration))
+        return false;
     }
   }
 
@@ -397,8 +404,8 @@ export function isCanonicalFlightOfferForIntent(
 
   if (offer.pricePerTraveler <= 0) return false;
   if (
-    offer.totalPrice !==
-    offer.pricePerTraveler * chargeableTravelerCount(intent)
+    offer.isDemonstration &&
+    offer.totalPrice !== offer.pricePerTraveler * chargeableTravelerCount(intent)
   ) {
     return false;
   }
@@ -408,9 +415,13 @@ export function isCanonicalFlightOfferForIntent(
   // consistently with its own id, and — per the generated-data policy — one
   // that actually operates a segment of this offer rather than a label
   // attached from outside.
-  const validatingCarrier = findDemoCarrierById(offer.validatingCarrierId);
-  if (validatingCarrier === null) return false;
-  if (offer.validatingCarrierName !== validatingCarrier.name) return false;
+  const validatingCarrier = offer.isDemonstration
+    ? findDemoCarrierById(offer.validatingCarrierId)
+    : null;
+  if (offer.isDemonstration) {
+    if (validatingCarrier === null) return false;
+    if (offer.validatingCarrierName !== validatingCarrier.name) return false;
+  } else if (!/^[A-Z0-9]{2}$/.test(offer.validatingCarrierId)) return false;
 
   // The declared operating carriers must be exactly the set actually flying —
   // no missing carrier the traveler would meet at the gate, and no unrelated
@@ -428,14 +439,21 @@ export function isCanonicalFlightOfferForIntent(
     // the assertion that the *offer-level* name list contains nothing but
     // catalogued fictional airlines, stated where a reader looking for "can a
     // real airline name appear here" will find it.
-    if (!isDemoCarrierName(carrier)) return false;
+    if (offer.isDemonstration && !isDemoCarrierName(carrier)) return false;
   }
-  if (!actualCarriers.has(validatingCarrier.name)) return false;
+  if (
+    offer.isDemonstration &&
+    validatingCarrier !== null &&
+    !actualCarriers.has(validatingCarrier.name)
+  )
+    return false;
 
   // The booking provider is one of the fictional demonstration providers.
   // A real agency name on a demonstration offer is a claim GTAI has no right
   // to make, whatever the rest of the payload looks like.
-  if (!isDemoBookingProvider(offer.provider)) return false;
+  if (offer.isDemonstration) {
+    if (!isDemoBookingProvider(offer.provider)) return false;
+  } else if (offer.provider !== "Duffel test inventory") return false;
 
   return true;
 }

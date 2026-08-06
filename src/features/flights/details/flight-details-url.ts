@@ -29,10 +29,11 @@ import type { ResultsViewState } from "../filters/flight-filter-types";
  * encoded separator (`%2F`, `%2E`), whitespace, or any other character
  * simply fails to match — there is no "sanitize and continue" path here.
  */
-const OFFER_ID_PATTERN = /^demo-[0-9a-z]{1,12}-\d{1,4}$/;
+const DEMO_OFFER_ID_PATTERN = /^demo-[0-9a-z]{1,12}-\d{1,4}$/;
+const DUFFEL_OFFER_ID_PATTERN = /^duffel:off_[A-Za-z0-9_]{1,96}$/;
 
 /** Generous relative to the real format (max ~22 chars) but a hard stop against pathological input. */
-const OFFER_ID_MAX_LENGTH = 64;
+const OFFER_ID_MAX_LENGTH = 112;
 
 /**
  * Whether a raw path segment is a syntactically valid demonstration offer id.
@@ -48,7 +49,10 @@ export function isValidOfferId(rawOfferId: string | undefined | null): boolean {
   if (rawOfferId.length === 0 || rawOfferId.length > OFFER_ID_MAX_LENGTH) {
     return false;
   }
-  return OFFER_ID_PATTERN.test(rawOfferId);
+  return (
+    DEMO_OFFER_ID_PATTERN.test(rawOfferId) ||
+    DUFFEL_OFFER_ID_PATTERN.test(rawOfferId)
+  );
 }
 
 /**
