@@ -112,3 +112,13 @@ Activation requires a later release to provide all of the following explicitly:
    release authorizes it.
 
 Until then, the adapter remains unavailable by construction.
+
+## V2.8-D credential deployment boundary
+
+V2.8-D adds a server-only resolver, stable Duffel redaction marker, and shipped
+activation guard. A missing, invalid, forbidden-public, or valid-looking present
+credential all leave this contract unavailable. No resolver output is wired to
+the inactive transport, and the future plaintext accessor has no call site.
+
+Local and Vercel Preview provisioning are deployment plans only. See
+`docs/implementation/V2_8_D_DUFFEL_TEST_CREDENTIAL_DEPLOYMENT_PLAN.md`.

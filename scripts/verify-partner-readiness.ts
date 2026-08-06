@@ -105,6 +105,10 @@ const SELF_REFERENTIAL: readonly string[] = [
   // V2.8-B's suite asserts that no travel company is named anywhere in the
   // external provider layer, which it can only do by naming them itself.
   join("scripts", "verify-provider-integration-readiness.ts"),
+  // V2.8-D preserves the same negative network assertions for the server-only
+  // credential plan; naming a forbidden provider inside that verifier is not
+  // product source, public copy, a hostname, or an integration.
+  join("scripts", "verify-duffel-credential-deployment.ts"),
 ];
 const isSelfReferential = (file: string): boolean =>
   SELF_REFERENTIAL.some((suffix) => file.endsWith(suffix));
@@ -1362,11 +1366,13 @@ function main(): void {
 
   // --- `.env.example` accuracy -------------------------------------------------
   ok(
-    "130. .env.example describes the current V2.8-C contract rather than an unpublished V1 site",
+    "130. .env.example describes the current V2.8-D contract rather than an unpublished V1 site",
     (() => {
       const env = readSource(".env.example");
       return (
-        /V2\.8-C requires NO environment variable/.test(env) &&
+        /V2\.8-D/.test(env) &&
+        /DUFFEL_ACCESS_TOKEN/.test(env) &&
+        /Not required in V2\.8-D/.test(env) &&
         !/no published domain yet/i.test(env) &&
         !/V1 \(Global Foundation\)/.test(env) &&
         /public-company-profile/.test(env) &&

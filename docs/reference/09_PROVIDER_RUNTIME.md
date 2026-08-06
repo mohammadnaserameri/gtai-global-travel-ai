@@ -301,3 +301,23 @@ documents, booking, order, payment, and raw provider payloads. Safe failures
 retain no authorization header or provider response body.
 
 See `docs/implementation/V2_8_C_DUFFEL_TEST_ADAPTER_CONTRACT.md`.
+
+---
+
+## V2.8-D credential deployment plan
+
+V2.8-D permits one future server-only variable name and adds a deterministic
+credential resolver. Resolution can report missing, present-but-inactive,
+invalid-shape, or forbidden-public-name; every state remains `unavailable`.
+The raw value is held in an opaque capsule whose serialization and inspection
+produce `[redacted:duffel-token]`.
+
+The shipped Duffel activation directive is `withheld`. The inactive transport
+does not import the resolver or its future plaintext accessor, the runtime
+registry still excludes Duffel, and the local deterministic provider remains
+the sole active provider. Local `.env.local` and Vercel Preview provisioning are
+documented for a later controlled release, not performed here.
+
+The privacy boundary stores no raw authorization header, query-token URL,
+credential-bearing request, or persistent audit record. See
+`docs/implementation/V2_8_D_DUFFEL_TEST_CREDENTIAL_DEPLOYMENT_PLAN.md`.

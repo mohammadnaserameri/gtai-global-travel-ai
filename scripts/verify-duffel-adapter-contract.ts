@@ -118,7 +118,15 @@ async function main(): Promise<void> {
     ok(`architecture: ${file} exists`, exists(`${duffelDirectory}/${file}`));
   }
   const duffelFiles = filesUnder(duffelDirectory);
-  const duffelCode = duffelFiles
+  // V2.8-C's adapter assertions intentionally exclude the later V2.8-D
+  // server-only credential policy modules. Those modules have their own
+  // stricter verifier and do not alter the frozen adapter/transport contract.
+  const duffelAdapterFiles = duffelFiles.filter(
+    (file) =>
+      !/duffel-credential-(?:resolver|redaction)\.ts$/.test(file) &&
+      !/duffel-activation-guard\.ts$/.test(file),
+  );
+  const duffelCode = duffelAdapterFiles
     .map((file) => stripComments(readFileSync(file, "utf8")))
     .join("\n");
   const runtimeRegistry = stripComments(

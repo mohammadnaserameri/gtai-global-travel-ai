@@ -1172,6 +1172,13 @@ async function main(): Promise<void> {
   const duffelContractText = duffelContractFiles
     .map((f) => stripComments(readFileSync(f, "utf8")))
     .join("\n");
+  const duffelCredentialResolverFiles = duffelContractFiles.filter((f) =>
+    f.endsWith("duffel-credential-resolver.ts"),
+  );
+  const duffelRuntimeContractText = duffelContractFiles
+    .filter((f) => !f.endsWith("duffel-credential-resolver.ts"))
+    .map((f) => stripComments(readFileSync(f, "utf8")))
+    .join("\n");
   ok(
     "65. no real provider implementation exists — the runtime makes no outbound request",
     !/\bfetch\s*\(/.test(serverText) &&
@@ -1193,7 +1200,8 @@ async function main(): Promise<void> {
     duffelContractFiles.length > 0 &&
       !/\bfetch\s*\(/.test(duffelContractText) &&
       !/XMLHttpRequest|axios|node-fetch|undici/.test(duffelContractText) &&
-      !/process\.env/.test(duffelContractText) &&
+      !/process\.env/.test(duffelRuntimeContractText) &&
+      duffelCredentialResolverFiles.length === 1 &&
       [...duffelContractText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every(
         (match) => match[1] === "api.duffel.com",
       ),

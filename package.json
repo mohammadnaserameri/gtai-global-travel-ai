@@ -20,7 +20,8 @@
     "verify:providers": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-providers.js",
     "verify:partner-readiness": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-partner-readiness.js",
     "verify:provider-integration-readiness": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-provider-integration-readiness.js",
-    "verify:duffel-adapter-contract": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-adapter-contract.js"
+    "verify:duffel-adapter-contract": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-adapter-contract.js",
+    "verify:duffel-credential-deployment": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-credential-deployment.js"
   },
   "dependencies": {
     "next": "16.2.12",

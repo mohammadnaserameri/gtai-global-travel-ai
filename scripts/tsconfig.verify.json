@@ -25,6 +25,7 @@
     "verify-providers.ts",
     "verify-partner-readiness.ts",
     "verify-provider-integration-readiness.ts",
-    "verify-duffel-adapter-contract.ts"
+    "verify-duffel-adapter-contract.ts",
+    "verify-duffel-credential-deployment.ts"
   ]
 }
