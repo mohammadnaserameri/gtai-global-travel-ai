@@ -27,6 +27,10 @@ import { sanitizeFiltersAgainstOffers } from "@/features/flights/filters/flight-
 import type { ResultsViewState } from "@/features/flights/filters/flight-filter-types";
 import { resolveFlightDetails } from "@/features/flights/details/flight-details-resolution";
 import {
+  isPreviewOfferId,
+  readPreviewOfferSnapshot,
+} from "@/features/flights/details/preview-offer-snapshot";
+import {
   buildClearedFiltersDetailsUrl,
   buildFlightDetailsUrl,
   buildResultsReturnUrl,
@@ -182,6 +186,24 @@ export function FlightDetailsExperience({
     if (fetchKey === null) return;
 
     const key = fetchKey;
+    if (isPreviewOfferId(offerId)) {
+      const snapshot = readPreviewOfferSnapshot(committedIntent, offerId);
+      let cancelled = false;
+      void Promise.resolve().then(() => {
+        if (cancelled) return;
+        setFetched({
+          key,
+          result:
+            snapshot === null
+              ? { status: "empty", coverage: "complete" }
+              : { status: "ready", offers: [snapshot], coverage: "complete" },
+        });
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const controller = new AbortController();
     const repository = getFlightOfferRepository();
 
@@ -210,7 +232,7 @@ export function FlightDetailsExperience({
       });
 
     return () => controller.abort();
-  }, [committedIntent, offerIdIsValid, fetchKey, devScenario, retryToken]);
+  }, [committedIntent, offerId, offerIdIsValid, fetchKey, devScenario, retryToken]);
 
   const currentParams = useMemo(
     () => new URLSearchParams(paramsString),

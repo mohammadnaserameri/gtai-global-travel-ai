@@ -9,6 +9,7 @@ import {
   type FlightOfferSearchResult,
 } from "./flight-offer-repository";
 import { isCanonicalFlightOfferArrayForIntent } from "./flight-offer-intent-validation";
+import { persistPreviewOfferSnapshots } from "./details/preview-offer-snapshot";
 import {
   buildFlightSearchApiRequest,
   CLIENT_PROVIDER_STATUSES,
@@ -145,6 +146,7 @@ export class ApiFlightOfferRepository implements FlightOfferRepository {
     // did not answer. Showing what came back is more honest than showing
     // nothing, and carrying the coverage forward is what stops the pages from
     // presenting it as the whole picture.
+    persistPreviewOfferSnapshots(intent, validated.offers);
     return {
       offers: validated.offers,
       coverage: validated.status === "partial" ? "partial" : "complete",
