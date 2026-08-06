@@ -321,3 +321,10 @@ documented for a later controlled release, not performed here.
 The privacy boundary stores no raw authorization header, query-token URL,
 credential-bearing request, or persistent audit record. See
 `docs/implementation/V2_8_D_DUFFEL_TEST_CREDENTIAL_DEPLOYMENT_PLAN.md`.
+
+## V2.8-E disabled Duffel test runtime adapter
+
+V2.8-E adds a server-only authenticated transport and runtime-adapter
+composition seam. Both remain excluded from the registry. The activation
+directive is `withheld`, normal search still uses `gtai-local-demo`, and
+automated verification uses only injected in-memory fetch doubles.

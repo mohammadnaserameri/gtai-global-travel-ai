@@ -124,7 +124,8 @@ async function main(): Promise<void> {
   const duffelAdapterFiles = duffelFiles.filter(
     (file) =>
       !/duffel-credential-(?:resolver|redaction)\.ts$/.test(file) &&
-      !/duffel-activation-guard\.ts$/.test(file),
+      !/duffel-activation-guard\.ts$/.test(file) &&
+      !/duffel-runtime-(?:adapter|transport)\.ts$/.test(file),
   );
   const duffelCode = duffelAdapterFiles
     .map((file) => stripComments(readFileSync(file, "utf8")))

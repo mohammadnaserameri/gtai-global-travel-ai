@@ -8,4 +8,6 @@ export * from "./duffel-credential-resolver";
 export * from "./duffel-failures";
 export * from "./duffel-request-builder";
 export * from "./duffel-response-mapper";
+export * from "./duffel-runtime-adapter";
+export * from "./duffel-runtime-transport";
 export * from "./duffel-transport";

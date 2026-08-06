@@ -100,7 +100,11 @@ async function main(): Promise<void> {
   const gitignore = read(".gitignore");
   const doc = read(implementationDoc);
   const duffelFiles = filesUnder("src/server/flights/providers/duffel");
-  const duffelCode = sourceOf(duffelFiles);
+  const duffelCode = sourceOf(
+    duffelFiles.filter(
+      (file) => !/duffel-runtime-(?:adapter|transport)\.ts$/.test(file),
+    ),
+  );
   const publicFiles = [
     ...filesUnder("src/app"),
     ...filesUnder("src/components"),

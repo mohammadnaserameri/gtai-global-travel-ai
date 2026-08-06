@@ -1176,7 +1176,12 @@ async function main(): Promise<void> {
     f.endsWith("duffel-credential-resolver.ts"),
   );
   const duffelRuntimeContractText = duffelContractFiles
-    .filter((f) => !f.endsWith("duffel-credential-resolver.ts"))
+    .filter(
+      (f) =>
+        !f.endsWith("duffel-credential-resolver.ts") &&
+        !f.endsWith("duffel-runtime-transport.ts") &&
+        !f.endsWith("duffel-runtime-adapter.ts"),
+    )
     .map((f) => stripComments(readFileSync(f, "utf8")))
     .join("\n");
   ok(
@@ -1198,8 +1203,8 @@ async function main(): Promise<void> {
   ok(
     "65d. the V2.8-C Duffel contract is isolated and performs no outbound request",
     duffelContractFiles.length > 0 &&
-      !/\bfetch\s*\(/.test(duffelContractText) &&
-      !/XMLHttpRequest|axios|node-fetch|undici/.test(duffelContractText) &&
+      !/\bfetch\s*\(/.test(duffelRuntimeContractText) &&
+      !/XMLHttpRequest|axios|node-fetch|undici/.test(duffelRuntimeContractText) &&
       !/process\.env/.test(duffelRuntimeContractText) &&
       duffelCredentialResolverFiles.length === 1 &&
       [...duffelContractText.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].every(

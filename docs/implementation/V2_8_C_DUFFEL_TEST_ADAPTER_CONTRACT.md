@@ -1,5 +1,8 @@
 # GTAI V2.8-C — Duffel Test Adapter Contract
 
+> V2.8-E implements the server-only transport seam described by this contract,
+> but keeps it disabled, unregistered, and exercised only with injected fakes.
+
 ## Purpose and status
 
 V2.8-C defines a server-only, inactive contract for a possible future Duffel

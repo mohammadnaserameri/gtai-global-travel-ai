@@ -1,5 +1,8 @@
 # GTAI V2.8-D — Duffel Test Credential Deployment Plan
 
+> V2.8-E adds a disabled runtime transport seam. It remains unregistered and
+> does not change this credential or activation policy.
+
 ## Purpose and scope
 
 V2.8-D defines how a future Duffel test token can be supplied to GTAI without

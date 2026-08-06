@@ -8,7 +8,12 @@ import {
 import { DUFFEL_PROVIDER_ID } from "./duffel-contract";
 
 export type DuffelThrownFailureKind =
-  "aborted" | "network" | "malformedJson" | "unexpectedSchema" | "unknown";
+  | "aborted"
+  | "timeout"
+  | "network"
+  | "malformedJson"
+  | "unexpectedSchema"
+  | "unknown";
 
 export interface NormalizeDuffelFailureInput {
   readonly requestId: string;
@@ -39,6 +44,8 @@ export function categoryForDuffelThrownFailure(
   switch (kind) {
     case "aborted":
       return "aborted";
+    case "timeout":
+      return "timeout";
     case "network":
       return "networkFailure";
     case "malformedJson":
