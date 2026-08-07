@@ -29,8 +29,11 @@ export type TravelImageCacheMode =
 
 export interface TravelImageCacheRuntimeStatus {
   readonly cacheMode: TravelImageCacheMode;
+  readonly durableCacheProvider: "upstash" | "generic" | "none";
   readonly durableCacheConfigured: boolean;
   readonly durableCacheActive: boolean;
+  readonly durableReadSucceeded: boolean;
+  readonly durableWriteSucceeded: boolean;
 }
 
 /** Compatibility name retained for the V2.10-A engine constructor. */
@@ -113,6 +116,7 @@ interface DurableCacheEnvironment {
   readonly enabled: boolean;
   readonly url: string | null;
   readonly token: string | null;
+  readonly provider: "upstash" | "generic" | "none";
 }
 
 type Environment = Readonly<Record<string, string | undefined>>;
@@ -141,15 +145,36 @@ function safeDurableUrl(value: string | null): string | null {
 export function resolveDurableCacheEnvironment(
   environment: Environment = process.env,
 ): DurableCacheEnvironment {
-  const url = safeDurableUrl(safeValue(environment.TRAVEL_IMAGE_DURABLE_CACHE_URL));
-  const token = safeValue(environment.TRAVEL_IMAGE_DURABLE_CACHE_TOKEN);
+  const requestedProvider = safeValue(
+    environment.TRAVEL_IMAGE_DURABLE_CACHE_PROVIDER,
+  );
+  const provider =
+    requestedProvider === "upstash"
+      ? "upstash"
+      : requestedProvider === null || requestedProvider === "generic"
+        ? "generic"
+        : "none";
+  const url = safeDurableUrl(
+    safeValue(
+      provider === "upstash"
+        ? environment.UPSTASH_REDIS_REST_URL
+        : environment.TRAVEL_IMAGE_DURABLE_CACHE_URL,
+    ),
+  );
+  const token = safeValue(
+    provider === "upstash"
+      ? environment.UPSTASH_REDIS_REST_TOKEN
+      : environment.TRAVEL_IMAGE_DURABLE_CACHE_TOKEN,
+  );
   return Object.freeze({
     enabled:
+      provider !== "none" &&
       environment.TRAVEL_IMAGE_DURABLE_CACHE_ENABLED === "true" &&
       url !== null &&
       token !== null,
     url,
     token,
+    provider,
   });
 }
 
@@ -275,9 +300,14 @@ async function readBoundedDurableJson(response: Response): Promise<unknown> {
   }
 }
 
-export class RestDurableTravelImageMetadataStore implements TravelImageMetadataStore {
+interface DurableTravelImageMetadataStore extends TravelImageMetadataStore {
+  readonly provider: "upstash" | "generic";
+}
+
+export class RestDurableTravelImageMetadataStore implements DurableTravelImageMetadataStore {
   readonly enabled = true;
   readonly mode = "durable" as const;
+  readonly provider = "generic" as const;
   private readonly baseUrl: string;
   private readonly token: string;
   private readonly fetcher: typeof fetch;
@@ -334,7 +364,9 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
       (payload as Record<string, unknown>).version !==
         DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION ||
       !Array.isArray((payload as Record<string, unknown>).assets) ||
-      Object.keys(payload).some((key) => !["version", "assets"].includes(key))
+      Object.keys(payload).some(
+        (key) => !["version", "assets", "expiresAt"].includes(key),
+      )
     ) {
       throw new Error("durable cache unavailable");
     }
@@ -396,6 +428,162 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
   }
 }
 
+function upstashCacheKey(key: string): string {
+  const [category = "destination", ...destinationParts] = key.split(":");
+  const safeCategory =
+    category
+      .normalize("NFKC")
+      .toLocaleLowerCase()
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "destination";
+  const destinationKey =
+    destinationParts
+      .join(":")
+      .normalize("NFKC")
+      .toLocaleLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 120) || "global";
+  return `gtai:travel-images:v1:${destinationKey}:${safeCategory}`;
+}
+
+function normalizedEnvelope(payload: unknown): readonly TravelImageAsset[] | null {
+  if (
+    typeof payload !== "object" ||
+    payload === null ||
+    Array.isArray(payload) ||
+    (payload as Record<string, unknown>).version !==
+      DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION ||
+    typeof (payload as Record<string, unknown>).destinationKey !== "string" ||
+    typeof (payload as Record<string, unknown>).category !== "string" ||
+    typeof (payload as Record<string, unknown>).expiresAt !== "string" ||
+    !Array.isArray((payload as Record<string, unknown>).assets) ||
+    Object.keys(payload).some(
+      (key) =>
+        !["version", "destinationKey", "category", "assets", "expiresAt"].includes(
+          key,
+        ),
+    )
+  ) {
+    throw new Error("durable cache unavailable");
+  }
+  const rawAssets = (payload as { assets: unknown[] }).assets;
+  const assets = rawAssets
+    .map(normalizedAsset)
+    .filter((asset): asset is TravelImageAsset => asset !== null)
+    .slice(0, resolveTravelImageRefreshBudget().maxAssetsPerKey);
+  if (rawAssets.length > 0 && assets.length === 0) {
+    throw new Error("durable cache unavailable");
+  }
+  return assets.length > 0 ? Object.freeze(assets) : null;
+}
+
+export class UpstashDurableTravelImageMetadataStore implements DurableTravelImageMetadataStore {
+  readonly provider = "upstash" as const;
+  private readonly baseUrl: string;
+  private readonly token: string;
+  private readonly fetcher: typeof fetch;
+
+  constructor(options: {
+    readonly baseUrl: string;
+    readonly token: string;
+    readonly fetcher?: typeof fetch;
+  }) {
+    this.baseUrl = options.baseUrl;
+    this.token = options.token;
+    this.fetcher = options.fetcher ?? fetch;
+  }
+
+  private async command(command: readonly unknown[]): Promise<unknown> {
+    const response = await this.fetcher(this.baseUrl, {
+      method: "POST",
+      cache: "no-store",
+      signal: AbortSignal.timeout(3_000),
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(command),
+    });
+    if (!response.ok) throw new Error("durable cache unavailable");
+    const payload = await readBoundedDurableJson(response);
+    if (
+      typeof payload !== "object" ||
+      payload === null ||
+      Array.isArray(payload) ||
+      Object.keys(payload).some((key) => !["result"].includes(key))
+    ) {
+      throw new Error("durable cache unavailable");
+    }
+    return (payload as { result?: unknown }).result;
+  }
+
+  async get(key: string): Promise<TravelImageAsset | null> {
+    return (await this.getMany(key))?.[0] ?? null;
+  }
+
+  async getMany(key: string): Promise<readonly TravelImageAsset[] | null> {
+    const result = await this.command(["GET", upstashCacheKey(key)]);
+    if (result === null) return null;
+    if (
+      typeof result !== "string" ||
+      result.length > MAX_DURABLE_TRAVEL_IMAGE_RESPONSE_BYTES
+    ) {
+      throw new Error("durable cache unavailable");
+    }
+    try {
+      return normalizedEnvelope(JSON.parse(result));
+    } catch {
+      throw new Error("durable cache unavailable");
+    }
+  }
+
+  async set(key: string, asset: TravelImageAsset, ttlMs?: number): Promise<void> {
+    await this.setMany(key, [asset], ttlMs);
+  }
+
+  async setMany(
+    key: string,
+    assets: readonly TravelImageAsset[],
+    ttlMs = 86_400_000,
+  ): Promise<void> {
+    const safeAssets = assets
+      .map(normalizedAsset)
+      .filter((asset): asset is TravelImageAsset => asset !== null)
+      .slice(0, resolveTravelImageRefreshBudget().maxAssetsPerKey);
+    if (safeAssets.length === 0) return;
+    const [category = "destination", ...destinationParts] = key.split(":");
+    const envelope = JSON.stringify({
+      version: DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION,
+      destinationKey: destinationParts.join(":"),
+      category,
+      assets: safeAssets,
+      expiresAt: new Date(Date.now() + Math.max(1, ttlMs)).toISOString(),
+    });
+    const result = await this.command([
+      "SET",
+      upstashCacheKey(key),
+      envelope,
+      "PX",
+      Math.max(1, Math.floor(ttlMs)),
+    ]);
+    if (result !== "OK") throw new Error("durable cache unavailable");
+  }
+
+  async delete(key: string): Promise<void> {
+    const result = await this.command(["DEL", upstashCacheKey(key)]);
+    if (typeof result !== "number") throw new Error("durable cache unavailable");
+  }
+
+  clear(): void {}
+  size(): number {
+    return 0;
+  }
+}
+
 export class DurableTravelImageMetadataStoreUnavailable implements TravelImageMetadataStore {
   readonly enabled = false;
   readonly mode = "durableUnavailable" as const;
@@ -429,12 +617,14 @@ export class DurableTravelImageMetadataStoreUnavailable implements TravelImageMe
 
 export class ResilientTravelImageMetadataStore implements TravelImageMetadataStore {
   private readonly memory: MemoryTravelImageMetadataCache;
-  private readonly durable: RestDurableTravelImageMetadataStore | null;
+  private readonly durable: DurableTravelImageMetadataStore | null;
   private durableActive = false;
+  private durableReadSucceeded = false;
+  private durableWriteSucceeded = false;
 
   constructor(options: {
     readonly memory?: MemoryTravelImageMetadataCache;
-    readonly durable?: RestDurableTravelImageMetadataStore | null;
+    readonly durable?: DurableTravelImageMetadataStore | null;
   }) {
     this.memory = options.memory ?? new MemoryTravelImageMetadataCache();
     this.durable = options.durable ?? null;
@@ -447,8 +637,11 @@ export class ResilientTravelImageMetadataStore implements TravelImageMetadataSto
           ? "durable"
           : "durableUnavailable"
         : "memory",
+      durableCacheProvider: this.durable?.provider ?? "none",
       durableCacheConfigured: this.durable !== null,
       durableCacheActive: this.durable !== null && this.durableActive,
+      durableReadSucceeded: this.durableReadSucceeded,
+      durableWriteSucceeded: this.durableWriteSucceeded,
     });
   }
 
@@ -461,12 +654,14 @@ export class ResilientTravelImageMetadataStore implements TravelImageMetadataSto
       try {
         const assets = await this.durable.getMany(key);
         this.durableActive = true;
+        this.durableReadSucceeded = true;
         if (assets) {
           this.memory.setMany(key, assets);
           return assets;
         }
       } catch {
         this.durableActive = false;
+        this.durableReadSucceeded = false;
       }
     }
     return this.memory.getMany(key);
@@ -486,8 +681,10 @@ export class ResilientTravelImageMetadataStore implements TravelImageMetadataSto
     try {
       await this.durable.setMany(key, assets, ttlMs);
       this.durableActive = true;
+      this.durableWriteSucceeded = true;
     } catch {
       this.durableActive = false;
+      this.durableWriteSucceeded = false;
     }
   }
 
@@ -519,12 +716,18 @@ export function createTravelImageMetadataStore(
   const budget = resolveTravelImageRefreshBudget(environment);
   const durable =
     durableEnvironment.enabled && durableEnvironment.url && durableEnvironment.token
-      ? new RestDurableTravelImageMetadataStore({
-          baseUrl: durableEnvironment.url,
-          token: durableEnvironment.token,
-          fetcher: options.fetcher,
-          maximumAssetsPerKey: budget.maxAssetsPerKey,
-        })
+      ? durableEnvironment.provider === "upstash"
+        ? new UpstashDurableTravelImageMetadataStore({
+            baseUrl: durableEnvironment.url,
+            token: durableEnvironment.token,
+            fetcher: options.fetcher,
+          })
+        : new RestDurableTravelImageMetadataStore({
+            baseUrl: durableEnvironment.url,
+            token: durableEnvironment.token,
+            fetcher: options.fetcher,
+            maximumAssetsPerKey: budget.maxAssetsPerKey,
+          })
       : null;
   return new ResilientTravelImageMetadataStore({
     durable,

@@ -35,8 +35,11 @@ export interface TravelImageRuntimeVerification {
   readonly attributionPresent: boolean;
   readonly fallbackActive: boolean;
   readonly cacheMode: TravelImageCacheMode;
+  readonly durableCacheProvider: "upstash" | "generic" | "none";
   readonly durableCacheConfigured: boolean;
   readonly durableCacheActive: boolean;
+  readonly durableReadSucceeded: boolean;
+  readonly durableWriteSucceeded: boolean;
   readonly refreshBudgetConfigured: boolean;
   readonly maxAssetsPerKey: number;
   readonly rotationEnabled: boolean;
@@ -72,8 +75,11 @@ export async function verifyTravelImageRuntime(
   const cacheMode = options.cacheMode ?? initialCache.cacheMode;
   const cacheFields = {
     cacheMode,
+    durableCacheProvider: initialCache.durableCacheProvider,
     durableCacheConfigured: initialCache.durableCacheConfigured,
     durableCacheActive: initialCache.durableCacheActive,
+    durableReadSucceeded: initialCache.durableReadSucceeded,
+    durableWriteSucceeded: initialCache.durableWriteSucceeded,
     refreshBudgetConfigured: refreshBudget.configured,
     maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
   } as const;
@@ -160,8 +166,11 @@ export async function verifyTravelImageRuntime(
       attributionPresent,
       fallbackActive: !verified,
       cacheMode: options.cacheMode ?? currentCache.cacheMode,
+      durableCacheProvider: currentCache.durableCacheProvider,
       durableCacheConfigured: currentCache.durableCacheConfigured,
       durableCacheActive: currentCache.durableCacheActive,
+      durableReadSucceeded: currentCache.durableReadSucceeded,
+      durableWriteSucceeded: currentCache.durableWriteSucceeded,
       refreshBudgetConfigured: refreshBudget.configured,
       maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
       rotationEnabled: true,
