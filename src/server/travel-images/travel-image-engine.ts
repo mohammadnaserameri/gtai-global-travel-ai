@@ -114,8 +114,9 @@ export class TravelImageEngine {
   }
 }
 
-function createRuntimeProviders(): readonly TravelImageProvider[] {
-  const environment = resolveTravelImageEnvironment();
+export function createTravelImageProviders(
+  environment = resolveTravelImageEnvironment(),
+): readonly TravelImageProvider[] {
   const providers: TravelImageProvider[] = [];
   if (environment.unsplashAccessKey) {
     providers.push(
@@ -144,7 +145,7 @@ export function getTravelImageEngine(): TravelImageEngine {
     const environment = resolveTravelImageEnvironment();
     runtimeEngine = new TravelImageEngine({
       enabled: environment.enabled,
-      providers: createRuntimeProviders(),
+      providers: createTravelImageProviders(environment),
     });
   }
   return runtimeEngine;

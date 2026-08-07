@@ -37,6 +37,8 @@
     "run-duffel-local-real-test.ts",
     "verify-dynamic-travel-image-engine.ts",
     "verify-dynamic-travel-image-preview-activation.ts",
-    "verify-dynamic-travel-image-runtime-verification.ts"
+    "verify-dynamic-travel-image-runtime-verification.ts",
+    "verify-dynamic-travel-image-live-smoke-test.ts",
+    "test-travel-image-live-smoke.ts"
   ]
 }
