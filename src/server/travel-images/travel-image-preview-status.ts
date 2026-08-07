@@ -8,7 +8,10 @@ import {
 } from "./travel-image-env";
 import type { TravelImageCacheMode } from "./travel-image-cache";
 
-export type TravelImageEngineMode = "disabled" | "fallback" | "livePreview";
+export type TravelImageEngineMode =
+  "disabled" | "fallback" | "livePreview" | "liveProduction";
+export type TravelImageProviderScope =
+  "none" | "configuredProviders" | "pexelsOnly";
 export type TravelImageRuntimeSafeReasonCode =
   | "productionDisabled"
   | "previewFlagDisabled"
@@ -25,12 +28,8 @@ export interface TravelImageRuntimeVerification {
   readonly attributionPresent: boolean;
   readonly fallbackActive: boolean;
   readonly cacheMode: TravelImageCacheMode;
-  readonly providerNamesConfigured: {
-    readonly primary: boolean;
-    readonly secondary: boolean;
-    readonly tertiary: boolean;
-  };
-  readonly lastSafeReasonCode: TravelImageRuntimeSafeReasonCode;
+  readonly providerScope: TravelImageProviderScope;
+  readonly safeReasonCode: TravelImageRuntimeSafeReasonCode;
 }
 
 interface RuntimeVerificationOptions {
@@ -39,22 +38,11 @@ interface RuntimeVerificationOptions {
   readonly cacheMode?: TravelImageCacheMode;
 }
 
-function configuredProviders(environment: TravelImageEnvironment) {
-  return Object.freeze({
-    primary: environment.unsplashAccessKey !== null,
-    secondary: environment.pexelsApiKey !== null,
-    tertiary: environment.pixabayApiKey !== null,
-  });
-}
-
-function safeResult(
-  values: Omit<TravelImageRuntimeVerification, "providerNamesConfigured">,
+function providerScope(
   environment: TravelImageEnvironment,
-): TravelImageRuntimeVerification {
-  return Object.freeze({
-    ...values,
-    providerNamesConfigured: configuredProviders(environment),
-  });
+): TravelImageProviderScope {
+  if (!environment.enabled) return "none";
+  return environment.productionEligible ? "pexelsOnly" : "configuredProviders";
 }
 
 export async function verifyTravelImageRuntime(
@@ -64,38 +52,37 @@ export async function verifyTravelImageRuntime(
   const cacheMode = options.cacheMode ?? "memory";
 
   if (!environment.enabled) {
-    return safeResult(
-      {
-        imageEngineMode: "disabled",
-        providerCallAttempted: false,
-        providerCallSucceeded: false,
-        normalizedAssetCount: 0,
-        attributionPresent: false,
-        fallbackActive: true,
-        cacheMode,
-        lastSafeReasonCode: environment.productionBlocked
-          ? "productionDisabled"
-          : "previewFlagDisabled",
-      },
-      environment,
-    );
+    return Object.freeze({
+      imageEngineMode: "disabled",
+      providerCallAttempted: false,
+      providerCallSucceeded: false,
+      normalizedAssetCount: 0,
+      attributionPresent: false,
+      fallbackActive: true,
+      cacheMode,
+      providerScope: "none",
+      safeReasonCode: environment.productionBlocked
+        ? "productionDisabled"
+        : "previewFlagDisabled",
+    });
   }
 
-  const providers = configuredProviders(environment);
-  if (!providers.primary && !providers.secondary && !providers.tertiary) {
-    return safeResult(
-      {
-        imageEngineMode: "fallback",
-        providerCallAttempted: false,
-        providerCallSucceeded: false,
-        normalizedAssetCount: 0,
-        attributionPresent: false,
-        fallbackActive: true,
-        cacheMode,
-        lastSafeReasonCode: "providerNotConfigured",
-      },
-      environment,
-    );
+  if (
+    !environment.unsplashAccessKey &&
+    !environment.pexelsApiKey &&
+    !environment.pixabayApiKey
+  ) {
+    return Object.freeze({
+      imageEngineMode: "fallback",
+      providerCallAttempted: false,
+      providerCallSucceeded: false,
+      normalizedAssetCount: 0,
+      attributionPresent: false,
+      fallbackActive: true,
+      cacheMode,
+      providerScope: "none",
+      safeReasonCode: "providerNotConfigured",
+    });
   }
 
   try {
@@ -109,35 +96,33 @@ export async function verifyTravelImageRuntime(
       asset.attribution.providerName.trim().length > 0;
     const verified = !asset.isFallback && attributionPresent;
 
-    return safeResult(
-      {
-        imageEngineMode: verified ? "livePreview" : "fallback",
-        providerCallAttempted: true,
-        providerCallSucceeded: verified,
-        normalizedAssetCount: verified ? 1 : 0,
-        attributionPresent,
-        fallbackActive: !verified,
-        cacheMode,
-        lastSafeReasonCode: verified
-          ? "liveAssetVerified"
-          : "normalizedAssetUnavailable",
-      },
-      environment,
-    );
+    return Object.freeze({
+      imageEngineMode: verified
+        ? environment.productionEligible
+          ? "liveProduction"
+          : "livePreview"
+        : "fallback",
+      providerCallAttempted: true,
+      providerCallSucceeded: verified,
+      normalizedAssetCount: verified ? 1 : 0,
+      attributionPresent,
+      fallbackActive: !verified,
+      cacheMode,
+      providerScope: providerScope(environment),
+      safeReasonCode: verified ? "liveAssetVerified" : "normalizedAssetUnavailable",
+    });
   } catch {
-    return safeResult(
-      {
-        imageEngineMode: "fallback",
-        providerCallAttempted: true,
-        providerCallSucceeded: false,
-        normalizedAssetCount: 0,
-        attributionPresent: false,
-        fallbackActive: true,
-        cacheMode,
-        lastSafeReasonCode: "providerUnavailable",
-      },
-      environment,
-    );
+    return Object.freeze({
+      imageEngineMode: "fallback",
+      providerCallAttempted: true,
+      providerCallSucceeded: false,
+      normalizedAssetCount: 0,
+      attributionPresent: false,
+      fallbackActive: true,
+      cacheMode,
+      providerScope: providerScope(environment),
+      safeReasonCode: "providerUnavailable",
+    });
   }
 }
 

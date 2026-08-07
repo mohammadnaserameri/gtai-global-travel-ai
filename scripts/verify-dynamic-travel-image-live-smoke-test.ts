@@ -203,7 +203,7 @@ async function main(): Promise<void> {
   );
   check(
     /VERCEL_ENV === "preview"/.test(envSource),
-    "public engine remains Preview-only",
+    "Preview deployment gate remains explicit",
   );
   check(!/fetch\s*\(/.test(uiSource), "client has no provider fetch");
   check(

@@ -34,6 +34,7 @@
     "verify:dynamic-travel-image-preview-activation": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-preview-activation.js",
     "verify:dynamic-travel-image-runtime-verification": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-runtime-verification.js",
     "verify:dynamic-travel-image-live-smoke-test": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-live-smoke-test.js",
+    "verify:production-pexels-image-activation": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-production-pexels-image-activation.js",
     "test:travel-image-live-smoke": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/test-travel-image-live-smoke.js"
   },
   "dependencies": {

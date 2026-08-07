@@ -68,7 +68,7 @@ async function main(): Promise<void> {
     "Production exposes no live asset count",
   );
   check(
-    production.lastSafeReasonCode === "productionDisabled",
+    production.safeReasonCode === "productionDisabled",
     "Production safe reason",
   );
 
@@ -116,7 +116,7 @@ async function main(): Promise<void> {
   check(failed.providerCallAttempted, "failed attempt recorded");
   check(!failed.providerCallSucceeded, "failed provider is not success");
   check(
-    failed.lastSafeReasonCode === "providerUnavailable",
+    failed.safeReasonCode === "providerUnavailable",
     "failure uses safe reason",
   );
 

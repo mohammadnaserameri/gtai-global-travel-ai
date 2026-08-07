@@ -39,6 +39,7 @@
     "verify-dynamic-travel-image-preview-activation.ts",
     "verify-dynamic-travel-image-runtime-verification.ts",
     "verify-dynamic-travel-image-live-smoke-test.ts",
+    "verify-production-pexels-image-activation.ts",
     "test-travel-image-live-smoke.ts"
   ]
 }

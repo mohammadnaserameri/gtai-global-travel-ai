@@ -150,8 +150,8 @@ async function main(): Promise<void> {
   check(/ImageAttribution/.test(uiSource), "live attribution is rendered");
   check(/imageEngineMode/.test(routeSource), "safe image mode is exposed");
   check(
-    /providerNamesConfigured/.test(routeSource + statusSource),
-    "configuration uses safe booleans",
+    /providerScope/.test(routeSource + statusSource),
+    "provider scope is safe metadata",
   );
   check(
     /cacheMode/.test(routeSource + statusSource),
@@ -218,8 +218,8 @@ async function main(): Promise<void> {
     "attributionPresent",
     "fallbackActive",
     "cacheMode",
-    "providerNamesConfigured",
-    "lastSafeReasonCode",
+    "providerScope",
+    "safeReasonCode",
   ];
   for (const key of safeKeys)
     check(

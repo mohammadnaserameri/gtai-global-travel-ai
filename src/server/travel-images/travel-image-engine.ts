@@ -117,6 +117,11 @@ export class TravelImageEngine {
 export function createTravelImageProviders(
   environment = resolveTravelImageEnvironment(),
 ): readonly TravelImageProvider[] {
+  if (environment.productionDeployment) {
+    return environment.productionEligible && environment.pexelsApiKey
+      ? [new PexelsTravelImageProvider({ apiKey: environment.pexelsApiKey })]
+      : [];
+  }
   const providers: TravelImageProvider[] = [];
   if (environment.unsplashAccessKey) {
     providers.push(

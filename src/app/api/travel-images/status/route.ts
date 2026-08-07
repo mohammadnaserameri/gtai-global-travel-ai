@@ -27,12 +27,8 @@ export async function GET(): Promise<Response> {
         attributionPresent: false,
         fallbackActive: true,
         cacheMode: "durableUnavailable",
-        providerNamesConfigured: {
-          primary: false,
-          secondary: false,
-          tertiary: false,
-        },
-        lastSafeReasonCode: "providerUnavailable",
+        providerScope: "none",
+        safeReasonCode: "providerUnavailable",
       }),
       { status: 200, headers: SAFE_HEADERS },
     );
