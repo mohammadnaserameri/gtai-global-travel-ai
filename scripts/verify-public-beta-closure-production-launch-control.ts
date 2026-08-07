@@ -13,6 +13,7 @@ import {
   runtimeProviderRegistry,
 } from "../src/server/flights/providers/provider-registry";
 import { evaluateDuffelPreviewActivation } from "../src/server/flights/providers/duffel/duffel-preview-activation-gate";
+import { GET as getPublicStatusResponse } from "../src/app/api/status/route";
 
 let checks = 0;
 function check(value: unknown, message: string): void {
@@ -27,7 +28,9 @@ const launchSource = read(
   "src/server/flights/providers/production-launch-control.ts",
 );
 const statusSource = read("src/server/system/public-beta-status.ts");
-const routeSource = read("src/app/api/system/public-beta-status/route.ts");
+const systemRouteSource = read("src/app/api/system/public-beta-status/route.ts");
+const publicRouteSource = read("src/app/api/status/route.ts");
+const routeSource = `${systemRouteSource}\n${publicRouteSource}`;
 const registrySource = read("src/server/flights/providers/provider-registry.ts");
 const requestSource = read(
   "src/server/flights/flight-search-request-validation.ts",
@@ -211,6 +214,28 @@ check(
     JSON.stringify(status),
   ),
   "status exposes no internals",
+);
+const publicStatusResponse = getPublicStatusResponse();
+check(
+  publicStatusResponse.status === 200,
+  "public status endpoint returns HTTP 200",
+);
+check(
+  publicStatusResponse.headers.get("Content-Type") ===
+    "application/json; charset=utf-8",
+  "public status endpoint returns JSON",
+);
+check(
+  publicStatusResponse.headers.get("Cache-Control") === "no-store, max-age=0",
+  "public status endpoint is not cached",
+);
+check(
+  publicRouteSource.includes("JSON.stringify(getPublicBetaStatus())"),
+  "public status response uses only the safe status contract",
+);
+check(
+  publicRouteSource.includes("export function GET(): Response"),
+  "public /api/status route exists",
 );
 check(/status:\s*200/.test(routeSource), "status endpoint HTTP 200");
 check(
