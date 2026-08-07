@@ -40,6 +40,7 @@
     "verify-dynamic-travel-image-runtime-verification.ts",
     "verify-dynamic-travel-image-live-smoke-test.ts",
     "verify-production-pexels-image-activation.ts",
+    "verify-production-image-rotation-durable-cache.ts",
     "test-travel-image-live-smoke.ts"
   ]
 }

@@ -29,6 +29,18 @@ const FALLBACK_PATHS: Readonly<Record<TravelImageCategory, string>> = Object.fre
   },
 );
 
+const MAX_ROTATING_ASSETS = 6;
+const DAY_MS = 86_400_000;
+
+export interface TravelImageRotationSelection {
+  readonly asset: TravelImageAsset;
+  readonly rotationKey: string;
+  readonly selectedIndex: number | null;
+  readonly assetCount: number;
+  readonly rotatedAtSafeDate: string;
+  readonly cacheHit: boolean;
+}
+
 export function createFallbackTravelImage(
   request: TravelImageRequest,
 ): TravelImageAsset {
@@ -62,32 +74,96 @@ function cacheKey(request: TravelImageRequest): string {
   ].join(":");
 }
 
+function utcDayKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function stableHash(value: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+export function selectRotatedTravelImage(
+  assets: readonly TravelImageAsset[],
+  request: TravelImageRequest,
+  dayKey: string,
+  fallback: TravelImageAsset = createFallbackTravelImage(request),
+  cacheHit = false,
+): TravelImageRotationSelection {
+  if (assets.length === 0) {
+    return Object.freeze({
+      asset: fallback,
+      rotationKey: dayKey,
+      selectedIndex: null,
+      assetCount: 0,
+      rotatedAtSafeDate: dayKey,
+      cacheHit,
+    });
+  }
+  const parsedDay = Date.parse(`${dayKey}T00:00:00.000Z`);
+  const dayNumber = Number.isFinite(parsedDay) ? Math.floor(parsedDay / DAY_MS) : 0;
+  const selectedIndex = (stableHash(cacheKey(request)) + dayNumber) % assets.length;
+  return Object.freeze({
+    asset: assets[selectedIndex] ?? fallback,
+    rotationKey: dayKey,
+    selectedIndex,
+    assetCount: assets.length,
+    rotatedAtSafeDate: dayKey,
+    cacheHit,
+  });
+}
+
 export class TravelImageEngine {
   private readonly enabled: boolean;
   private readonly providers: readonly TravelImageProvider[];
   private readonly cache: TravelImageMetadataCache;
+  private readonly now: () => Date;
 
   constructor(options: {
     readonly enabled: boolean;
     readonly providers: readonly TravelImageProvider[];
     readonly cache?: TravelImageMetadataCache;
+    readonly now?: () => Date;
   }) {
     this.enabled = options.enabled;
     this.providers = options.providers;
     this.cache = options.cache ?? travelImageMetadataCache;
+    this.now = options.now ?? (() => new Date());
   }
 
   async resolve(
     request: TravelImageRequest,
     options: { readonly forceRefresh?: boolean } = {},
   ): Promise<TravelImageAsset> {
+    return (await this.resolveWithMetadata(request, options)).asset;
+  }
+
+  async resolveWithMetadata(
+    request: TravelImageRequest,
+    options: { readonly forceRefresh?: boolean } = {},
+  ): Promise<TravelImageRotationSelection> {
     const fallback = createFallbackTravelImage(request);
-    if (!this.enabled || this.providers.length === 0) return fallback;
+    const rotationKey = utcDayKey(this.now());
+    if (!this.enabled || this.providers.length === 0) {
+      return selectRotatedTravelImage([], request, rotationKey, fallback);
+    }
 
     const key = cacheKey(request);
     if (!options.forceRefresh) {
-      const cached = this.cache.get(key);
-      if (cached) return cached;
+      const cached = await this.cache.getMany(key);
+      if (cached?.length) {
+        return selectRotatedTravelImage(
+          cached,
+          request,
+          rotationKey,
+          fallback,
+          true,
+        );
+      }
     }
 
     const queries = generateTravelImageQueries(request);
@@ -101,9 +177,12 @@ export class TravelImageEngine {
     const candidates = settled.flatMap((result) =>
       result.status === "fulfilled" ? result.value : [],
     );
-    const selected = rankTravelImageAssets(candidates, request)[0] ?? fallback;
-    this.cache.set(key, selected);
-    return selected;
+    const ranked = rankTravelImageAssets(candidates, request).slice(
+      0,
+      MAX_ROTATING_ASSETS,
+    );
+    if (ranked.length > 0) await this.cache.setMany(key, ranked);
+    return selectRotatedTravelImage(ranked, request, rotationKey, fallback);
   }
 
   async resolveMany(
