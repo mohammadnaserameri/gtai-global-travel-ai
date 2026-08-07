@@ -252,7 +252,7 @@ async function main(): Promise<void> {
     /AbortSignal\.timeout\(3_000\)/.test(cacheSource),
     "durable timeout bounded",
   );
-  check(/slice\(0, 6\)/.test(cacheSource), "durable asset count bounded");
+  check(/maximumAssetsPerKey/.test(cacheSource), "durable asset count bounded");
   check(
     /MAX_ROTATING_ASSETS = 6/.test(engineSource),
     "rotation candidates bounded",

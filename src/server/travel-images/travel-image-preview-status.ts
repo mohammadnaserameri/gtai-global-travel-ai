@@ -13,6 +13,7 @@ import {
   getTravelImageCacheRuntimeStatus,
   type TravelImageCacheMode,
 } from "./travel-image-cache";
+import { resolveTravelImageRefreshBudget } from "./travel-image-refresh-budget";
 
 export type TravelImageEngineMode =
   "disabled" | "fallback" | "livePreview" | "liveProduction";
@@ -36,6 +37,8 @@ export interface TravelImageRuntimeVerification {
   readonly cacheMode: TravelImageCacheMode;
   readonly durableCacheConfigured: boolean;
   readonly durableCacheActive: boolean;
+  readonly refreshBudgetConfigured: boolean;
+  readonly maxAssetsPerKey: number;
   readonly rotationEnabled: boolean;
   readonly rotationKey: string;
   readonly assetCount: number;
@@ -64,12 +67,15 @@ export async function verifyTravelImageRuntime(
 ): Promise<TravelImageRuntimeVerification> {
   const environment = options.environment ?? resolveTravelImageEnvironment();
   const initialCache = getTravelImageCacheRuntimeStatus();
+  const refreshBudget = resolveTravelImageRefreshBudget();
   const rotationKey = options.rotationKey ?? new Date().toISOString().slice(0, 10);
   const cacheMode = options.cacheMode ?? initialCache.cacheMode;
   const cacheFields = {
     cacheMode,
     durableCacheConfigured: initialCache.durableCacheConfigured,
     durableCacheActive: initialCache.durableCacheActive,
+    refreshBudgetConfigured: refreshBudget.configured,
+    maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
   } as const;
 
   if (!environment.enabled) {
@@ -156,6 +162,8 @@ export async function verifyTravelImageRuntime(
       cacheMode: options.cacheMode ?? currentCache.cacheMode,
       durableCacheConfigured: currentCache.durableCacheConfigured,
       durableCacheActive: currentCache.durableCacheActive,
+      refreshBudgetConfigured: refreshBudget.configured,
+      maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
       rotationEnabled: true,
       rotationKey: selection.rotationKey,
       assetCount: selection.assetCount,

@@ -1,6 +1,7 @@
 import "../server-only";
 
 import type { TravelImageAsset } from "../../features/travel-images/travel-image-types";
+import { resolveTravelImageRefreshBudget } from "./travel-image-refresh-budget";
 
 interface CacheEntry {
   readonly assets: readonly TravelImageAsset[];
@@ -39,17 +40,22 @@ export class MemoryTravelImageMetadataCache implements TravelImageMetadataStore 
   private readonly entries = new Map<string, CacheEntry>();
   private readonly clock: () => number;
   private readonly maximumEntries: number;
+  private readonly maximumAssetsPerKey: number;
   private readonly defaultTtlMs: number;
 
   constructor(
     options: {
       readonly clock?: () => number;
       readonly maximumEntries?: number;
+      readonly maximumAssetsPerKey?: number;
       readonly defaultTtlMs?: number;
     } = {},
   ) {
     this.clock = options.clock ?? Date.now;
     this.maximumEntries = options.maximumEntries ?? 256;
+    this.maximumAssetsPerKey =
+      options.maximumAssetsPerKey ??
+      resolveTravelImageRefreshBudget().maxAssetsPerKey;
     this.defaultTtlMs = options.defaultTtlMs ?? 86_400_000;
   }
 
@@ -80,7 +86,7 @@ export class MemoryTravelImageMetadataCache implements TravelImageMetadataStore 
   ): void {
     this.entries.delete(key);
     this.entries.set(key, {
-      assets: Object.freeze([...assets]),
+      assets: Object.freeze(assets.slice(0, this.maximumAssetsPerKey)),
       expiresAt: this.clock() + Math.max(1, ttlMs),
     });
     while (this.entries.size > this.maximumEntries) {
@@ -194,8 +200,10 @@ function normalizedAsset(value: unknown): TravelImageAsset | null {
     !["pexels", "unsplash", "pixabay"].includes(String(provider)) ||
     typeof width !== "number" ||
     !Number.isFinite(width) ||
+    width <= 0 ||
     typeof height !== "number" ||
     !Number.isFinite(height) ||
+    height <= 0 ||
     typeof record.id !== "string" ||
     typeof record.alt !== "string" ||
     typeof record.query !== "string" ||
@@ -235,15 +243,20 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
   private readonly baseUrl: string;
   private readonly token: string;
   private readonly fetcher: typeof fetch;
+  private readonly maximumAssetsPerKey: number;
 
   constructor(options: {
     readonly baseUrl: string;
     readonly token: string;
     readonly fetcher?: typeof fetch;
+    readonly maximumAssetsPerKey?: number;
   }) {
     this.baseUrl = options.baseUrl;
     this.token = options.token;
     this.fetcher = options.fetcher ?? fetch;
+    this.maximumAssetsPerKey =
+      options.maximumAssetsPerKey ??
+      resolveTravelImageRefreshBudget().maxAssetsPerKey;
   }
 
   private endpoint(key: string): string {
@@ -281,12 +294,18 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
       payload === null ||
       !Array.isArray((payload as Record<string, unknown>).assets)
     ) {
-      return null;
+      throw new Error("durable cache unavailable");
     }
     const assets = (payload as { assets: unknown[] }).assets
       .map(normalizedAsset)
       .filter((asset): asset is TravelImageAsset => asset !== null)
-      .slice(0, 6);
+      .slice(0, this.maximumAssetsPerKey);
+    if (
+      (payload as { assets: unknown[] }).assets.length > 0 &&
+      assets.length === 0
+    ) {
+      throw new Error("durable cache unavailable");
+    }
     return assets.length > 0 ? Object.freeze(assets) : null;
   }
 
@@ -302,7 +321,7 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
     const safeAssets = assets
       .map(normalizedAsset)
       .filter((asset): asset is TravelImageAsset => asset !== null)
-      .slice(0, 6);
+      .slice(0, this.maximumAssetsPerKey);
     if (safeAssets.length === 0) return;
     const response = await this.fetcher(
       this.endpoint(key),
@@ -455,15 +474,22 @@ export function createTravelImageMetadataStore(
   options: { readonly fetcher?: typeof fetch } = {},
 ): ResilientTravelImageMetadataStore {
   const durableEnvironment = resolveDurableCacheEnvironment(environment);
+  const budget = resolveTravelImageRefreshBudget(environment);
   const durable =
     durableEnvironment.enabled && durableEnvironment.url && durableEnvironment.token
       ? new RestDurableTravelImageMetadataStore({
           baseUrl: durableEnvironment.url,
           token: durableEnvironment.token,
           fetcher: options.fetcher,
+          maximumAssetsPerKey: budget.maxAssetsPerKey,
         })
       : null;
-  return new ResilientTravelImageMetadataStore({ durable });
+  return new ResilientTravelImageMetadataStore({
+    durable,
+    memory: new MemoryTravelImageMetadataCache({
+      maximumAssetsPerKey: budget.maxAssetsPerKey,
+    }),
+  });
 }
 
 export const travelImageMetadataCache = createTravelImageMetadataStore();

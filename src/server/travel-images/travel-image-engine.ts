@@ -12,6 +12,7 @@ import {
 } from "./travel-image-cache";
 import { generateTravelImageQueries } from "./travel-image-query";
 import { rankTravelImageAssets } from "./travel-image-ranking";
+import { resolveTravelImageRefreshBudget } from "./travel-image-refresh-budget";
 import type { TravelImageProvider } from "./providers/travel-image-provider";
 import { UnsplashTravelImageProvider } from "./providers/unsplash-provider";
 import { PexelsTravelImageProvider } from "./providers/pexels-provider";
@@ -122,17 +123,27 @@ export class TravelImageEngine {
   private readonly providers: readonly TravelImageProvider[];
   private readonly cache: TravelImageMetadataCache;
   private readonly now: () => Date;
+  private readonly maxAssetsPerKey: number;
+  private readonly providerTimeoutMs: number;
 
   constructor(options: {
     readonly enabled: boolean;
     readonly providers: readonly TravelImageProvider[];
     readonly cache?: TravelImageMetadataCache;
     readonly now?: () => Date;
+    readonly maxAssetsPerKey?: number;
+    readonly providerTimeoutMs?: number;
   }) {
     this.enabled = options.enabled;
     this.providers = options.providers;
     this.cache = options.cache ?? travelImageMetadataCache;
     this.now = options.now ?? (() => new Date());
+    const budget = resolveTravelImageRefreshBudget();
+    this.maxAssetsPerKey = Math.min(
+      MAX_ROTATING_ASSETS,
+      options.maxAssetsPerKey ?? budget.maxAssetsPerKey,
+    );
+    this.providerTimeoutMs = options.providerTimeoutMs ?? budget.providerTimeoutMs;
   }
 
   async resolve(
@@ -171,6 +182,7 @@ export class TravelImageEngine {
       this.providers.map((provider, index) =>
         provider.search(queries[index % queries.length] ?? queries[0] ?? "travel", {
           forceRefresh: options.forceRefresh,
+          signal: AbortSignal.timeout(this.providerTimeoutMs),
         }),
       ),
     );
@@ -179,7 +191,7 @@ export class TravelImageEngine {
     );
     const ranked = rankTravelImageAssets(candidates, request).slice(
       0,
-      MAX_ROTATING_ASSETS,
+      this.maxAssetsPerKey,
     );
     if (ranked.length > 0) await this.cache.setMany(key, ranked);
     return selectRotatedTravelImage(ranked, request, rotationKey, fallback);

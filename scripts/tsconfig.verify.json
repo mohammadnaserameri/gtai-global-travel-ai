@@ -41,6 +41,7 @@
     "verify-dynamic-travel-image-live-smoke-test.ts",
     "verify-production-pexels-image-activation.ts",
     "verify-production-image-rotation-durable-cache.ts",
+    "verify-durable-travel-image-cache-refresh-budget.ts",
     "test-travel-image-live-smoke.ts"
   ]
 }

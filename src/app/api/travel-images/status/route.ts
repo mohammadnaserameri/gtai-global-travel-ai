@@ -29,6 +29,8 @@ export async function GET(): Promise<Response> {
         cacheMode: "durableUnavailable",
         durableCacheConfigured: false,
         durableCacheActive: false,
+        refreshBudgetConfigured: true,
+        maxAssetsPerKey: 6,
         rotationEnabled: true,
         rotationKey: new Date().toISOString().slice(0, 10),
         assetCount: 0,
