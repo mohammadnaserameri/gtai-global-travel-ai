@@ -117,6 +117,9 @@ interface DurableCacheEnvironment {
 
 type Environment = Readonly<Record<string, string | undefined>>;
 
+export const DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION = 1;
+export const MAX_DURABLE_TRAVEL_IMAGE_RESPONSE_BYTES = 128 * 1024;
+
 function safeValue(value: string | undefined): string | null {
   const normalized = value?.trim();
   return normalized ? normalized : null;
@@ -237,6 +240,41 @@ function normalizedAsset(value: unknown): TravelImageAsset | null {
   });
 }
 
+async function readBoundedDurableJson(response: Response): Promise<unknown> {
+  const declaredLength = Number(response.headers.get("content-length"));
+  if (
+    Number.isFinite(declaredLength) &&
+    declaredLength > MAX_DURABLE_TRAVEL_IMAGE_RESPONSE_BYTES
+  ) {
+    throw new Error("durable cache unavailable");
+  }
+  if (!response.body) throw new Error("durable cache unavailable");
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_DURABLE_TRAVEL_IMAGE_RESPONSE_BYTES) {
+      await reader.cancel();
+      throw new Error("durable cache unavailable");
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    throw new Error("durable cache unavailable");
+  }
+}
+
 export class RestDurableTravelImageMetadataStore implements TravelImageMetadataStore {
   readonly enabled = true;
   readonly mode = "durable" as const;
@@ -288,11 +326,15 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
     );
     if (response.status === 404) return null;
     if (!response.ok) throw new Error("durable cache unavailable");
-    const payload: unknown = await response.json();
+    const payload: unknown = await readBoundedDurableJson(response);
     if (
       typeof payload !== "object" ||
       payload === null ||
-      !Array.isArray((payload as Record<string, unknown>).assets)
+      Array.isArray(payload) ||
+      (payload as Record<string, unknown>).version !==
+        DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION ||
+      !Array.isArray((payload as Record<string, unknown>).assets) ||
+      Object.keys(payload).some((key) => !["version", "assets"].includes(key))
     ) {
       throw new Error("durable cache unavailable");
     }
@@ -328,7 +370,7 @@ export class RestDurableTravelImageMetadataStore implements TravelImageMetadataS
       this.requestInit(
         "PUT",
         JSON.stringify({
-          version: 1,
+          version: DURABLE_TRAVEL_IMAGE_CACHE_CONTRACT_VERSION,
           assets: safeAssets,
           expiresAt: new Date(Date.now() + Math.max(1, ttlMs)).toISOString(),
         }),

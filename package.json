@@ -37,6 +37,7 @@
     "verify:production-pexels-image-activation": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-production-pexels-image-activation.js",
     "verify:production-image-rotation-durable-cache": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-production-image-rotation-durable-cache.js",
     "verify:durable-travel-image-cache-refresh-budget": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-durable-travel-image-cache-refresh-budget.js",
+    "verify:durable-travel-image-cache-provider-adapter": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-durable-travel-image-cache-provider-adapter.js",
     "test:travel-image-live-smoke": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/test-travel-image-live-smoke.js"
   },
   "dependencies": {

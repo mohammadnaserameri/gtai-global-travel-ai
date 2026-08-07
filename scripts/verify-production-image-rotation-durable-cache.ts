@@ -166,7 +166,7 @@ async function main(): Promise<void> {
 
   const successfulFetcher: typeof fetch = async (_input, init) => {
     if (init?.method === "GET") {
-      return Response.json({ assets });
+      return Response.json({ version: 1, assets });
     }
     return new Response(null, { status: 204 });
   };

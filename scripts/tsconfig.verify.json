@@ -42,6 +42,7 @@
     "verify-production-pexels-image-activation.ts",
     "verify-production-image-rotation-durable-cache.ts",
     "verify-durable-travel-image-cache-refresh-budget.ts",
+    "verify-durable-travel-image-cache-provider-adapter.ts",
     "test-travel-image-live-smoke.ts"
   ]
 }
