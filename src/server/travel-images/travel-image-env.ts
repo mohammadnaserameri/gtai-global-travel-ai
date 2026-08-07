@@ -2,6 +2,8 @@ import "../server-only";
 
 export interface TravelImageEnvironment {
   readonly enabled: boolean;
+  readonly previewEligible: boolean;
+  readonly productionBlocked: boolean;
   readonly unsplashAccessKey: string | null;
   readonly pexelsApiKey: string | null;
   readonly pixabayApiKey: string | null;
@@ -18,8 +20,12 @@ function safeValue(value: string | undefined): string | null {
 export function resolveTravelImageEnvironment(
   environment: Environment = process.env,
 ): TravelImageEnvironment {
+  const requested = environment.TRAVEL_IMAGE_ENGINE_ENABLED === "true";
+  const previewEligible = environment.VERCEL_ENV === "preview";
   return Object.freeze({
-    enabled: environment.TRAVEL_IMAGE_ENGINE_ENABLED === "true",
+    enabled: requested && previewEligible,
+    previewEligible,
+    productionBlocked: environment.VERCEL_ENV === "production",
     unsplashAccessKey: safeValue(environment.UNSPLASH_ACCESS_KEY),
     pexelsApiKey: safeValue(environment.PEXELS_API_KEY),
     pixabayApiKey: safeValue(environment.PIXABAY_API_KEY),

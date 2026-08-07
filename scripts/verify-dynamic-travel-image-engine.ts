@@ -205,12 +205,20 @@ async function main(): Promise<void> {
   check(off.pixabayApiKey === null, "missing Pixabay key safe");
   const on = resolveTravelImageEnvironment({
     TRAVEL_IMAGE_ENGINE_ENABLED: "true",
+    VERCEL_ENV: "preview",
     UNSPLASH_ACCESS_KEY: "placeholder-unsplash",
     PEXELS_API_KEY: "placeholder-pexels",
     PIXABAY_API_KEY: "placeholder-pixabay",
     CRON_SECRET: "placeholder-cron",
   });
-  check(on.enabled, "exact true enables engine");
+  check(on.enabled, "exact true enables engine in Preview");
+  check(
+    !resolveTravelImageEnvironment({
+      TRAVEL_IMAGE_ENGINE_ENABLED: "true",
+      VERCEL_ENV: "production",
+    }).enabled,
+    "Production remains hard-blocked",
+  );
   check(
     !resolveTravelImageEnvironment({
       TRAVEL_IMAGE_ENGINE_ENABLED: "TRUE",

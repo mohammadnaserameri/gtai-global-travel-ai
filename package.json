@@ -30,7 +30,8 @@
     "verify:duffel-preview-manual-test-gate": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-preview-manual-test-gate.js",
     "verify:duffel-local-real-test-harness": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-duffel-local-real-test-harness.js",
     "test:duffel-local-real": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/run-duffel-local-real-test.js",
-    "verify:dynamic-travel-image-engine": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-engine.js"
+    "verify:dynamic-travel-image-engine": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-engine.js",
+    "verify:dynamic-travel-image-preview-activation": "tsc -p scripts/tsconfig.verify.json && node node_modules/.cache/gtai-verify/scripts/verify-dynamic-travel-image-preview-activation.js"
   },
   "dependencies": {
     "next": "16.2.12",
