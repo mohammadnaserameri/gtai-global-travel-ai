@@ -150,16 +150,16 @@ async function main(): Promise<void> {
   check(/ImageAttribution/.test(uiSource), "live attribution is rendered");
   check(/imageEngineMode/.test(routeSource), "safe image mode is exposed");
   check(
-    /providersConfigured/.test(routeSource + statusSource),
+    /providerNamesConfigured/.test(routeSource + statusSource),
     "configuration uses safe booleans",
   );
   check(
-    /cachedAssetCount/.test(routeSource + statusSource),
-    "cache count is bounded metadata",
+    /cacheMode/.test(routeSource + statusSource),
+    "cache mode is bounded metadata",
   );
   check(
-    /providerRequestsServerSideOnly/.test(routeSource + statusSource),
-    "server-only boundary is reported",
+    /providerCallAttempted/.test(routeSource + statusSource),
+    "server provider attempt is reported safely",
   );
   check(/catch \{/.test(routeSource), "diagnostic failure is safely collapsed");
   check(
@@ -212,11 +212,14 @@ async function main(): Promise<void> {
 
   const safeKeys = [
     "imageEngineMode",
-    "providersConfigured",
-    "cachedAssetCount",
+    "providerCallAttempted",
+    "providerCallSucceeded",
+    "normalizedAssetCount",
+    "attributionPresent",
     "fallbackActive",
-    "providerRequestsServerSideOnly",
-    "lastRefreshSafeStatus",
+    "cacheMode",
+    "providerNamesConfigured",
+    "lastSafeReasonCode",
   ];
   for (const key of safeKeys)
     check(

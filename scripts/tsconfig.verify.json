@@ -36,6 +36,7 @@
     "verify-public-beta-closure-production-launch-control.ts",
     "run-duffel-local-real-test.ts",
     "verify-dynamic-travel-image-engine.ts",
-    "verify-dynamic-travel-image-preview-activation.ts"
+    "verify-dynamic-travel-image-preview-activation.ts",
+    "verify-dynamic-travel-image-runtime-verification.ts"
   ]
 }

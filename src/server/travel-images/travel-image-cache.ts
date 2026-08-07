@@ -7,7 +7,7 @@ interface CacheEntry {
   readonly expiresAt: number;
 }
 
-export interface TravelImageMetadataCache {
+export interface TravelImageMetadataStore {
   get(key: string): TravelImageAsset | null;
   set(key: string, asset: TravelImageAsset, ttlMs?: number): void;
   delete(key: string): void;
@@ -15,7 +15,13 @@ export interface TravelImageMetadataCache {
   size(): number;
 }
 
-export class MemoryTravelImageMetadataCache implements TravelImageMetadataCache {
+export type TravelImageCacheMode =
+  "memory" | "nextFetchCache" | "durableUnavailable";
+
+/** Compatibility name retained for the V2.10-A engine constructor. */
+export type TravelImageMetadataCache = TravelImageMetadataStore;
+
+export class MemoryTravelImageMetadataCache implements TravelImageMetadataStore {
   private readonly entries = new Map<string, CacheEntry>();
   private readonly clock: () => number;
   private readonly maximumEntries: number;
@@ -71,4 +77,37 @@ export class MemoryTravelImageMetadataCache implements TravelImageMetadataCache 
   }
 }
 
+/**
+ * Deliberately inactive readiness adapter. A future durable implementation can
+ * satisfy the same metadata-store contract without changing the image engine.
+ * Until a service is explicitly approved, every operation is a safe no-op.
+ */
+export class DurableTravelImageMetadataStoreUnavailable implements TravelImageMetadataStore {
+  readonly enabled = false;
+  readonly mode = "durableUnavailable" as const;
+
+  get(key: string): TravelImageAsset | null {
+    void key;
+    return null;
+  }
+
+  set(key: string, asset: TravelImageAsset, ttlMs?: number): void {
+    void key;
+    void asset;
+    void ttlMs;
+  }
+
+  delete(key: string): void {
+    void key;
+  }
+
+  clear(): void {}
+
+  size(): number {
+    return 0;
+  }
+}
+
 export const travelImageMetadataCache = new MemoryTravelImageMetadataCache();
+export const durableTravelImageMetadataStore =
+  new DurableTravelImageMetadataStoreUnavailable();
