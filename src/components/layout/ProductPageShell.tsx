@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Direction } from "@/config/locales";
+import type { TravelImageAsset } from "@/features/travel-images/travel-image-types";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import type { InitialFlightSearch } from "@/features/flights/search-intent-types";
 import { Container } from "@/components/layout/Container";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SearchShell } from "@/components/search/SearchShell";
+import { ProductImage } from "@/components/travel-images/ProductImage";
 
 type ProductId = "flights" | "stays" | "cars" | "packages";
 
@@ -19,7 +21,6 @@ interface PlannedItem {
 
 interface ProductPageShellProps {
   dictionary: Dictionary;
-  /** The `pages.<key>` slice for this route. */
   page: {
     eyebrow: string;
     title: string;
@@ -30,31 +31,21 @@ interface ProductPageShellProps {
   };
   dir: Direction;
   locale: string;
-  /** Renders the search shell with this product tab preselected. */
+  image?: TravelImageAsset;
   searchProduct?: ProductId;
-  /** Seeds the Flight Search form from a safe, pre-validated Edit-search return trip. */
   initialFlightSearch?: InitialFlightSearch;
-  /** Icon shown in the empty state. */
   icon?: ReactNode;
-  /** Icons paired with the "planned" cards, cycled if shorter than the list. */
   plannedIcons?: readonly ReactNode[];
-  /** Extra content rendered between the planned grid and the empty state. */
   children?: ReactNode;
 }
 
-/**
- * Shared frame for every placeholder product page.
- *
- * All six pages are intentionally the same shape: a titled band, the search
- * surface where it applies, what the page will eventually do, and an honest
- * empty state. Building them from one component is what keeps the placeholders
- * looking designed rather than unfinished.
- */
+/** Shared, honest frame for every current and planned travel product page. */
 export function ProductPageShell({
   dictionary,
   page,
   dir,
   locale,
+  image,
   searchProduct,
   initialFlightSearch,
   icon,
@@ -75,6 +66,9 @@ export function ProductPageShell({
             description={page.description}
             aside={<Badge tone="neutral">{common.notConnectedBadge}</Badge>}
           />
+          {image ? (
+            <ProductImage asset={image} alt={page.title} className="mt-8" />
+          ) : null}
         </Container>
 
         {searchProduct ? (

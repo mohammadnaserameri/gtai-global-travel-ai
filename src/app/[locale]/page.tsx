@@ -13,6 +13,10 @@ import { WhyGtai } from "@/components/home/WhyGtai";
 import { TrustSection } from "@/components/home/TrustSection";
 import { AffiliateDisclosure } from "@/components/ui/AffiliateDisclosure";
 import { DemonstrationDataNotice } from "@/components/ui/DemonstrationDataNotice";
+import {
+  resolveTravelImage,
+  resolveTravelImages,
+} from "@/server/travel-images/travel-image-engine";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -40,13 +44,34 @@ export default async function HomePage({ params }: PageProps) {
   const contentLocale = resolveContentLocale(locale);
   const dictionary = await getDictionary(contentLocale);
   const dir = getDirection(contentLocale);
+  const destinationTargets = [
+    ["Toronto", "Canada"],
+    ["Vancouver", "Canada"],
+    ["London", "United Kingdom"],
+    ["Paris", "France"],
+    ["Dubai", "United Arab Emirates"],
+    ["Tokyo", "Japan"],
+    ["Istanbul", "Turkey"],
+    ["Barcelona", "Spain"],
+  ] as const;
+  const [heroImage, exploreImage, destinationImages] = await Promise.all([
+    resolveTravelImage({ category: "hero", destination: "Global" }),
+    resolveTravelImage({ category: "explore", destination: "Global" }),
+    resolveTravelImages(
+      destinationTargets.map(([destination, country]) => ({
+        category: "destination" as const,
+        destination,
+        country,
+      })),
+    ),
+  ]);
 
   return (
     <>
       {/* Order is deliberate: search first, then one line of reassurance, then
           the AI differentiator, then discovery, then the supporting sections.
           A traveller reaches the search controls without scrolling. */}
-      <Hero dictionary={dictionary} dir={dir} locale={locale} />
+      <Hero dictionary={dictionary} dir={dir} locale={locale} image={heroImage} />
 
       {/* Directly under the search surface, before any reassurance copy. A
           visitor who is about to run a search should know what the results
@@ -78,8 +103,12 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       <GuidedAiPanel locale={locale} dictionary={dictionary} />
-      <PopularDestinations dictionary={dictionary} />
-      <ExploreSection locale={locale} dictionary={dictionary} />
+      <PopularDestinations dictionary={dictionary} images={destinationImages} />
+      <ExploreSection
+        locale={locale}
+        dictionary={dictionary}
+        image={exploreImage}
+      />
       <WhyGtai dictionary={dictionary} />
       <TrustSection dictionary={dictionary} />
 

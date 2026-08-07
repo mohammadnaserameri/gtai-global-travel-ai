@@ -10,6 +10,7 @@ import {
 } from "@/features/flights/search-intent-url";
 import { parseInitialFlightSearch } from "@/features/flights/search-intent-validation";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CalendarIcon,
   FlightIcon,
@@ -37,6 +38,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FlightsPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
   const dictionary = await getDictionary(resolveContentLocale(locale));
+  const image = await resolveTravelImage({
+    category: "flights",
+    destination: "Global",
+  });
   const rawParams = rawSearchIntentParamsFromRecord(await searchParams);
   const initialFlightSearch = parseInitialFlightSearch(rawParams);
 
@@ -46,6 +51,7 @@ export default async function FlightsPage({ params, searchParams }: PageProps) {
       page={dictionary.pages.flights}
       dir={getDirection(resolveContentLocale(locale))}
       locale={locale}
+      image={image}
       searchProduct="flights"
       initialFlightSearch={initialFlightSearch}
       icon={<FlightIcon size={22} />}

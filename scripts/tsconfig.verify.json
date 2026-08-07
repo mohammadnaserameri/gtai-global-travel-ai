@@ -34,6 +34,7 @@
     "verify-duffel-preview-details-stability.ts",
     "verify-duffel-preview-live-ux-production-readiness.ts",
     "verify-public-beta-closure-production-launch-control.ts",
-    "run-duffel-local-real-test.ts"
+    "run-duffel-local-real-test.ts",
+    "verify-dynamic-travel-image-engine.ts"
   ]
 }

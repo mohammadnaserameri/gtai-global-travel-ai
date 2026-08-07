@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CoinsIcon,
   LayersIcon,
@@ -34,6 +35,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PackagesPage({ params }: PageProps) {
   const { locale } = await params;
   const dictionary = await getDictionary(resolveContentLocale(locale));
+  const image = await resolveTravelImage({
+    category: "packages",
+    destination: "Global",
+  });
 
   return (
     <ProductPageShell
@@ -41,6 +46,7 @@ export default async function PackagesPage({ params }: PageProps) {
       page={dictionary.pages.packages}
       dir={getDirection(resolveContentLocale(locale))}
       locale={locale}
+      image={image}
       searchProduct="packages"
       icon={<PackageIcon size={22} />}
       plannedIcons={[

@@ -1,21 +1,22 @@
-/**
- * Ambient hero decoration.
- *
- * Deliberately background-level: it sits behind the content on a negative
- * z-index, is `pointer-events: none`, carries no text and is hidden from
- * assistive technology. The route artwork only renders from `lg` up, so small
- * screens pay nothing for it and the search surface stays the focal point.
- */
-export function HeroBackdrop() {
+import type { TravelImageAsset } from "@/features/travel-images/travel-image-types";
+import { TravelHeroImage } from "@/components/travel-images/TravelHeroImage";
+
+interface HeroBackdropProps {
+  image: TravelImageAsset;
+}
+
+/** Responsive travel photography with the existing lightweight route motif. */
+export function HeroBackdrop({ image }: HeroBackdropProps) {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-      <div className="gtai-aurora" />
+    <div className="absolute inset-0 z-0 overflow-hidden">
+      <TravelHeroImage asset={image} />
 
       <svg
+        aria-hidden="true"
         viewBox="0 0 520 380"
         fill="none"
         preserveAspectRatio="xMaxYMid slice"
-        className="absolute inset-y-0 end-0 hidden w-1/2 max-w-2xl opacity-[0.18] lg:block"
+        className="pointer-events-none absolute inset-y-0 end-0 hidden w-1/2 max-w-2xl opacity-[0.18] lg:block"
       >
         <defs>
           <linearGradient id="gtai-hero-route" x1="0" y1="1" x2="1" y2="0">
@@ -24,8 +25,6 @@ export function HeroBackdrop() {
             <stop offset="100%" stopColor="var(--accent-600)" />
           </linearGradient>
         </defs>
-
-        {/* Meridian arcs, read as a globe edge without drawing a literal globe */}
         <circle
           cx="392"
           cy="150"
@@ -46,8 +45,6 @@ export function HeroBackdrop() {
           stroke="var(--brand-500)"
           strokeWidth="1.2"
         />
-
-        {/* Travel path across the field */}
         <path
           d="M40 316C150 250 268 176 470 92"
           stroke="url(#gtai-hero-route)"

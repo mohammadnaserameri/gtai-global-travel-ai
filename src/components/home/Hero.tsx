@@ -1,4 +1,5 @@
 import type { Direction } from "@/config/locales";
+import type { TravelImageAsset } from "@/features/travel-images/travel-image-types";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { Container } from "@/components/layout/Container";
 import { SearchShell } from "@/components/search/SearchShell";
@@ -8,27 +9,18 @@ interface HeroProps {
   dictionary: Dictionary;
   dir: Direction;
   locale: string;
+  image: TravelImageAsset;
 }
 
-/**
- * Above-the-fold band: a short introduction followed immediately by the search
- * surface.
- *
- * The introduction is deliberately two elements — one headline and one
- * sentence. Everything that used to live here (eyebrow badges, three benefit
- * cards, a large route illustration and a release notice) either moved further
- * down the page or was cut, because a traveller landing on GTAI should reach
- * the search controls without scrolling. The whole band fits inside 900px of
- * viewport height at desktop widths.
- */
-export function Hero({ dictionary, dir, locale }: HeroProps) {
+/** Above-the-fold introduction and search surface. */
+export function Hero({ dictionary, dir, locale, image }: HeroProps) {
   const { hero, searchTabs, search } = dictionary;
 
   return (
-    <section className="border-border/70 from-brand-25 via-background to-background relative isolate border-b bg-linear-to-b">
-      <HeroBackdrop />
+    <section className="border-border/70 bg-background relative isolate overflow-hidden border-b">
+      <HeroBackdrop image={image} />
 
-      <Container className="relative pt-8 pb-10 sm:pt-10 lg:pt-12 lg:pb-14">
+      <Container className="relative z-10 pt-8 pb-10 sm:pt-10 lg:pt-12 lg:pb-14">
         <div className="max-w-2xl">
           <h1 className="text-foreground text-3xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
             {hero.title}

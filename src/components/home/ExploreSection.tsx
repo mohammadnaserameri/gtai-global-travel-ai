@@ -1,3 +1,4 @@
+import type { TravelImageAsset } from "@/features/travel-images/travel-image-types";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { localePath } from "@/i18n/routing";
 import { Container } from "@/components/layout/Container";
@@ -5,6 +6,7 @@ import { SectionHeading } from "@/components/layout/SectionHeading";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ProductImage } from "@/components/travel-images/ProductImage";
 import {
   ArrowRightIcon,
   CoinsIcon,
@@ -16,6 +18,7 @@ import {
 interface ExploreSectionProps {
   locale: string;
   dictionary: Dictionary;
+  image: TravelImageAsset;
 }
 
 const icons = [
@@ -25,7 +28,7 @@ const icons = [
   <RouteIcon key="reach" size={20} />,
 ];
 
-export function ExploreSection({ locale, dictionary }: ExploreSectionProps) {
+export function ExploreSection({ locale, dictionary, image }: ExploreSectionProps) {
   const { exploreSection, common } = dictionary;
 
   return (
@@ -41,6 +44,8 @@ export function ExploreSection({ locale, dictionary }: ExploreSectionProps) {
           description={exploreSection.description}
           aside={<Badge tone="future">{common.futureBadge}</Badge>}
         />
+
+        <ProductImage asset={image} alt={exploreSection.title} className="mt-8" />
 
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {exploreSection.items.map((item, index) => (
