@@ -40,6 +40,10 @@ export interface TravelImageRuntimeVerification {
   readonly durableCacheActive: boolean;
   readonly durableReadSucceeded: boolean;
   readonly durableWriteSucceeded: boolean;
+  readonly durableWriteVerified: boolean;
+  readonly durableReadAfterWriteSucceeded: boolean;
+  readonly durableLastWriteSafeReasonCode:
+    "durableWritePersisted" | "durableWriteNotVerified";
   readonly refreshBudgetConfigured: boolean;
   readonly maxAssetsPerKey: number;
   readonly rotationEnabled: boolean;
@@ -80,6 +84,9 @@ export async function verifyTravelImageRuntime(
     durableCacheActive: initialCache.durableCacheActive,
     durableReadSucceeded: initialCache.durableReadSucceeded,
     durableWriteSucceeded: initialCache.durableWriteSucceeded,
+    durableWriteVerified: false,
+    durableReadAfterWriteSucceeded: false,
+    durableLastWriteSafeReasonCode: "durableWriteNotVerified" as const,
     refreshBudgetConfigured: refreshBudget.configured,
     maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
   } as const;
@@ -154,6 +161,11 @@ export async function verifyTravelImageRuntime(
     const verified = !asset.isFallback && attributionPresent;
 
     const currentCache = getTravelImageCacheRuntimeStatus();
+    const persistedDurableAsset =
+      verified &&
+      selection.cacheHit &&
+      currentCache.durableCacheActive &&
+      currentCache.durableReadSucceeded;
     return Object.freeze({
       imageEngineMode: verified
         ? environment.productionEligible
@@ -170,7 +182,13 @@ export async function verifyTravelImageRuntime(
       durableCacheConfigured: currentCache.durableCacheConfigured,
       durableCacheActive: currentCache.durableCacheActive,
       durableReadSucceeded: currentCache.durableReadSucceeded,
-      durableWriteSucceeded: currentCache.durableWriteSucceeded,
+      durableWriteSucceeded:
+        currentCache.durableWriteSucceeded || persistedDurableAsset,
+      durableWriteVerified: persistedDurableAsset,
+      durableReadAfterWriteSucceeded: persistedDurableAsset,
+      durableLastWriteSafeReasonCode: persistedDurableAsset
+        ? "durableWritePersisted"
+        : "durableWriteNotVerified",
       refreshBudgetConfigured: refreshBudget.configured,
       maxAssetsPerKey: refreshBudget.maxAssetsPerKey,
       rotationEnabled: true,

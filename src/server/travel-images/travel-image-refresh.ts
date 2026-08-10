@@ -48,6 +48,11 @@ export interface TravelImageRefreshResult {
   readonly maxAssetsPerKey: number;
   readonly cacheMode:
     "memory" | "durable" | "durableUnavailable" | "nextFetchCache";
+  readonly durableWriteVerified: boolean;
+  readonly durableWriteSucceeded: boolean;
+  readonly durableReadAfterWriteSucceeded: boolean;
+  readonly durableLastWriteSafeReasonCode:
+    "durableWritePersisted" | "durableWriteNotVerified";
 }
 
 function utcDayNumber(dayKey: string): number {
@@ -107,6 +112,19 @@ export async function refreshDailyTravelImages(): Promise<TravelImageRefreshResu
     }
   }
 
+  const verificationTarget = targets[0];
+  const readAfterWrite = verificationTarget
+    ? await engine.resolveWithMetadata(verificationTarget)
+    : null;
+  const cacheStatus = getTravelImageCacheRuntimeStatus();
+  const durableWriteVerified =
+    readAfterWrite !== null &&
+    !readAfterWrite.asset.isFallback &&
+    readAfterWrite.cacheHit &&
+    cacheStatus.durableCacheActive &&
+    cacheStatus.durableReadSucceeded &&
+    cacheStatus.durableWriteSucceeded;
+
   return {
     ok: true,
     targetCount: targets.length,
@@ -116,6 +134,12 @@ export async function refreshDailyTravelImages(): Promise<TravelImageRefreshResu
     providerCallBudget: budget.maxProviderRequests,
     refreshBudgetConfigured: true,
     maxAssetsPerKey: budget.maxAssetsPerKey,
-    cacheMode: getTravelImageCacheRuntimeStatus().cacheMode,
+    cacheMode: cacheStatus.cacheMode,
+    durableWriteVerified,
+    durableWriteSucceeded: cacheStatus.durableWriteSucceeded,
+    durableReadAfterWriteSucceeded: durableWriteVerified,
+    durableLastWriteSafeReasonCode: durableWriteVerified
+      ? "durableWritePersisted"
+      : "durableWriteNotVerified",
   };
 }
