@@ -1069,6 +1069,31 @@ async function main(): Promise<void> {
     ytoLhrRun.offers.every((o) => o.itineraries[1].departure.date === ytoLhrReturn),
   );
 
+  // --- R1e. Production regression: Toronto -> Montreal, next-day return --------------------
+  const ytoYmqIntent = buildSearchIntent({
+    tripType: "roundTrip",
+    origin: yto,
+    destination: ymq,
+    departureDate: addDays(today, 1),
+    returnDate: addDays(today, 2),
+    travelers: DEFAULT_TRAVELERS,
+    cabinClass: "economy",
+    flexibilityDays: 0,
+    currency: "CAD",
+    locale,
+  });
+  if (!ytoYmqIntent) throw new Error("Fixture YTO -> YMQ intent failed to build.");
+  const ytoYmqRun = await repo.search(ytoYmqIntent);
+  check(
+    "R1e. Toronto to Montreal next-day return generates exactly 12 demo offers",
+    ytoYmqRun.offers.length,
+    12,
+  );
+  ok(
+    "R1f. Toronto to Montreal results remain demonstration offers",
+    ytoYmqRun.offers.every((offer) => offer.isDemonstration),
+  );
+
   // --- R2. Targeted route sweep: 1/2/5-day gaps, eastbound/westbound, a date-line-scale ------
   //         offset (YVR <-> NRT, ~16-17h apart), and stop-count diversity (direct/1-stop/2-stop).
   const targetedRoutePairs: readonly [typeof ymq, typeof ymq][] = [

@@ -290,6 +290,31 @@ async function main(): Promise<void> {
   );
   check(/Check live options on Trip\.com/.test(uiSource), "truthful CTA wording");
   check(
+    uiSource.indexOf("tripComOutboundUrl ?") <
+      uiSource.indexOf('offerState.status === "error" ?'),
+    "Trip.com CTA renders independently before demo failure state",
+  );
+  check(
+    /role="status"/.test(uiSource) &&
+      /Demonstration results are temporarily unavailable/.test(uiSource) &&
+      /still check live options with our travel partner/.test(uiSource),
+    "demo failure is a non-fatal partner fallback",
+  );
+  check(
+    !/No booking or partner redirect is available yet/.test(uiSource),
+    "outdated no-redirect copy removed",
+  );
+  check(
+    /Demonstration fares shown on GTAI are locally generated, not live prices/.test(
+      uiSource,
+    ),
+    "updated affiliate disclosure distinguishes demo fares",
+  );
+  check(
+    !/Trip\.com (?:fare|price)s? shown on GTAI/i.test(uiSource),
+    "demo fares are not attributed to Trip.com",
+  );
+  check(
     /intent\.tripType !== "roundTrip"/.test(uiSource) &&
       /intent\.cabinClass !== "economy"/.test(uiSource),
     "CTA unavailable for unvalidated trip type and cabin",

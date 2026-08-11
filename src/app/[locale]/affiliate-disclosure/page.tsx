@@ -25,12 +25,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 /**
  * Affiliate Disclosure.
  *
- * Split into "Today" and "Planned" rather than written as one continuous
- * statement, because the honest answer to "does GTAI earn a commission?" has
- * two halves that are easy to blur together: no commission is earned from
- * anything on this site now, and the intention is that one day some will be.
- * A single paragraph covering both invariably reads as the more flattering of
- * the two.
+ * Split into "Today" and "Planned" so active affiliate links, demonstration
+ * inventory, and future partner expansion remain visibly distinct.
  */
 export default async function AffiliateDisclosurePage({ params }: PageProps) {
   const { locale } = await params;

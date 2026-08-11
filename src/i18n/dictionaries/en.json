@@ -63,7 +63,7 @@
     },
     "affiliateDisclosure": {
       "title": "Affiliate Disclosure — GTAI",
-      "description": "How GTAI intends to make money, and why no affiliate or booking link is active in this demonstration release."
+      "description": "How GTAI uses external affiliate links while keeping demonstration fares separate from live partner searches."
     }
   },
   "common": {
@@ -408,7 +408,7 @@
       },
       {
         "title": "Transparent affiliate model",
-        "description": "Where GTAI would earn a commission will be labelled on the page it appears. No commission is earned today.",
+        "description": "Commission-eligible partner links are labelled where they appear and remain separate from demonstration results.",
         "status": "planned"
       },
       {
@@ -447,7 +447,7 @@
       },
       {
         "title": "Visible affiliate relationships",
-        "description": "If commission-earning links are introduced, they will be labelled where they appear rather than buried in a policy page. None exist today."
+        "description": "Commission-eligible links are labelled where they appear rather than buried in a policy page."
       },
       {
         "title": "Privacy-conscious personalization",
@@ -461,16 +461,16 @@
   },
   "affiliate": {
     "label": "Affiliate disclosure",
-    "short": "GTAI is a travel comparison service. It does not currently provide booking links, and no commission is earned from the demonstration results shown today.",
-    "title": "Planned affiliate model — how GTAI may earn revenue later",
+    "short": "GTAI is a travel comparison service. Demonstration fares are not live or bookable. For supported searches, GTAI may link to partners such as Trip.com and may earn an eligible commission.",
+    "title": "Affiliate links and demonstration fares",
     "points": [
-      "GTAI is being built to compare travel offers published by third-party travel providers.",
-      "In this version no offer redirects anywhere: results are demonstration data.",
-      "If approved integrations are activated later, the partner — not GTAI — would complete the booking and take the payment.",
-      "GTAI may then receive a commission when a booking is completed.",
+      "Demonstration fares shown on GTAI are locally generated and are not live bookable prices.",
+      "For supported searches, GTAI may provide external affiliate links to approved partners such as Trip.com.",
+      "The partner — not GTAI — completes the booking and takes payment.",
+      "GTAI may receive an eligible commission when a traveller completes a transaction with the partner.",
       "Always recheck the price, dates and conditions on the partner site before you pay."
     ],
-    "notice": "GTAI is not showing live offers or prices yet, so no partner links appear on this site today."
+    "notice": "A partner link is a separate external live search. It does not make GTAI's demonstration fares partner inventory."
   },
   "pages": {
     "flights": {
@@ -872,7 +872,7 @@
         "GTAI is not connected to live flight inventory in this version.",
         "Airlines and booking providers shown here are fictional demonstration identities.",
         "Offers are generated locally for interface and workflow testing.",
-        "No booking or partner redirect is available yet."
+        "Demonstration fares cannot be booked on GTAI. For supported searches, you can check current options on Trip.com."
       ]
     },
     "livePreview": {
@@ -905,7 +905,8 @@
       "changeDestination": "Choose another destination"
     },
     "error": {
-      "title": "We could not complete this flight search safely. Retry in a moment.",
+      "title": "Demonstration results are temporarily unavailable.",
+      "description": "You can still check live options with our travel partner.",
       "retry": "Retry"
     },
     "invalid": {
@@ -1190,7 +1191,7 @@
     "points": [
       "Airlines and booking providers shown in results are invented for demonstration purposes.",
       "No live travel provider is connected in this version.",
-      "No booking, payment or partner redirection takes place on GTAI."
+      "GTAI does not complete booking or payment; supported searches may open a separate partner site."
     ]
   },
   "partnerStatus": {
@@ -1366,16 +1367,16 @@
     },
     "affiliateDisclosure": {
       "title": "Affiliate Disclosure",
-      "intro": "This page explains how GTAI intends to make money, and what is and is not happening today.",
+      "intro": "GTAI is a travel comparison service. Demonstration fares are not live bookable prices, while supported searches may offer separate external affiliate links.",
       "currentHeading": "Today",
       "current": [
-        "GTAI does not provide live affiliate or booking links in this demonstration release.",
-        "The airlines, booking providers and prices shown in results are fictional, so no booking can result from them.",
-        "No commission is earned from anything on this website today."
+        "Demonstration fares shown on GTAI are locally generated, not live prices, and cannot be booked directly on GTAI.",
+        "For supported searches, GTAI may provide external affiliate links to partners such as Trip.com.",
+        "Booking and payment are completed on the partner site, and GTAI may earn an eligible commission."
       ],
       "futureHeading": "Planned",
       "future": [
-        "GTAI may later work with approved affiliate or referral partners.",
+        "GTAI may add more approved affiliate or referral partners.",
         "GTAI may receive compensation when a traveller follows an approved link and completes a transaction with a third party.",
         "Any booking and payment would take place with that third party, not with GTAI.",
         "Compensation must never change the factual price a provider supplies.",

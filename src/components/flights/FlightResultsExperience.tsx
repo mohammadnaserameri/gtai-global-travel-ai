@@ -486,8 +486,8 @@ export function FlightResultsExperience({
 
       {offerState.status === "error" ? (
         <div
-          role="alert"
-          className="border-danger/25 bg-danger-subtle rounded-2xl border p-6 text-center"
+          role="status"
+          className="border-border bg-surface-subtle rounded-2xl border p-6 text-center"
         >
           <h1
             ref={errorHeadingRef}
@@ -496,6 +496,9 @@ export function FlightResultsExperience({
           >
             {labels.error.title}
           </h1>
+          <p className="text-foreground-muted mt-2 text-sm">
+            {labels.error.description}
+          </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Button
               variant="primary"

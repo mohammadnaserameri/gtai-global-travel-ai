@@ -444,16 +444,16 @@
   },
   "affiliate": {
     "label": "Divulgation d'affiliation",
-    "short": "GTAI est un service de comparaison de voyage. Il ne fournit actuellement aucun lien de réservation, et aucune commission n'est perçue sur les résultats de démonstration affichés aujourd'hui.",
-    "title": "Modèle d'affiliation prévu — comment GTAI pourrait générer des revenus",
+    "short": "GTAI est un service de comparaison de voyage. Les tarifs de démonstration ne sont ni réels ni réservables. Pour les recherches compatibles, GTAI peut proposer des liens partenaires et recevoir une commission admissible.",
+    "title": "Liens d'affiliation et tarifs de démonstration",
     "points": [
-      "GTAI est conçu pour comparer des offres de voyage publiées par des fournisseurs tiers.",
-      "Dans cette version, aucune offre ne redirige nulle part : les résultats sont des données de démonstration.",
-      "Si des intégrations approuvées sont activées plus tard, c'est le partenaire — et non GTAI — qui effectuerait la réservation et encaisserait le paiement.",
-      "GTAI pourrait alors recevoir une commission lorsqu'une réservation est finalisée.",
+      "Les tarifs de démonstration sont générés localement et ne sont pas des prix réels réservables.",
+      "Pour les recherches compatibles, GTAI peut proposer des liens d'affiliation externes vers des partenaires comme Trip.com.",
+      "Le partenaire — et non GTAI — effectue la réservation et encaisse le paiement.",
+      "GTAI peut recevoir une commission admissible lorsqu'un voyageur finalise une transaction chez le partenaire.",
       "Vérifiez toujours le prix, les dates et les conditions sur le site du partenaire avant de payer."
     ],
-    "notice": "GTAI n'affiche pas encore d'offres ou de prix réels ; aucun lien partenaire n'apparaît donc sur ce site aujourd'hui."
+    "notice": "Un lien partenaire ouvre une recherche externe distincte et ne transforme pas les tarifs de démonstration de GTAI en inventaire partenaire."
   },
   "footer": {
     "tagline": "Une plateforme multilingue de comparaison de voyage en cours de construction au Canada pour les voyageurs du monde entier.",
@@ -602,7 +602,7 @@
         "GTAI n'est pas connecté à un inventaire de vols en direct dans cette version.",
         "Les compagnies aériennes et les fournisseurs de réservation affichés ici sont des identités de démonstration fictives.",
         "Les offres sont générées localement pour tester l'interface et le parcours.",
-        "Aucune réservation ni redirection partenaire n'est encore disponible."
+        "Les tarifs de démonstration ne sont pas réservables sur GTAI. Pour les recherches compatibles, consultez les options actuelles sur Trip.com."
       ]
     },
     "resultCount": {
@@ -627,7 +627,8 @@
       "changeDestination": "Choisir une autre destination"
     },
     "error": {
-      "title": "Nous n'avons pas pu préparer les résultats de démonstration.",
+      "title": "Les résultats de démonstration sont temporairement indisponibles.",
+      "description": "Vous pouvez toujours consulter les options actuelles auprès de notre partenaire de voyage.",
       "retry": "Réessayer"
     },
     "invalid": {
@@ -1064,16 +1065,16 @@
     },
     "affiliateDisclosure": {
       "title": "Divulgation d'affiliation",
-      "intro": "Cette page explique comment GTAI entend générer des revenus, et ce qui se passe — ou non — aujourd'hui.",
+      "intro": "GTAI est un service de comparaison. Les tarifs de démonstration ne sont pas réservables, tandis que certaines recherches peuvent proposer des liens d'affiliation externes distincts.",
       "currentHeading": "Aujourd'hui",
       "current": [
-        "GTAI ne fournit aucun lien d'affiliation ou de réservation en direct dans cette version de démonstration.",
-        "Les compagnies aériennes, les fournisseurs de réservation et les prix affichés dans les résultats sont fictifs : aucune réservation ne peut en découler.",
-        "Aucune commission n'est perçue à partir de quoi que ce soit sur ce site aujourd'hui."
+        "Les tarifs de démonstration sont générés localement, ne sont pas des prix réels et ne peuvent pas être réservés sur GTAI.",
+        "Pour les recherches compatibles, GTAI peut proposer des liens d'affiliation externes vers des partenaires comme Trip.com.",
+        "La réservation et le paiement ont lieu sur le site du partenaire, et GTAI peut recevoir une commission admissible."
       ],
       "futureHeading": "Prévu",
       "future": [
-        "GTAI pourra ultérieurement travailler avec des partenaires d'affiliation ou de recommandation approuvés.",
+        "GTAI pourra ajouter d'autres partenaires d'affiliation ou de recommandation approuvés.",
         "GTAI pourra recevoir une rémunération lorsqu'un voyageur suit un lien approuvé et conclut une transaction avec un tiers.",
         "Toute réservation et tout paiement auraient lieu auprès de ce tiers, et non auprès de GTAI.",
         "Une rémunération ne doit jamais modifier le prix factuel communiqué par un fournisseur.",
