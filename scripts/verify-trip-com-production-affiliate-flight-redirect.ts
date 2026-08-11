@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 import {
-  buildTripComCitySlug,
   buildTripComFlightRedirect,
   getTripComAffiliateClickCount,
   getTripComAffiliateProviderMetadata,
@@ -24,23 +23,21 @@ const activeEnvironment = Object.freeze({
   TRIP_COM_AFFILIATE_ENABLED: "true",
   TRIP_COM_AFFILIATE_BASE_URL: "https://www.trip.com/",
   TRIP_COM_AFFILIATE_TEMPLATE:
-    "/flights/{originSlug}-to-{destinationSlug}/tickets-{origin}-{destination}?flighttype=S&dcity={origin}&acity={destination}&Allianceid={affiliateId}&SID={sid}&trip_sub1={trip_sub1}",
+    "/flights/showfarefirst?dcity={originLower}&acity={destinationLower}&ddate={departureDate}&rdate={returnDate}&triptype=rt&class={tripComCabin}&lowpricesource=searchform&quantity={adults}&searchboxarg=t&nonstoponly=off&locale={tripComLocale}&curr={currency}&Allianceid={affiliateId}&SID={sid}&trip_sub1={trip_sub1}",
   TRIP_COM_AFFILIATE_ID: "verification-affiliate",
   TRIP_COM_AFFILIATE_SID: "verification-sid",
 });
 
 const safeInput = Object.freeze({
-  originCityName: "Montreal",
-  destinationCityName: "Toronto",
   origin: "YMQ",
   destination: "YTO",
-  departureDate: "2030-01-01",
-  returnDate: null,
-  tripType: "oneWay" as const,
+  departureDate: "2026-09-15",
+  returnDate: "2026-09-20",
+  tripType: "roundTrip" as const,
   cabinClass: "economy" as const,
   adults: 1,
   children: 0,
-  locale: "en",
+  locale: "en-CA",
   currency: "CAD",
 });
 
@@ -92,21 +89,44 @@ async function main(): Promise<void> {
   check(redirect.destination.protocol === "https:", "HTTPS only");
   check(redirect.destination.hostname === "www.trip.com", "exact host retained");
   check(
-    redirect.destination.pathname ===
-      "/flights/Montreal-to-Toronto/tickets-YMQ-YTO",
-    "Montreal to Toronto validated path",
+    redirect.destination.pathname === "/flights/showfarefirst",
+    "validated Trip.com results path",
   );
   check(
-    redirect.destination.searchParams.get("flighttype") === "S",
-    "validated single-flight type retained",
+    redirect.destination.searchParams.get("dcity") === "ymq",
+    "origin lower-case code injected",
   );
   check(
-    redirect.destination.searchParams.get("dcity") === "YMQ",
-    "origin code injected",
+    redirect.destination.searchParams.get("acity") === "yto",
+    "destination lower-case code injected",
   );
   check(
-    redirect.destination.searchParams.get("acity") === "YTO",
-    "destination code injected",
+    redirect.destination.searchParams.get("ddate") === "2026-09-15",
+    "departure date preserved",
+  );
+  check(
+    redirect.destination.searchParams.get("rdate") === "2026-09-20",
+    "return date preserved",
+  );
+  check(
+    redirect.destination.searchParams.get("triptype") === "rt",
+    "round-trip mapping preserved",
+  );
+  check(
+    redirect.destination.searchParams.get("class") === "y",
+    "validated economy mapping preserved",
+  );
+  check(
+    redirect.destination.searchParams.get("quantity") === "1",
+    "validated adult quantity preserved",
+  );
+  check(
+    redirect.destination.searchParams.get("locale") === "en-XX",
+    "configured safe Trip.com locale used",
+  );
+  check(
+    redirect.destination.searchParams.get("curr") === "USD",
+    "configured safe Trip.com currency used",
   );
   check(
     redirect.destination.searchParams.get("Allianceid") ===
@@ -132,40 +152,9 @@ async function main(): Promise<void> {
   );
   check(redirect.clickId === "safe-click-id-123456", "safe click id retained");
   check(
-    buildTripComCitySlug("  Montréal  ", "YMQ") === "Montreal",
-    "Unicode city name normalized safely",
-  );
-  check(
-    buildTripComCitySlug("New / York?", "NYC") === "New-York",
-    "unsafe path characters removed from slug",
-  );
-  check(
-    buildTripComCitySlug(null, "YMQ") === "YMQ",
-    "missing canonical metadata falls back to validated code",
-  );
-
-  const westernRedirect = buildTripComFlightRedirect(
-    {
-      ...safeInput,
-      originCityName: "Vancouver",
-      destinationCityName: "Calgary",
-      origin: "YVR",
-      destination: "YYC",
-    },
-    {
-      environment: activeEnvironment,
-      createClickId: () => "western-safe-click-123456",
-    },
-  );
-  check(westernRedirect !== null, "Vancouver to Calgary redirect built");
-  check(
-    westernRedirect?.destination.pathname ===
-      "/flights/Vancouver-to-Calgary/tickets-YVR-YYC",
-    "Vancouver to Calgary validated path",
-  );
-  check(
-    !westernRedirect?.destination.searchParams.has("trip_sub3"),
-    "second validated route omits trip_sub3",
+    !redirect.destination.search.includes("en-CA") &&
+      !redirect.destination.search.includes("CAD"),
+    "unvalidated GTAI locale and currency are not forwarded",
   );
 
   const invalidInputs = [
@@ -175,11 +164,18 @@ async function main(): Promise<void> {
     { ...safeInput, destination: "YMQ" },
     { ...safeInput, departureDate: "not-a-date" },
     { ...safeInput, departureDate: "2030-02-30" },
-    { ...safeInput, returnDate: "2029-01-01" },
+    { ...safeInput, returnDate: "2026-09-14" },
     { ...safeInput, locale: "../../redirect" },
     { ...safeInput, currency: "CAD%0d%0a" },
     { ...safeInput, adults: 0 },
+    { ...safeInput, adults: 2 },
+    { ...safeInput, children: 1 },
     { ...safeInput, children: 9 },
+    { ...safeInput, cabinClass: "premiumEconomy" as const },
+    { ...safeInput, cabinClass: "business" as const },
+    { ...safeInput, cabinClass: "first" as const },
+    { ...safeInput, tripType: "oneWay" as const, returnDate: null },
+    { ...safeInput, returnDate: null },
   ];
   for (const input of invalidInputs) {
     check(
@@ -190,12 +186,12 @@ async function main(): Promise<void> {
   }
 
   const maliciousTemplates = [
-    "javascript:{originSlug}{destinationSlug}{origin}{destination}{trip_sub1}{affiliateId}{sid}",
-    "data:text/html,{originSlug}{destinationSlug}{origin}{destination}{trip_sub1}{affiliateId}{sid}",
-    "file:///{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://evil.example/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://www.trip.com@evil.example/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://www.trip.com/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}\r\nX-Test: bad",
+    "javascript:{originLower}{destinationLower}{departureDate}{returnDate}{tripComCabin}{adults}{tripComLocale}{currency}{trip_sub1}{affiliateId}{sid}",
+    "data:text/html,{originLower}{destinationLower}{departureDate}{returnDate}{tripComCabin}{adults}{tripComLocale}{currency}{trip_sub1}{affiliateId}{sid}",
+    "file:///{originLower}/{destinationLower}/{departureDate}/{returnDate}/{tripComCabin}/{adults}/{tripComLocale}/{currency}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://evil.example/{originLower}/{destinationLower}/{departureDate}/{returnDate}/{tripComCabin}/{adults}/{tripComLocale}/{currency}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com@evil.example/{originLower}/{destinationLower}/{departureDate}/{returnDate}/{tripComCabin}/{adults}/{tripComLocale}/{currency}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com/{originLower}/{destinationLower}/{departureDate}/{returnDate}/{tripComCabin}/{adults}/{tripComLocale}/{currency}?x={trip_sub1}&a={affiliateId}&s={sid}\r\nX-Test: bad",
   ];
   for (const template of maliciousTemplates) {
     const environment = {
@@ -293,6 +289,21 @@ async function main(): Promise<void> {
     "no affiliate config in client source",
   );
   check(/Check live options on Trip\.com/.test(uiSource), "truthful CTA wording");
+  check(
+    /intent\.tripType !== "roundTrip"/.test(uiSource) &&
+      /intent\.cabinClass !== "economy"/.test(uiSource),
+    "CTA unavailable for unvalidated trip type and cabin",
+  );
+  check(
+    /intent\.travelers\.adults !== 1/.test(uiSource) &&
+      /intent\.travelers\.children !== 0/.test(uiSource),
+    "CTA unavailable for unvalidated traveller shape",
+  );
+  check(
+    /intent\.travelers\.infantsInSeat !== 0/.test(uiSource) &&
+      /intent\.travelers\.infantsOnLap !== 0/.test(uiSource),
+    "CTA unavailable when infant data cannot be preserved",
+  );
   check(
     /prices above remain demonstration data/.test(uiSource),
     "demo price distinction visible",

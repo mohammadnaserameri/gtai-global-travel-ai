@@ -2,12 +2,21 @@ import type { FlightSearchIntent } from "@/features/flights/search-intent-types"
 
 /** Builds only a same-origin GTAI endpoint URL; tracking configuration stays server-side. */
 export function buildTripComOutboundUrl(intent: FlightSearchIntent): string | null {
+  if (
+    intent.tripType !== "roundTrip" ||
+    !intent.returnDate ||
+    intent.cabinClass !== "economy" ||
+    intent.travelers.adults !== 1 ||
+    intent.travelers.children !== 0 ||
+    intent.travelers.infantsInSeat !== 0 ||
+    intent.travelers.infantsOnLap !== 0
+  ) {
+    return null;
+  }
   const origin = intent.origin.iataCode ?? intent.origin.cityCode;
   const destination = intent.destination.iataCode ?? intent.destination.cityCode;
   if (!origin || !destination) return null;
   const query = new URLSearchParams({
-    originLocationId: intent.origin.entityId,
-    destinationLocationId: intent.destination.entityId,
     origin,
     destination,
     departure: intent.departureDate,
