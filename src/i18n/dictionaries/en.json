@@ -1064,6 +1064,12 @@
       "demonstrationProvider": "Demonstration provider",
       "carrierNote": "Fictional demonstration airline"
     },
+    "tripComAffiliate": {
+      "title": "Live flight search with Trip.com",
+      "description": "The GTAI prices above remain demonstration data. Use this separate partner option to check current flight options directly on Trip.com.",
+      "disclosure": "Booking and payment are completed on Trip.com. GTAI may earn an eligible affiliate commission.",
+      "cta": "Check live options on Trip.com"
+    },
     "viewFlightDetails": "View flight details",
     "partialCoverage": {
       "title": "Some demonstration sources did not respond.",

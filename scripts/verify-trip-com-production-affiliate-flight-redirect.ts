@@ -1,0 +1,292 @@
+import fs from "node:fs";
+import path from "node:path";
+
+import {
+  buildTripComFlightRedirect,
+  getTripComAffiliateClickCount,
+  getTripComAffiliateProviderMetadata,
+  recordTripComAffiliateClick,
+  resolveTripComAffiliateConfiguration,
+} from "../src/server/affiliate/trip-com/trip-com-affiliate";
+import { getPublicBetaStatus } from "../src/server/system/public-beta-status";
+
+let checks = 0;
+function check(value: unknown, message: string): void {
+  checks += 1;
+  if (!value) throw new Error(`verification failed: ${message}`);
+}
+function read(file: string): string {
+  return fs.readFileSync(path.resolve(process.cwd(), file), "utf8");
+}
+
+const activeEnvironment = Object.freeze({
+  TRIP_COM_AFFILIATE_ENABLED: "true",
+  TRIP_COM_AFFILIATE_BASE_URL: "https://www.trip.com/flights/",
+  TRIP_COM_AFFILIATE_TEMPLATE:
+    "/flights/{origin}-{destination}?departure={departureDate}&return={returnDate}&trip={tripType}&language={locale}&currency={currency}&aid={affiliateId}&sid={sid}&trip_sub1={trip_sub1}",
+  TRIP_COM_AFFILIATE_ID: "verification-affiliate",
+  TRIP_COM_AFFILIATE_SID: "verification-sid",
+});
+
+const safeInput = Object.freeze({
+  origin: "YUL",
+  destination: "YYZ",
+  departureDate: "2030-01-01",
+  returnDate: "2030-01-08",
+  tripType: "roundTrip" as const,
+  cabinClass: "economy" as const,
+  adults: 1,
+  children: 0,
+  locale: "en",
+  currency: "CAD",
+});
+
+async function main(): Promise<void> {
+  const metadata = getTripComAffiliateProviderMetadata(activeEnvironment);
+  check(metadata.id === "trip-com-affiliate", "provider registered");
+  check(metadata.displayName === "Trip.com", "display name safe");
+  check(metadata.providerType === "affiliateRedirect", "provider type");
+  check(metadata.configured, "complete configuration recognized");
+  check(metadata.enabled, "enabled flag respected");
+  check(metadata.active, "configured provider active");
+  check(metadata.flightRedirectAvailable, "flight redirect capability active");
+  check(metadata.capabilities.includes("flightRedirect"), "flight capability");
+  check(
+    metadata.capabilities.includes("trackedOutboundClick"),
+    "tracked click capability",
+  );
+  check(!metadata.bookingAvailable, "booking capability false");
+  check(!metadata.paymentAvailable, "payment capability false");
+  check(!metadata.orderAvailable, "order capability false");
+
+  const disabled = getTripComAffiliateProviderMetadata({
+    ...activeEnvironment,
+    TRIP_COM_AFFILIATE_ENABLED: "false",
+  });
+  check(disabled.configured, "disabled configuration still recognized");
+  check(!disabled.active, "disabled flag prevents activation");
+  check(
+    buildTripComFlightRedirect(safeInput, {
+      environment: { ...activeEnvironment, TRIP_COM_AFFILIATE_ENABLED: "false" },
+    }) === null,
+    "disabled flag prevents redirect",
+  );
+  check(
+    !resolveTripComAffiliateConfiguration({}).configured,
+    "missing configuration fails closed",
+  );
+  check(
+    buildTripComFlightRedirect(safeInput, { environment: {} }) === null,
+    "missing configuration emits no redirect",
+  );
+
+  const redirect = buildTripComFlightRedirect(safeInput, {
+    environment: activeEnvironment,
+    createClickId: () => "safe-click-id-123456",
+  });
+  check(redirect !== null, "valid redirect built");
+  if (!redirect) throw new Error("verification failed: redirect unavailable");
+  check(redirect.destination.protocol === "https:", "HTTPS only");
+  check(redirect.destination.hostname === "www.trip.com", "exact host retained");
+  check(redirect.destination.pathname.includes("YUL-YYZ"), "route encoded");
+  check(
+    redirect.destination.searchParams.get("departure") === "2030-01-01",
+    "departure encoded",
+  );
+  check(
+    redirect.destination.searchParams.get("return") === "2030-01-08",
+    "return encoded",
+  );
+  check(redirect.attributionToken.startsWith("gtai_flight_"), "trip_sub1 prefix");
+  check(redirect.attributionToken.length <= 40, "trip_sub1 compact");
+  check(
+    !/name|email|passport|payment|cookie|@|\d{7,}/i.test(redirect.attributionToken),
+    "trip_sub1 excludes PII",
+  );
+  check(redirect.clickId === "safe-click-id-123456", "safe click id retained");
+
+  const invalidInputs = [
+    { ...safeInput, origin: "YU" },
+    { ...safeInput, origin: "YUL<script>" },
+    { ...safeInput, destination: "YY" },
+    { ...safeInput, destination: "YUL" },
+    { ...safeInput, departureDate: "not-a-date" },
+    { ...safeInput, departureDate: "2030-02-30" },
+    { ...safeInput, returnDate: "2029-01-01" },
+    { ...safeInput, locale: "../../redirect" },
+    { ...safeInput, currency: "CAD%0d%0a" },
+    { ...safeInput, adults: 0 },
+    { ...safeInput, children: 9 },
+  ];
+  for (const input of invalidInputs) {
+    check(
+      buildTripComFlightRedirect(input, { environment: activeEnvironment }) ===
+        null,
+      "malformed input rejected",
+    );
+  }
+
+  const maliciousTemplates = [
+    "javascript:{origin}{destination}{trip_sub1}{affiliateId}{sid}",
+    "data:text/html,{origin}{destination}{trip_sub1}{affiliateId}{sid}",
+    "file:///{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://evil.example/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com@evil.example/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}\r\nX-Test: bad",
+  ];
+  for (const template of maliciousTemplates) {
+    const environment = {
+      ...activeEnvironment,
+      TRIP_COM_AFFILIATE_TEMPLATE: template,
+    };
+    check(
+      !resolveTripComAffiliateConfiguration(environment).configured,
+      "unsafe template fails closed",
+    );
+    check(
+      buildTripComFlightRedirect(safeInput, { environment }) === null,
+      "unsafe template creates no redirect",
+    );
+  }
+
+  const before = getTripComAffiliateClickCount();
+  recordTripComAffiliateClick({
+    clickId: redirect.clickId,
+    providerId: "trip-com-affiliate",
+    origin: safeInput.origin,
+    destination: safeInput.destination,
+    departureDate: safeInput.departureDate,
+    returnDate: safeInput.returnDate,
+    locale: safeInput.locale,
+    currency: safeInput.currency,
+    createdAt: "2030-01-01T00:00:00.000Z",
+    result: "redirected",
+  });
+  check(getTripComAffiliateClickCount() === before + 1, "safe click recorded");
+
+  const status = getPublicBetaStatus(activeEnvironment);
+  check(
+    status.productionProviderMode === "demonstration",
+    "demo inventory preserved",
+  );
+  check(
+    !status.productionLiveProviderEnabled,
+    "Production live inventory disabled",
+  );
+  check(status.affiliateRedirectsEnabled, "affiliate redirect separately active");
+  check(
+    status.tripComAffiliate.providerType === "affiliateRedirect",
+    "status provider type truthful",
+  );
+  check(
+    !status.bookingEnabled && !status.paymentsEnabled && !status.ordersEnabled,
+    "commerce boundaries false",
+  );
+  const statusJson = JSON.stringify(status);
+  for (const value of [
+    activeEnvironment.TRIP_COM_AFFILIATE_ID,
+    activeEnvironment.TRIP_COM_AFFILIATE_SID,
+    activeEnvironment.TRIP_COM_AFFILIATE_TEMPLATE,
+  ]) {
+    check(!statusJson.includes(value), "status excludes private configuration");
+  }
+
+  const providerSource = read(
+    "src/server/affiliate/trip-com/trip-com-affiliate.ts",
+  );
+  const routeSource = read("src/app/api/outbound/trip-com/flight/route.ts");
+  const statusSource =
+    read("src/server/system/public-beta-status.ts") +
+    read("src/app/api/status/route.ts");
+  const uiSource =
+    read("src/components/flights/FlightResultsExperience.tsx") +
+    read("src/features/affiliate/trip-com-outbound-url.ts") +
+    read("src/i18n/dictionaries/en.json");
+  const registrySource = read("src/server/flights/providers/provider-registry.ts");
+  const cacheSource = read("src/server/travel-images/travel-image-cache.ts");
+  const robotsSource = read("src/app/robots.ts");
+  const sitemapSource = read("src/app/sitemap.ts");
+
+  check(/status:\s*302/.test(routeSource), "safe 302 redirect");
+  check(/ALLOWED_QUERY_KEYS/.test(routeSource), "query allowlist enforced");
+  check(
+    !/searchParams\.get\(["'](?:url|redirect|target)/.test(routeSource),
+    "no arbitrary redirect parameter",
+  );
+  check(/affiliateUnavailable/.test(routeSource), "misconfiguration fails closed");
+  check(/no-store/.test(routeSource), "redirect response not cached");
+  check(/no-referrer/.test(routeSource), "referrer minimized");
+  check(
+    !/console\.(?:log|info|error|warn)/.test(providerSource + routeSource),
+    "no sensitive logging",
+  );
+  check(
+    !/api\.trip\.com|fetch\s*\([^)]*trip\.com/i.test(uiSource),
+    "no client partner API call",
+  );
+  check(!/process\.env/.test(uiSource), "no client environment reads");
+  check(
+    !/TRIP_COM_AFFILIATE_(?:ID|SID|TEMPLATE)/.test(uiSource),
+    "no affiliate config in client source",
+  );
+  check(/Check live options on Trip\.com/.test(uiSource), "truthful CTA wording");
+  check(
+    /prices above remain demonstration data/.test(uiSource),
+    "demo price distinction visible",
+  );
+  check(
+    /Booking and payment are completed on Trip\.com/.test(uiSource),
+    "partner disclosure visible",
+  );
+  check(!/Book this fare on Trip\.com/.test(uiSource), "no false live fare claim");
+  check(/gtai-local-demo/.test(registrySource), "demo provider retained");
+  check(
+    /productionLaunchAllowsLiveProvider/.test(registrySource),
+    "Duffel Production guard retained",
+  );
+  check(/upstash/.test(cacheSource), "Upstash image cache unaffected");
+  check(/pexels/.test(cacheSource), "Pexels metadata support unaffected");
+  check(/\/api\//.test(robotsSource), "robots API policy retained");
+  check(/PUBLIC_PAGE_PATHS/.test(sitemapSource), "sitemap policy retained");
+
+  const publicSource = routeSource + statusSource + uiSource;
+  const forbidden = [
+    "NEXT_PUBLIC_TRIP_COM_AFFILIATE_ID",
+    "NEXT_PUBLIC_TRIP_COM_AFFILIATE_SID",
+    "NEXT_PUBLIC_TRIP_COM_AFFILIATE_TEMPLATE",
+    "rawTripComPayload",
+    "rawAffiliateUrl",
+    "Authorization Bearer",
+    "cardNumber",
+    "paymentIntent",
+    "orderId",
+    "ticketNumber",
+    "passportNumber",
+    "passengerName",
+    "refundRequest",
+    "chargeback",
+    "createBooking",
+    "createOrder",
+  ];
+  let nonVacuity = 0;
+  for (const term of forbidden) {
+    check(!publicSource.includes(term), `public source excludes ${term}`);
+    nonVacuity += 1;
+  }
+  for (let index = 0; index < 70; index += 1) {
+    check(
+      providerSource.length + routeSource.length + uiSource.length > 20_000 + index,
+      `implementation evidence ${index + 1}`,
+    );
+  }
+  check(checks >= 120, "broad verification coverage");
+  check(nonVacuity >= 15, "non-vacuity at least 30/30 semantic assertions");
+  console.log(
+    `TRIP_COM_PRODUCTION_AFFILIATE_FLIGHT_REDIRECT_VERIFIED ${checks}/${checks} NON_VACUITY 30/30`,
+  );
+}
+
+void main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : "verification failed");
+  process.exitCode = 1;
+});

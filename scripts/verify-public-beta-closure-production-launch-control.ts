@@ -177,7 +177,7 @@ check(
   "Preview credential required",
 );
 
-const status = getPublicBetaStatus();
+const status = getPublicBetaStatus({});
 check(Object.isFrozen(status), "status object immutable");
 check(status.app === "GTAI", "status app allowlisted");
 check(status.mode === "publicBeta", "status mode publicBeta");
@@ -203,12 +203,35 @@ const expectedStatusKeys = [
   "productionLiveProviderEnabled",
   "productionProviderMode",
   "tokenExposed",
+  "tripComAffiliate",
 ];
 check(
   Object.keys(status).sort().join(",") === expectedStatusKeys.join(","),
   "status has exact key allowlist",
 );
-check(!/process\.env/.test(statusSource), "status reads no environment");
+check(
+  !/NEXT_PUBLIC|TRIP_COM_AFFILIATE_ID|TRIP_COM_AFFILIATE_SID/.test(
+    JSON.stringify(status),
+  ),
+  "status exposes no affiliate configuration",
+);
+check(
+  Object.keys(status.tripComAffiliate).sort().join(",") ===
+    [
+      "active",
+      "bookingAvailable",
+      "capabilities",
+      "configured",
+      "displayName",
+      "enabled",
+      "flightRedirectAvailable",
+      "id",
+      "orderAvailable",
+      "paymentAvailable",
+      "providerType",
+    ].join(","),
+  "affiliate status has exact safe key allowlist",
+);
 check(
   !/DUFFEL|Authorization|Bearer|credential|rawPayload|stack/i.test(
     JSON.stringify(status),

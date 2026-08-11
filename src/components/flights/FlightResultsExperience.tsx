@@ -50,10 +50,12 @@ import { SortControl } from "@/components/flights/SortControl";
 import { ResultCard } from "@/components/flights/ResultCard";
 import { ResultsLoadingSkeleton } from "@/components/flights/ResultsLoadingSkeleton";
 import { FlightFilters } from "@/components/flights/filters/FlightFilters";
+import { buildTripComOutboundUrl } from "@/features/affiliate/trip-com-outbound-url";
 
 interface FlightResultsExperienceProps {
   locale: string;
   dictionary: Dictionary;
+  tripComAffiliateAvailable: boolean;
 }
 
 type OfferState =
@@ -106,6 +108,7 @@ function resolve(rawParamsString: string, locale: string) {
 export function FlightResultsExperience({
   locale,
   dictionary,
+  tripComAffiliateAvailable,
 }: FlightResultsExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -144,11 +147,11 @@ export function FlightResultsExperience({
   // `offerState` — only re-runs when the fetch itself actually resolves
   // (or the key changes), never on an unrelated render.
   const offerState: OfferState = useMemo(() => {
-    if (intentKey === null) return { status: "idle" };
+    if (fetchKey === null) return { status: "idle" };
     return fetched && fetched.key === fetchKey
       ? fetched.result
       : { status: "loading" };
-  }, [intentKey, fetched, fetchKey]);
+  }, [fetched, fetchKey]);
 
   /**
    * Mirrors the codebase's established "adjust state during render" pattern
@@ -310,6 +313,9 @@ export function FlightResultsExperience({
   }
 
   const { intent } = validation;
+  const tripComOutboundUrl = tripComAffiliateAvailable
+    ? buildTripComOutboundUrl(intent)
+    : null;
   const cabinLabel = dictionary.search.options.cabin[intent.cabinClass];
   const flexibilityLabel =
     dictionary.search.dates.flexible[FLEX_LABEL_KEY[intent.flexibilityDays]];
@@ -444,6 +450,18 @@ export function FlightResultsExperience({
       ) : isLivePreview ? (
         <Alert tone="success" title={labels.livePreview.title}>
           <p>{labels.livePreview.description}</p>
+        </Alert>
+      ) : null}
+
+      {tripComOutboundUrl ? (
+        <Alert tone="brand" title={labels.tripComAffiliate.title}>
+          <p>{labels.tripComAffiliate.description}</p>
+          <p className="mt-1.5 text-sm">{labels.tripComAffiliate.disclosure}</p>
+          <div className="mt-4">
+            <ButtonLink href={tripComOutboundUrl} external variant="primary">
+              {labels.tripComAffiliate.cta}
+            </ButtonLink>
+          </div>
         </Alert>
       ) : null}
 

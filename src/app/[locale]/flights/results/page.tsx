@@ -6,6 +6,7 @@ import { buildNonIndexableMetadata } from "@/lib/seo/public-metadata";
 import { Container } from "@/components/layout/Container";
 import { FlightResultsExperience } from "@/components/flights/FlightResultsExperience";
 import { ResultsLoadingSkeleton } from "@/components/flights/ResultsLoadingSkeleton";
+import { getTripComAffiliateProviderMetadata } from "@/server/affiliate/trip-com/trip-com-affiliate";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -33,6 +34,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FlightResultsPage({ params }: PageProps) {
   const { locale } = await params;
   const dictionary = await getDictionary(locale);
+  const tripComAffiliateAvailable =
+    getTripComAffiliateProviderMetadata().flightRedirectAvailable;
 
   return (
     <Suspense
@@ -42,7 +45,11 @@ export default async function FlightResultsPage({ params }: PageProps) {
         </Container>
       }
     >
-      <FlightResultsExperience locale={locale} dictionary={dictionary} />
+      <FlightResultsExperience
+        locale={locale}
+        dictionary={dictionary}
+        tripComAffiliateAvailable={tripComAffiliateAvailable}
+      />
     </Suspense>
   );
 }
