@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { TripComCategoryCta } from "@/components/affiliate/TripComCategoryCta";
 import { Alert } from "@/components/ui/Alert";
 import {
   LayersIcon,
@@ -54,6 +55,11 @@ export default async function TripsPage({ params }: PageProps) {
       <Alert tone="info" title={dictionary.nav.signIn} className="mt-8">
         {dictionary.pages.trips.signInNotice}
       </Alert>
+      <TripComCategoryCta
+        vertical="train"
+        {...dictionary.tripComCategories}
+        cta={dictionary.tripComCategories.trainCta}
+      />
     </ProductPageShell>
   );
 }

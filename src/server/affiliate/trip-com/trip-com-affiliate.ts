@@ -18,6 +18,17 @@ const REQUIRED_TEMPLATE_FIELDS = [
   "sid",
 ] as const;
 const ALLOWED_TEMPLATE_FIELDS = new Set<string>([...REQUIRED_TEMPLATE_FIELDS]);
+const CATEGORY_TEMPLATE_FIELDS = new Set(["trip_sub1", "affiliateId", "sid"]);
+
+export type TripComVertical = "hotel" | "train" | "attraction" | "package" | "car";
+
+const CATEGORY_TEMPLATE_ENV: Record<TripComVertical, string> = {
+  hotel: "TRIP_COM_HOTEL_AFFILIATE_TEMPLATE",
+  train: "TRIP_COM_TRAIN_AFFILIATE_TEMPLATE",
+  attraction: "TRIP_COM_ATTRACTION_AFFILIATE_TEMPLATE",
+  package: "TRIP_COM_PACKAGE_AFFILIATE_TEMPLATE",
+  car: "TRIP_COM_CAR_AFFILIATE_TEMPLATE",
+};
 
 type Environment = Readonly<Record<string, string | undefined>>;
 
@@ -28,8 +39,21 @@ export interface TripComAffiliateProviderMetadata {
   readonly configured: boolean;
   readonly enabled: boolean;
   readonly active: boolean;
-  readonly capabilities: readonly ["flightRedirect", "trackedOutboundClick"];
+  readonly capabilities: readonly [
+    "flightRedirect",
+    "hotelRedirect",
+    "trainRedirect",
+    "attractionRedirect",
+    "packageRedirect",
+    "carRentalRedirect",
+    "trackedOutboundClick",
+  ];
   readonly flightRedirectAvailable: boolean;
+  readonly hotelRedirectAvailable: boolean;
+  readonly trainRedirectAvailable: boolean;
+  readonly attractionRedirectAvailable: boolean;
+  readonly packageRedirectAvailable: boolean;
+  readonly carRentalRedirectAvailable: boolean;
   readonly bookingAvailable: false;
   readonly paymentAvailable: false;
   readonly orderAvailable: false;
@@ -45,6 +69,7 @@ interface TripComAffiliateConfiguration {
   readonly sid: string | null;
   readonly defaultLanguage: string;
   readonly defaultCurrency: string;
+  readonly categoryTemplates: Readonly<Record<TripComVertical, string | null>>;
 }
 
 export interface TripComFlightRedirectInput {
@@ -66,17 +91,22 @@ export interface TripComFlightRedirect {
   readonly attributionToken: string;
 }
 
+export interface TripComCategoryRedirect extends TripComFlightRedirect {
+  readonly vertical: TripComVertical;
+}
+
 export interface AffiliateClickEvent {
   readonly clickId: string;
   readonly providerId: "trip-com-affiliate";
-  readonly origin: string;
-  readonly destination: string;
-  readonly departureDate: string;
-  readonly returnDate: string | null;
-  readonly locale: string;
-  readonly currency: string;
+  readonly origin?: string;
+  readonly destination?: string;
+  readonly departureDate?: string;
+  readonly returnDate?: string | null;
+  readonly locale?: string;
+  readonly currency?: string;
   readonly createdAt: string;
   readonly result: "redirected";
+  readonly vertical?: "flight" | TripComVertical;
 }
 
 const clickEvents: AffiliateClickEvent[] = [];
@@ -168,6 +198,38 @@ function validateTemplate(
   }
 }
 
+function validateCategoryTemplate(
+  template: string | null,
+  baseUrl: string | null,
+): boolean {
+  if (!template || !baseUrl || /[\r\n]/.test(template)) return false;
+  const fields = [...template.matchAll(/\{([A-Za-z0-9_]+)\}/g)].map(
+    (match) => match[1] ?? "",
+  );
+  if (
+    fields.some((field) => !CATEGORY_TEMPLATE_FIELDS.has(field)) ||
+    [...CATEGORY_TEMPLATE_FIELDS].some((field) => !fields.includes(field))
+  ) {
+    return false;
+  }
+  const rendered = template.replace(/\{([A-Za-z0-9_]+)\}/g, (_match, field) =>
+    encodeURIComponent(
+      field === "trip_sub1" ? "gtai_hotel_validation" : "validation",
+    ),
+  );
+  try {
+    const url = new URL(rendered, baseUrl);
+    return (
+      url.protocol === "https:" &&
+      TRIP_COM_HOSTS.has(url.hostname) &&
+      !url.username &&
+      !url.password
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function resolveTripComAffiliateConfiguration(
   environment: Environment = process.env,
 ): TripComAffiliateConfiguration {
@@ -183,14 +245,23 @@ export function resolveTripComAffiliateConfiguration(
     sid !== null &&
     validateTemplate(template, baseUrl);
   const enabled = environment.TRIP_COM_AFFILIATE_ENABLED === "true";
+  const categoryTemplates = Object.fromEntries(
+    (Object.keys(CATEGORY_TEMPLATE_ENV) as TripComVertical[]).map((vertical) => {
+      const candidate = value(environment[CATEGORY_TEMPLATE_ENV[vertical]]);
+      return [
+        vertical,
+        validateCategoryTemplate(candidate, baseUrl) ? candidate : null,
+      ];
+    }),
+  ) as Record<TripComVertical, string | null>;
   return Object.freeze({
     enabled,
     configured,
     active: enabled && configured,
     baseUrl,
     template: configured ? template : null,
-    affiliateId: configured ? affiliateId : null,
-    sid: configured ? sid : null,
+    affiliateId: baseUrl ? affiliateId : null,
+    sid: baseUrl ? sid : null,
     defaultLanguage: /^[a-z]{2}(?:-[A-Z]{2})?$/.test(
       environment.TRIP_COM_AFFILIATE_DEFAULT_LANGUAGE ?? "",
     )
@@ -201,6 +272,7 @@ export function resolveTripComAffiliateConfiguration(
     )
       ? String(environment.TRIP_COM_AFFILIATE_DEFAULT_CURRENCY)
       : "USD",
+    categoryTemplates: Object.freeze(categoryTemplates),
   });
 }
 
@@ -217,9 +289,39 @@ export function getTripComAffiliateProviderMetadata(
     active: configuration.active,
     capabilities: Object.freeze([
       "flightRedirect",
+      "hotelRedirect",
+      "trainRedirect",
+      "attractionRedirect",
+      "packageRedirect",
+      "carRentalRedirect",
       "trackedOutboundClick",
     ] as const),
     flightRedirectAvailable: configuration.active,
+    hotelRedirectAvailable:
+      configuration.enabled &&
+      configuration.affiliateId !== null &&
+      configuration.sid !== null &&
+      configuration.categoryTemplates.hotel !== null,
+    trainRedirectAvailable:
+      configuration.enabled &&
+      configuration.affiliateId !== null &&
+      configuration.sid !== null &&
+      configuration.categoryTemplates.train !== null,
+    attractionRedirectAvailable:
+      configuration.enabled &&
+      configuration.affiliateId !== null &&
+      configuration.sid !== null &&
+      configuration.categoryTemplates.attraction !== null,
+    packageRedirectAvailable:
+      configuration.enabled &&
+      configuration.affiliateId !== null &&
+      configuration.sid !== null &&
+      configuration.categoryTemplates.package !== null,
+    carRentalRedirectAvailable:
+      configuration.enabled &&
+      configuration.affiliateId !== null &&
+      configuration.sid !== null &&
+      configuration.categoryTemplates.car !== null,
     bookingAvailable: false,
     paymentAvailable: false,
     orderAvailable: false,
@@ -270,9 +372,57 @@ function tripComCabin(
   return input === "economy" ? "y" : null;
 }
 
-function attribution(clickId: string): string {
+function attribution(
+  clickId: string,
+  vertical: "flight" | TripComVertical = "flight",
+): string {
   const digest = createHash("sha256").update(clickId).digest("hex").slice(0, 20);
-  return `gtai_flight_${digest}`;
+  return `gtai_${vertical}_${digest}`;
+}
+
+export function buildTripComCategoryRedirect(
+  vertical: TripComVertical,
+  options: {
+    readonly environment?: Environment;
+    readonly createClickId?: () => string;
+  } = {},
+): TripComCategoryRedirect | null {
+  const configuration = resolveTripComAffiliateConfiguration(options.environment);
+  const template = configuration.categoryTemplates[vertical];
+  if (
+    !configuration.enabled ||
+    !configuration.baseUrl ||
+    !configuration.affiliateId ||
+    !configuration.sid ||
+    !template
+  )
+    return null;
+  const rawClickId = (options.createClickId ?? randomUUID)();
+  const clickId = rawClickId.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
+  if (clickId.length < 8) return null;
+  const attributionToken = attribution(clickId, vertical);
+  const rendered = template.replace(/\{([A-Za-z0-9_]+)\}/g, (_match, field) =>
+    encodeURIComponent(
+      field === "trip_sub1"
+        ? attributionToken
+        : field === "affiliateId"
+          ? (configuration.affiliateId ?? "")
+          : (configuration.sid ?? ""),
+    ),
+  );
+  try {
+    const destination = new URL(rendered, configuration.baseUrl);
+    if (
+      destination.protocol !== "https:" ||
+      !TRIP_COM_HOSTS.has(destination.hostname) ||
+      destination.username ||
+      destination.password
+    )
+      return null;
+    return Object.freeze({ destination, clickId, attributionToken, vertical });
+  } catch {
+    return null;
+  }
 }
 
 export function buildTripComFlightRedirect(

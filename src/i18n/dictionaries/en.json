@@ -1079,6 +1079,16 @@
       "retry": "Retry"
     }
   },
+  "tripComCategories": {
+    "title": "External live search on Trip.com",
+    "description": "GTAI does not transfer dates, locations, guests, or other search details for this category. This opens a generic Trip.com category search.",
+    "disclosure": "Booking and payment are completed on Trip.com. GTAI may earn an eligible affiliate commission.",
+    "hotelCta": "Search hotels on Trip.com",
+    "trainCta": "Search trains on Trip.com",
+    "attractionCta": "Explore activities on Trip.com",
+    "packageCta": "Explore Flight + Hotel on Trip.com",
+    "carCta": "Search cars on Trip.com"
+  },
   "flightDetails": {
     "heading": "Flight details",
     "backToResults": "Back to results",

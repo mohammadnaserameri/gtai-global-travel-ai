@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { TripComCategoryCta } from "@/components/affiliate/TripComCategoryCta";
 import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CalendarIcon,
@@ -54,6 +55,12 @@ export default async function ExplorePage({ params }: PageProps) {
         <CompassIcon key="interest" size={20} />,
         <RouteIcon key="reach" size={20} />,
       ]}
-    />
+    >
+      <TripComCategoryCta
+        vertical="attraction"
+        {...dictionary.tripComCategories}
+        cta={dictionary.tripComCategories.attractionCta}
+      />
+    </ProductPageShell>
   );
 }

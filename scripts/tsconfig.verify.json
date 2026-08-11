@@ -46,6 +46,7 @@
     "verify-upstash-durable-travel-image-cache-adapter.ts",
     "verify-durable-cache-write-verification-refresh-persistence.ts",
     "verify-trip-com-production-affiliate-flight-redirect.ts",
+    "verify-trip-com-multi-vertical-affiliate-expansion.ts",
     "test-travel-image-live-smoke.ts"
   ]
 }

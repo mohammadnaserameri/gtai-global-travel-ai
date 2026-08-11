@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { TripComCategoryCta } from "@/components/affiliate/TripComCategoryCta";
 import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CoinsIcon,
@@ -56,6 +57,12 @@ export default async function StaysPage({ params }: PageProps) {
         <TravelersIcon key="preferences" size={20} />,
         <ShieldIcon key="cancellation" size={20} />,
       ]}
-    />
+    >
+      <TripComCategoryCta
+        vertical="hotel"
+        {...dictionary.tripComCategories}
+        cta={dictionary.tripComCategories.hotelCta}
+      />
+    </ProductPageShell>
   );
 }

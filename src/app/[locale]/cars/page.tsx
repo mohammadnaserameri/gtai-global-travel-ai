@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { TripComCategoryCta } from "@/components/affiliate/TripComCategoryCta";
 import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CarIcon,
@@ -56,6 +57,12 @@ export default async function CarsPage({ params }: PageProps) {
         <ShieldIcon key="licence" size={20} />,
         <RouteIcon key="border" size={20} />,
       ]}
-    />
+    >
+      <TripComCategoryCta
+        vertical="car"
+        {...dictionary.tripComCategories}
+        cta={dictionary.tripComCategories.carCta}
+      />
+    </ProductPageShell>
   );
 }

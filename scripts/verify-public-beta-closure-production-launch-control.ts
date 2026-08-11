@@ -219,16 +219,21 @@ check(
   Object.keys(status.tripComAffiliate).sort().join(",") ===
     [
       "active",
+      "attractionRedirectAvailable",
       "bookingAvailable",
       "capabilities",
+      "carRentalRedirectAvailable",
       "configured",
       "displayName",
       "enabled",
       "flightRedirectAvailable",
+      "hotelRedirectAvailable",
       "id",
       "orderAvailable",
+      "packageRedirectAvailable",
       "paymentAvailable",
       "providerType",
+      "trainRedirectAvailable",
     ].join(","),
   "affiliate status has exact safe key allowlist",
 );

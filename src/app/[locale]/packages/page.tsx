@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
 import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { TripComCategoryCta } from "@/components/affiliate/TripComCategoryCta";
 import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
 import {
   CoinsIcon,
@@ -55,6 +56,12 @@ export default async function PackagesPage({ params }: PageProps) {
         <PackageIcon key="flexible" size={20} />,
         <SparkIcon key="optimizer" size={20} />,
       ]}
-    />
+    >
+      <TripComCategoryCta
+        vertical="package"
+        {...dictionary.tripComCategories}
+        cta={dictionary.tripComCategories.packageCta}
+      />
+    </ProductPageShell>
   );
 }
