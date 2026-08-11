@@ -10,6 +10,8 @@
  */
 
 import { addDays, todayIso } from "../src/features/dates/date-utils";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { formatFieldDate } from "../src/features/dates/date-formatting";
 import { DEMO_LOCATIONS } from "../src/features/locations/demo-location-data";
 import {
@@ -71,6 +73,37 @@ function ok(name: string, condition: boolean): void {
 
 async function main(): Promise<void> {
   const locale = "en";
+  const heroSource = readFileSync(
+    resolve(process.cwd(), "src/components/home/Hero.tsx"),
+    "utf8",
+  );
+  const datePanelSource = readFileSync(
+    resolve(process.cwd(), "src/components/search/date-picker/DatePickerPanel.tsx"),
+    "utf8",
+  );
+  ok(
+    "0a. homepage hero permits vertical date-popover overflow",
+    /overflow-x-clip/.test(heroSource) &&
+      !/overflow-hidden border-b/.test(heroSource),
+  );
+  ok(
+    "0b. homepage hero stacking context stays above adjacent content",
+    /relative/.test(heroSource) &&
+      /isolate/.test(heroSource) &&
+      /z-10/.test(heroSource) &&
+      /overflow-x-clip/.test(heroSource),
+  );
+  ok(
+    "0c. desktop calendar retains an anchored popover with bounded scrolling",
+    /absolute end-0 top-\[calc\(100%\+0\.5rem\)\] z-50/.test(datePanelSource) &&
+      /max-h-\[32rem\] overflow-y-auto/.test(datePanelSource),
+  );
+  ok(
+    "0d. mobile calendar retains fixed sheet, focus trap, and scroll containment",
+    /fixed inset-0 z-\[120\]/.test(datePanelSource) &&
+      /useFocusTrap\(isSheet/.test(datePanelSource) &&
+      /overflow-y-auto overscroll-contain/.test(datePanelSource),
+  );
   const today = todayIso();
   const departure = addDays(today, 10);
   const returnDate = addDays(departure, 5);

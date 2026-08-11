@@ -17,7 +17,7 @@ export function Hero({ dictionary, dir, locale, image }: HeroProps) {
   const { hero, searchTabs, search } = dictionary;
 
   return (
-    <section className="border-border/70 bg-background relative isolate overflow-hidden border-b">
+    <section className="border-border/70 bg-background relative isolate z-10 overflow-x-clip border-b">
       <HeroBackdrop image={image} />
 
       <Container className="relative z-10 pt-8 pb-10 sm:pt-10 lg:pt-12 lg:pb-14">
