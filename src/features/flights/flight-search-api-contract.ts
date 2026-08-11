@@ -157,6 +157,9 @@ export const CLIENT_ERROR_CODES = [
   "unsupportedVersion",
   "searchUnavailable",
   "providerUnavailable",
+  "providerTimeout",
+  "providerExecutionFailed",
+  "responseValidationFailed",
 ] as const;
 
 export type ClientFlightSearchErrorCode = (typeof CLIENT_ERROR_CODES)[number];

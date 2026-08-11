@@ -1,20 +1,21 @@
-import "@/server/server-only";
+import "../../../../server/server-only";
 
-import { MAX_REQUEST_BODY_BYTES } from "@/features/flights/flight-search-api-contract";
-import type { ClientFlightSearchErrorCode } from "@/features/flights/flight-search-api-contract";
-import { validateFlightSearchRequestBody } from "@/server/flights/flight-search-request-validation";
-import type { RequestRejectionReason } from "@/server/flights/flight-search-request-validation";
+import { MAX_REQUEST_BODY_BYTES } from "../../../../features/flights/flight-search-api-contract";
+import type { ClientFlightSearchErrorCode } from "../../../../features/flights/flight-search-api-contract";
+import { validateFlightSearchRequestBody } from "../../../../server/flights/flight-search-request-validation";
+import type { RequestRejectionReason } from "../../../../server/flights/flight-search-request-validation";
 import {
   isJsonContentType,
   readBoundedRequestBody,
-} from "@/server/flights/request-body-reader";
+} from "../../../../server/flights/request-body-reader";
 import {
   buildErrorResponse,
   buildSuccessResponse,
   RESPONSE_HEADERS,
-} from "@/server/flights/flight-search-response";
-import { orchestrateProviderSearch } from "@/server/flights/providers/provider-search-orchestrator";
-import { resolveRuntimeProviderRegistry } from "@/server/flights/providers/provider-registry";
+} from "../../../../server/flights/flight-search-response";
+import { orchestrateProviderSearch } from "../../../../server/flights/providers/provider-search-orchestrator";
+import { runtimeProviderRegistry } from "../../../../server/flights/providers/provider-registry";
+import type { OrchestratedSearchResult } from "../../../../server/flights/providers/provider-runtime-types";
 
 /**
  * The internal GTAI flight-search endpoint.
@@ -36,6 +37,17 @@ export const dynamic = "force-dynamic";
 /** How a rejected request maps onto the two codes the client vocabulary has for it. */
 function errorCodeFor(reason: RequestRejectionReason): ClientFlightSearchErrorCode {
   return reason === "unsupportedVersion" ? "unsupportedVersion" : "invalidRequest";
+}
+
+function providerErrorCode(
+  result: OrchestratedSearchResult,
+): ClientFlightSearchErrorCode {
+  const failureCodes = result.outcomes.map((outcome) => outcome.failure?.code);
+  if (failureCodes.includes("timeout")) return "providerTimeout";
+  if (failureCodes.includes("malformedResponse")) {
+    return "responseValidationFailed";
+  }
+  return "providerExecutionFailed";
 }
 
 function json(body: unknown, status: number): Response {
@@ -92,14 +104,17 @@ export async function POST(request: Request): Promise<Response> {
       signal: request.signal,
       scenario: validation.scenario,
     },
-    { registry: resolveRuntimeProviderRegistry() },
+    // Public Beta Preview is demonstration inventory. Legacy Duffel manual-test
+    // flags must never replace this registry on the traveller-facing route;
+    // Duffel remains reachable only through its explicit verification harness.
+    { registry: runtimeProviderRegistry },
   );
 
   if (result.status === "failed") {
     // Every provider failed. That is not an empty result set, and saying so
     // would tell the visitor there are no flights when nobody managed to
     // look. 503 with a safe code; the reasons stay in the audit stream.
-    return json(buildErrorResponse("providerUnavailable"), 503);
+    return json(buildErrorResponse(providerErrorCode(result)), 503);
   }
 
   return json(buildSuccessResponse(result), 200);
