@@ -204,6 +204,7 @@ const expectedStatusKeys = [
   "productionProviderMode",
   "tokenExposed",
   "tripComAffiliate",
+  "viatorAffiliate",
 ];
 check(
   Object.keys(status).sort().join(",") === expectedStatusKeys.join(","),
@@ -231,6 +232,38 @@ check(
       "providerType",
     ].join(","),
   "affiliate status has exact safe key allowlist",
+);
+check(
+  Object.keys(status.viatorAffiliate).sort().join(",") ===
+    [
+      "active",
+      "availabilityScheduleAvailable",
+      "bookingAvailable",
+      "capabilities",
+      "configured",
+      "destinationSearchAvailable",
+      "displayName",
+      "enabled",
+      "environment",
+      "id",
+      "orderAvailable",
+      "paymentAvailable",
+      "productDetailsAvailable",
+      "productSearchAvailable",
+      "providerType",
+      "redirectAvailable",
+      "refundAvailable",
+      "ticketingAvailable",
+      "travelerSubmissionAvailable",
+    ].join(","),
+  "Viator status has exact safe key allowlist",
+);
+check(
+  status.viatorAffiliate.environment === "sandbox" &&
+    status.viatorAffiliate.bookingAvailable === false &&
+    status.viatorAffiliate.paymentAvailable === false &&
+    status.viatorAffiliate.orderAvailable === false,
+  "Viator status preserves public beta commerce boundary",
 );
 check(
   !/DUFFEL|Authorization|Bearer|credential|rawPayload|stack/i.test(
@@ -311,7 +344,10 @@ check(
 );
 
 const sha = (value: string): string =>
-  createHash("sha256").update(value).digest("hex").toUpperCase();
+  createHash("sha256")
+    .update(value.replace(/\r\n/g, "\n"))
+    .digest("hex")
+    .toUpperCase();
 check(
   sha(read("src/app/robots.ts")) ===
     "6CE8E732F51ABCDC4F6EDB8FFD7F532966004BB141384D4667E0BC4A5CDDA106",

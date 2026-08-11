@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.pexels.com", pathname: "/**" },
       { protocol: "https", hostname: "pixabay.com", pathname: "/**" },
       { protocol: "https", hostname: "cdn.pixabay.com", pathname: "/**" },
+      {
+        protocol: "https",
+        hostname: "dynamic-media-cdn.tripadvisor.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cache-graphicslib.viator.com",
+        pathname: "/**",
+      },
     ],
   },
 };

@@ -4,6 +4,8 @@ import {
   getTripComAffiliateProviderMetadata,
   type TripComAffiliateProviderMetadata,
 } from "../affiliate/trip-com/trip-com-affiliate";
+import { getViatorAffiliateMetadata } from "../affiliate/viator/viator-config";
+import type { ViatorAffiliateMetadata } from "../affiliate/viator/viator-types";
 
 export interface PublicBetaStatus {
   readonly app: "GTAI";
@@ -17,12 +19,14 @@ export interface PublicBetaStatus {
   readonly tokenExposed: false;
   readonly productionLiveProviderEnabled: false;
   readonly tripComAffiliate: TripComAffiliateProviderMetadata;
+  readonly viatorAffiliate: ViatorAffiliateMetadata;
 }
 
 export function getPublicBetaStatus(
   environment: Readonly<Record<string, string | undefined>> = process.env,
 ): PublicBetaStatus {
   const tripComAffiliate = getTripComAffiliateProviderMetadata(environment);
+  const viatorAffiliate = getViatorAffiliateMetadata(environment);
   return Object.freeze({
     app: "GTAI",
     mode: "publicBeta",
@@ -31,9 +35,10 @@ export function getPublicBetaStatus(
     bookingEnabled: false,
     paymentsEnabled: false,
     ordersEnabled: false,
-    affiliateRedirectsEnabled: tripComAffiliate.active,
+    affiliateRedirectsEnabled: tripComAffiliate.active || viatorAffiliate.active,
     tokenExposed: false,
     productionLiveProviderEnabled: false,
     tripComAffiliate,
+    viatorAffiliate,
   });
 }

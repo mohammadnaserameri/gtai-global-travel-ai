@@ -4,14 +4,17 @@ import { getDirection, resolveContentLocale } from "@/config/locales";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPublicMetadata } from "@/lib/seo/public-metadata";
 import { PRODUCT_PAGE_PATHS } from "@/config/public-company-profile";
-import { ProductPageShell } from "@/components/layout/ProductPageShell";
+import { Container } from "@/components/layout/Container";
+import { SectionHeading } from "@/components/layout/SectionHeading";
+import { Badge } from "@/components/ui/Badge";
+import { ViatorExploreExperience } from "@/components/explore/ViatorExploreExperience";
 import { resolveTravelImage } from "@/server/travel-images/travel-image-engine";
+import { ProductImage } from "@/components/travel-images/ProductImage";
+import { getViatorAffiliateMetadata } from "@/server/affiliate/viator/viator-config";
 import {
-  CalendarIcon,
-  CoinsIcon,
-  CompassIcon,
-  RouteIcon,
-} from "@/components/ui/icons";
+  getViatorDestinations,
+  getViatorTags,
+} from "@/server/affiliate/viator/viator-adapter";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -39,21 +42,57 @@ export default async function ExplorePage({ params }: PageProps) {
     category: "explore",
     destination: "Global",
   });
+  const metadata = getViatorAffiliateMetadata();
+  let destinations = [] as Awaited<ReturnType<typeof getViatorDestinations>>;
+  let tags = [] as Awaited<ReturnType<typeof getViatorTags>>;
+  let bootstrapFailed = false;
+  if (metadata.active) {
+    try {
+      [destinations, tags] = await Promise.all([
+        getViatorDestinations(locale),
+        getViatorTags(locale),
+      ]);
+    } catch {
+      bootstrapFailed = true;
+    }
+  }
 
   return (
-    <ProductPageShell
-      dictionary={dictionary}
-      page={dictionary.pages.explore}
-      dir={getDirection(resolveContentLocale(locale))}
-      locale={locale}
-      image={image}
-      icon={<CompassIcon size={22} />}
-      plannedIcons={[
-        <CoinsIcon key="budget" size={20} />,
-        <CalendarIcon key="month" size={20} />,
-        <CompassIcon key="interest" size={20} />,
-        <RouteIcon key="reach" size={20} />,
-      ]}
-    />
+    <main dir={getDirection(resolveContentLocale(locale))}>
+      <section className="border-border/70 from-brand-25 to-background relative border-b bg-linear-to-b">
+        <Container className="py-12 lg:py-16">
+          <SectionHeading
+            as="h1"
+            eyebrow={dictionary.viatorExplore.eyebrow}
+            title={dictionary.viatorExplore.title}
+            description={dictionary.viatorExplore.description}
+            aside={
+              metadata.active ? (
+                <Badge tone="success">{dictionary.viatorExplore.liveBadge}</Badge>
+              ) : undefined
+            }
+          />
+          <ProductImage
+            asset={image}
+            alt={dictionary.viatorExplore.title}
+            className="mt-8"
+          />
+        </Container>
+      </section>
+      <section className="py-12 lg:py-16">
+        <Container>
+          <ViatorExploreExperience
+            dictionary={dictionary}
+            locale={locale}
+            active={metadata.active}
+            destinations={destinations}
+            tags={tags}
+            bootstrapFailed={bootstrapFailed}
+          />
+        </Container>
+      </section>
+    </main>
   );
 }
+
+export const dynamic = "force-dynamic";
