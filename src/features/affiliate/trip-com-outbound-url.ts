@@ -6,6 +6,8 @@ export function buildTripComOutboundUrl(intent: FlightSearchIntent): string | nu
   const destination = intent.destination.iataCode ?? intent.destination.cityCode;
   if (!origin || !destination) return null;
   const query = new URLSearchParams({
+    originLocationId: intent.origin.entityId,
+    destinationLocationId: intent.destination.entityId,
     origin,
     destination,
     departure: intent.departureDate,

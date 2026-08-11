@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import {
+  buildTripComCitySlug,
   buildTripComFlightRedirect,
   getTripComAffiliateClickCount,
   getTripComAffiliateProviderMetadata,
@@ -21,19 +22,21 @@ function read(file: string): string {
 
 const activeEnvironment = Object.freeze({
   TRIP_COM_AFFILIATE_ENABLED: "true",
-  TRIP_COM_AFFILIATE_BASE_URL: "https://www.trip.com/flights/",
+  TRIP_COM_AFFILIATE_BASE_URL: "https://www.trip.com/",
   TRIP_COM_AFFILIATE_TEMPLATE:
-    "/flights/{origin}-{destination}?departure={departureDate}&return={returnDate}&trip={tripType}&language={locale}&currency={currency}&aid={affiliateId}&sid={sid}&trip_sub1={trip_sub1}",
+    "/flights/{originSlug}-to-{destinationSlug}/tickets-{origin}-{destination}?flighttype=S&dcity={origin}&acity={destination}&Allianceid={affiliateId}&SID={sid}&trip_sub1={trip_sub1}",
   TRIP_COM_AFFILIATE_ID: "verification-affiliate",
   TRIP_COM_AFFILIATE_SID: "verification-sid",
 });
 
 const safeInput = Object.freeze({
-  origin: "YUL",
-  destination: "YYZ",
+  originCityName: "Montreal",
+  destinationCityName: "Toronto",
+  origin: "YMQ",
+  destination: "YTO",
   departureDate: "2030-01-01",
-  returnDate: "2030-01-08",
-  tripType: "roundTrip" as const,
+  returnDate: null,
+  tripType: "oneWay" as const,
   cabinClass: "economy" as const,
   adults: 1,
   children: 0,
@@ -88,15 +91,39 @@ async function main(): Promise<void> {
   if (!redirect) throw new Error("verification failed: redirect unavailable");
   check(redirect.destination.protocol === "https:", "HTTPS only");
   check(redirect.destination.hostname === "www.trip.com", "exact host retained");
-  check(redirect.destination.pathname.includes("YUL-YYZ"), "route encoded");
   check(
-    redirect.destination.searchParams.get("departure") === "2030-01-01",
-    "departure encoded",
+    redirect.destination.pathname ===
+      "/flights/Montreal-to-Toronto/tickets-YMQ-YTO",
+    "Montreal to Toronto validated path",
   );
   check(
-    redirect.destination.searchParams.get("return") === "2030-01-08",
-    "return encoded",
+    redirect.destination.searchParams.get("flighttype") === "S",
+    "validated single-flight type retained",
   );
+  check(
+    redirect.destination.searchParams.get("dcity") === "YMQ",
+    "origin code injected",
+  );
+  check(
+    redirect.destination.searchParams.get("acity") === "YTO",
+    "destination code injected",
+  );
+  check(
+    redirect.destination.searchParams.get("Allianceid") ===
+      activeEnvironment.TRIP_COM_AFFILIATE_ID,
+    "affiliate id injected server-side",
+  );
+  check(
+    redirect.destination.searchParams.get("SID") ===
+      activeEnvironment.TRIP_COM_AFFILIATE_SID,
+    "SID injected server-side",
+  );
+  check(
+    redirect.destination.searchParams.get("trip_sub1") ===
+      redirect.attributionToken,
+    "trip_sub1 injected",
+  );
+  check(!redirect.destination.searchParams.has("trip_sub3"), "trip_sub3 absent");
   check(redirect.attributionToken.startsWith("gtai_flight_"), "trip_sub1 prefix");
   check(redirect.attributionToken.length <= 40, "trip_sub1 compact");
   check(
@@ -104,12 +131,48 @@ async function main(): Promise<void> {
     "trip_sub1 excludes PII",
   );
   check(redirect.clickId === "safe-click-id-123456", "safe click id retained");
+  check(
+    buildTripComCitySlug("  Montréal  ", "YMQ") === "Montreal",
+    "Unicode city name normalized safely",
+  );
+  check(
+    buildTripComCitySlug("New / York?", "NYC") === "New-York",
+    "unsafe path characters removed from slug",
+  );
+  check(
+    buildTripComCitySlug(null, "YMQ") === "YMQ",
+    "missing canonical metadata falls back to validated code",
+  );
+
+  const westernRedirect = buildTripComFlightRedirect(
+    {
+      ...safeInput,
+      originCityName: "Vancouver",
+      destinationCityName: "Calgary",
+      origin: "YVR",
+      destination: "YYC",
+    },
+    {
+      environment: activeEnvironment,
+      createClickId: () => "western-safe-click-123456",
+    },
+  );
+  check(westernRedirect !== null, "Vancouver to Calgary redirect built");
+  check(
+    westernRedirect?.destination.pathname ===
+      "/flights/Vancouver-to-Calgary/tickets-YVR-YYC",
+    "Vancouver to Calgary validated path",
+  );
+  check(
+    !westernRedirect?.destination.searchParams.has("trip_sub3"),
+    "second validated route omits trip_sub3",
+  );
 
   const invalidInputs = [
     { ...safeInput, origin: "YU" },
     { ...safeInput, origin: "YUL<script>" },
     { ...safeInput, destination: "YY" },
-    { ...safeInput, destination: "YUL" },
+    { ...safeInput, destination: "YMQ" },
     { ...safeInput, departureDate: "not-a-date" },
     { ...safeInput, departureDate: "2030-02-30" },
     { ...safeInput, returnDate: "2029-01-01" },
@@ -127,12 +190,12 @@ async function main(): Promise<void> {
   }
 
   const maliciousTemplates = [
-    "javascript:{origin}{destination}{trip_sub1}{affiliateId}{sid}",
-    "data:text/html,{origin}{destination}{trip_sub1}{affiliateId}{sid}",
-    "file:///{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://evil.example/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://www.trip.com@evil.example/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
-    "https://www.trip.com/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}\r\nX-Test: bad",
+    "javascript:{originSlug}{destinationSlug}{origin}{destination}{trip_sub1}{affiliateId}{sid}",
+    "data:text/html,{originSlug}{destinationSlug}{origin}{destination}{trip_sub1}{affiliateId}{sid}",
+    "file:///{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://evil.example/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com@evil.example/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}",
+    "https://www.trip.com/{originSlug}/{destinationSlug}/{origin}/{destination}?x={trip_sub1}&a={affiliateId}&s={sid}\r\nX-Test: bad",
   ];
   for (const template of maliciousTemplates) {
     const environment = {

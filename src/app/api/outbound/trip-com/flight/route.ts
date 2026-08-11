@@ -4,10 +4,13 @@ import {
   buildTripComFlightRedirect,
   recordTripComAffiliateClick,
 } from "../../../../../server/affiliate/trip-com/trip-com-affiliate";
+import { resolveLocationIds } from "../../../../../features/locations/location-search";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_QUERY_KEYS = new Set([
+  "originLocationId",
+  "destinationLocationId",
   "origin",
   "destination",
   "departure",
@@ -37,6 +40,14 @@ function integer(value: string | null): number {
   return value !== null && /^\d$/.test(value) ? Number(value) : -1;
 }
 
+function canonicalCityName(locationId: string | null, code: string): string | null {
+  if (!locationId || !/^[a-z0-9-]{1,80}$/.test(locationId)) return null;
+  const [location] = resolveLocationIds([locationId]);
+  if (!location || location.isFlexibleDestination) return null;
+  const resolvedCode = location.iataCode ?? location.cityCode;
+  return resolvedCode === code ? location.cityName : null;
+}
+
 export function GET(request: Request): Response {
   const url = new URL(request.url);
   if ([...url.searchParams.keys()].some((key) => !ALLOWED_QUERY_KEYS.has(key))) {
@@ -44,6 +55,8 @@ export function GET(request: Request): Response {
   }
   const trip = url.searchParams.get("trip");
   const cabin = url.searchParams.get("cabin");
+  const origin = url.searchParams.get("origin") ?? "";
+  const destination = url.searchParams.get("destination") ?? "";
   if (
     (trip !== "oneWay" && trip !== "roundTrip") ||
     !["economy", "premiumEconomy", "business", "first"].includes(cabin ?? "")
@@ -51,8 +64,16 @@ export function GET(request: Request): Response {
     return safeResponse("invalidRequest", 400);
   }
   const redirect = buildTripComFlightRedirect({
-    origin: url.searchParams.get("origin") ?? "",
-    destination: url.searchParams.get("destination") ?? "",
+    originCityName: canonicalCityName(
+      url.searchParams.get("originLocationId"),
+      origin,
+    ),
+    destinationCityName: canonicalCityName(
+      url.searchParams.get("destinationLocationId"),
+      destination,
+    ),
+    origin,
+    destination,
     departureDate: url.searchParams.get("departure") ?? "",
     returnDate: url.searchParams.get("return"),
     tripType: trip,
@@ -67,8 +88,8 @@ export function GET(request: Request): Response {
   recordTripComAffiliateClick({
     clickId: redirect.clickId,
     providerId: "trip-com-affiliate",
-    origin: url.searchParams.get("origin") ?? "",
-    destination: url.searchParams.get("destination") ?? "",
+    origin,
+    destination,
     departureDate: url.searchParams.get("departure") ?? "",
     returnDate: url.searchParams.get("return"),
     locale: url.searchParams.get("locale") ?? "",

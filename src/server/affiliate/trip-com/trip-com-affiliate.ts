@@ -5,6 +5,8 @@ import { createHash, randomUUID } from "node:crypto";
 const PROVIDER_ID = "trip-com-affiliate";
 const TRIP_COM_HOSTS = new Set(["trip.com", "www.trip.com"]);
 const REQUIRED_TEMPLATE_FIELDS = [
+  "originSlug",
+  "destinationSlug",
   "origin",
   "destination",
   "trip_sub1",
@@ -52,6 +54,8 @@ interface TripComAffiliateConfiguration {
 }
 
 export interface TripComFlightRedirectInput {
+  readonly originCityName: string | null;
+  readonly destinationCityName: string | null;
   readonly origin: string;
   readonly destination: string;
   readonly departureDate: string;
@@ -146,6 +150,8 @@ function validateTemplate(
 ): boolean {
   if (!template || !baseUrl || !templateFields(template)) return false;
   const rendered = renderTemplate(template, {
+    originSlug: "Montreal",
+    destinationSlug: "Toronto",
     origin: "YUL",
     destination: "YYZ",
     departureDate: "2030-01-01",
@@ -242,6 +248,28 @@ function validDate(input: string): boolean {
   return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === input;
 }
 
+/**
+ * Creates a path-safe Trip.com city slug from GTAI's canonical English city
+ * metadata. The caller resolves that metadata from the structured location
+ * directory; raw search-box text never reaches this function. A validated
+ * three-letter location code is the only fallback when metadata is absent.
+ */
+export function buildTripComCitySlug(
+  canonicalCityName: string | null,
+  fallbackCode: string,
+): string | null {
+  if (!validCode(fallbackCode)) return null;
+  const normalized = (canonicalCityName ?? "")
+    .normalize("NFKD")
+    .replace(/\p{M}+/gu, "")
+    .replace(/[^A-Za-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80)
+    .replace(/-$/g, "");
+  return normalized || fallbackCode;
+}
+
 function validInput(input: TripComFlightRedirectInput): boolean {
   if (!validCode(input.origin) || !validCode(input.destination)) return false;
   if (input.origin === input.destination || !validDate(input.departureDate)) {
@@ -297,7 +325,15 @@ export function buildTripComFlightRedirect(
   const clickId = rawClickId.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
   if (clickId.length < 8) return null;
   const attributionToken = attribution(clickId);
+  const originSlug = buildTripComCitySlug(input.originCityName, input.origin);
+  const destinationSlug = buildTripComCitySlug(
+    input.destinationCityName,
+    input.destination,
+  );
+  if (!originSlug || !destinationSlug) return null;
   const rendered = renderTemplate(configuration.template, {
+    originSlug,
+    destinationSlug,
     origin: input.origin,
     destination: input.destination,
     departureDate: input.departureDate,

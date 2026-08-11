@@ -33,7 +33,17 @@ Optional variables:
 - `TRIP_COM_AFFILIATE_DEFAULT_LANGUAGE`
 - `TRIP_COM_AFFILIATE_DEFAULT_CURRENCY`
 
-The template must be an official, manually validated Trip.com pattern and contain the required placeholders for origin, destination, affiliate ID, SID, and `trip_sub1`. Unsupported parameters are not invented. Configuration is server-only, never `NEXT_PUBLIC_*`, and partial configuration fails closed.
+The template must be an official, manually validated Trip.com pattern and contain the required placeholders for canonical origin and destination slugs, origin and destination codes, affiliate ID, SID, and `trip_sub1`. Unsupported parameters are not invented. Configuration is server-only, never `NEXT_PUBLIC_*`, and partial configuration fails closed.
+
+The validated V2.11 Production template is:
+
+```text
+/flights/{originSlug}-to-{destinationSlug}/tickets-{origin}-{destination}?flighttype=S&dcity={origin}&acity={destination}&Allianceid={affiliateId}&SID={sid}&trip_sub1={trip_sub1}
+```
+
+`TRIP_COM_AFFILIATE_BASE_URL` remains `https://www.trip.com/`. The adapter derives `{originSlug}` and `{destinationSlug}` from GTAI's structured canonical English city metadata, normalizes Unicode, removes unsafe path characters, and uses the already validated three-letter location code as a fail-closed-safe fallback. It never uses raw search-box text for a slug.
+
+Two independently generated links from Trip.com's official Affiliate Link tool established the same structure: Montreal/YMQ to Toronto/YTO produced `/flights/Montreal-to-Toronto/tickets-YMQ-YTO`, and Vancouver/YVR to Calgary/YYC produced `/flights/Vancouver-to-Calgary/tickets-YVR-YYC`. Account-specific values are deliberately omitted from this evidence. `trip_sub3` varied between those generated links, is not established as required, and is therefore neither accepted nor emitted by GTAI V2.11.
 
 ## Attribution and privacy boundary
 
